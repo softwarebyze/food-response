@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import GoNoGo from './GoNoGo'
-import Home from './Home'
-import Navbar from './Navbar'
-import StopSignal from './StopSignal'
+import GoNoGo from './components/GoNoGo'
+import Home from './components/Home'
+import Navbar from './components/Navbar'
+import StopSignal from './components/StopSignal'
 
 function App() {
   return (

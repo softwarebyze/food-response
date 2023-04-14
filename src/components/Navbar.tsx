@@ -3,7 +3,7 @@ import { TrainingTask } from '../types/TrainingTask'
 
 function Navbar({ tasks }: { tasks: TrainingTask[] }) {
   return (
-    <div id="nav">
+    <div>
       <NavLink to="/">Home</NavLink>
       {tasks.map((task) => (
         <NavLink key={task.name} to={task.path}>

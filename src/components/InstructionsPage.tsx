@@ -4,10 +4,10 @@ interface Props {
   trainingTask: TrainingTask
 }
 function InstructionsPage(props: Props) {
-  const { taskName, instructions } = props.trainingTask
+  const { name, instructions } = props.trainingTask
   return (
     <>
-      <h1>{taskName}</h1>
+      <h1>{name}</h1>
       <p>{instructions}</p>
       <button>Start Game</button>
     </>

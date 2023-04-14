@@ -2,7 +2,23 @@
   "tasks": [
     {
       "name": "Stop Signal",
+      "path": "stopsignal",
+      "instructions": "You will see pictures in either a dark blue or light gray border. Touch the picture if you see a blue border. Be sure to touch the screen inside the box outline. Do not touch the screen if you see a gray border. Go as fast as you can but remember accuracy is more important than speed!"
+    },
+    {
+      "name": "Go/No-Go",
+      "path": "gonogo",
       "instructions": "You will see pictures on either the left or right side of the screen, surrounded by a solid or dashed border. If you see a solid border around the picture, touch the picture. Be sure to touch the side of the screen that you see the picture and stay within the border. Do not touch the screen if you see a dashed border. Go as fast as you can but remember accuracy is more important than speed!"
+    },
+    {
+      "name": "Dot Probe",
+      "path": "dotprobe",
+      "instructions": "You will see pictures on the screen followed by a dot on the left or right side of the screen. If you see the dot on the left side of the screen, touch the screen on the left side. If you see the dot on the right side of the screen, touch the right side. Be sure to touch the screen inside the box outline. Go as fast as you can but remember accuracy is more important than speed!"
+    },
+    {
+      "name": "Visual Search",
+      "path": "visualsearch",
+      "instructions": "You will see a grid of images. Select the image of a vegetable or fruit as quickly as you can. Go as fast as you can but remember accuracy is more important that speed!"
     }
   ]
 }

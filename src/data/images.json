@@ -1,21 +1,44 @@
 {
-    "images": {
-      "unhealthy": [
-        "https://media.istockphoto.com/id/520410807/photo/cheeseburger.jpg?s=612x612&w=0&k=20&c=fG_OrCzR5HkJGI8RXBk76NwxxTasMb1qpTVlEM0oyg4=",
-        "https://image.zmenu.com/large/4452/20140407050823954313.png",
-        "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/51093a82ee5daa1a.cro-cwN8URd_-large.jpg",
-        "https://cdn.shopify.com/s/files/1/0186/2225/1072/products/IMG_4833ChocolateCake_2000x.jpg?v=1611325614"
-      ],
-      "healthy": [
-        "https://media.istockphoto.com/id/584226186/photo/green-apple.jpg?b=1&s=170667a&w=0&k=20&c=lDC_bfwsTi7_B_TdFClMNLUoYzVK331rOo_KECwby1U=",
-        "https://cpimg.tistatic.com/07617644/b/4/Fresh-Green-Grapes.jpg",
-        "https://i.insider.com/5bb28ca901145507d561db73?width=700",
-        "https://www.nutsinbulk.ie/files/items/wholefoods/organic_lentils_red_whole.jpg",
-        "https://img.freepik.com/free-vector/vintage-pear-illustration_53876-112720.jpg?w=2000"
-      ],
-      "water": [
-        "https://img.freepik.com/free-vector/isolated-glass-water_1368-2666.jpg?w=2000"
-      ]
+  "images": [
+    {
+      "src": "https://media.istockphoto.com/id/520410807/photo/cheeseburger.jpg?s=612x612&w=0&k=20&c=fG_OrCzR5HkJGI8RXBk76NwxxTasMb1qpTVlEM0oyg4=",
+      "type": "unhealthy"
+    },
+    {
+      "src": "https://image.zmenu.com/large/4452/20140407050823954313.png",
+      "type": "unhealthy"
+    },
+    {
+      "src": "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/51093a82ee5daa1a.cro-cwN8URd_-large.jpg",
+      "type": "unhealthy"
+    },
+    {
+      "src": "https://cdn.shopify.com/s/files/1/0186/2225/1072/products/IMG_4833ChocolateCake_2000x.jpg?v=1611325614",
+      "type": "unhealthy"
+    },
+    {
+      "src": "https://media.istockphoto.com/id/584226186/photo/green-apple.jpg?b=1&s=170667a&w=0&k=20&c=lDC_bfwsTi7_B_TdFClMNLUoYzVK331rOo_KECwby1U=",
+      "type": "healthy"
+    },
+    {
+      "src": "https://cpimg.tistatic.com/07617644/b/4/Fresh-Green-Grapes.jpg",
+      "type": "healthy"
+    },
+    {
+      "src": "https://i.insider.com/5bb28ca901145507d561db73?width=700",
+      "type": "healthy"
+    },
+    {
+      "src": "https://www.nutsinbulk.ie/files/items/wholefoods/organic_lentils_red_whole.jpg",
+      "type": "healthy"
+    },
+    {
+      "src": "https://img.freepik.com/free-vector/vintage-pear-illustration_53876-112720.jpg?w=2000",
+      "type": "healthy"
+    },
+    {
+      "src": "https://img.freepik.com/free-vector/isolated-glass-water_1368-2666.jpg?w=2000",
+      "type": "water"
     }
-  }
-  
+  ]
+}

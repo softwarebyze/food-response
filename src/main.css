@@ -1,0 +1,182 @@
+html,
+body {
+  height: 100%;
+  background: #fff;
+}
+
+blockquote {
+  background: #d5f4f4;
+  border-left: 10px solid #91e3e3;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+}
+
+blockquote p {
+  display: inline;
+  color: #061a1a;
+}
+
+blockquote i {
+  color: #91e3e3;
+  margin-left: 0.4em;
+  margin-right: 0.3em;
+}
+
+#gameContainer {
+  background: #ffffff;
+}
+
+#fullscreen {
+  margin-bottom: 10px;
+}
+
+.green-grow {
+  border: 3px solid green;
+  transition: all 0.1s ease-in-out;
+  transform: scale(2);
+}
+
+.red-shrink {
+  border: 3px solid red;
+  transition: all 0.1s ease-in-out;
+  transform: scale(0.5);
+}
+
+.gameWrapper {
+  max-width: 960px;
+  margin: 0px auto;
+}
+
+.redCross {
+  color: red;
+  font-size: 6em;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 1em;
+}
+
+.notification {
+  word-break: break-all;
+}
+
+.squeezed {
+  max-width: 50%;
+  height: 300px;
+}
+
+.badge1 {
+  background: #94fff7;
+}
+
+.badge2 {
+  background: #f2e86b;
+}
+
+.badge3 {
+  background: #ff738f;
+}
+
+.badge4 {
+  background: #f4c6ee;
+}
+
+.badge5 {
+  background: #39e17e;
+}
+
+.block-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2em;
+}
+
+.badge6 {
+  background: #c784ff;
+}
+
+.highlight {
+  background: yellow;
+  padding-left: 2px;
+  padding-right: 2px;
+  border-radius: 2px;
+}
+
+.fixationCross {
+  text-align: center;
+  font-size: 4em;
+  margin: 2em auto;
+}
+
+.vsImg {
+  width: 90%;
+}
+
+.sized {
+  height: 340px;
+  max-width: 960px;
+}
+
+.solidBorder {
+  border: 2px solid #000;
+  overflow: hidden;
+}
+
+.dashedBorder {
+  border: 2px dashed #000;
+  overflow: hidden;
+}
+
+.imageBox {
+  text-align: center;
+  overflow: hidden;
+}
+
+.blueBorder {
+  border: 5px solid blue;
+}
+
+.grayBorder {
+  border: 5px solid gray;
+}
+
+.whiteBorder {
+  border: 5px solid white;
+}
+
+.probe {
+  text-align: center;
+  font-size: 4em;
+  margin: 2em auto;
+}
+
+.rightSide {
+  padding: 1em;
+}
+
+.leftSide {
+  padding: 1em;
+}
+
+.white {
+  color: white;
+}
+
+.questionFeedback {
+  color: #fff;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.red,
+.red a:hover {
+  color: red;
+}
+
+.elm-overlay {
+  z-index: 9000;
+}
+
+.gray {
+  background: #efefef;
+}

@@ -24,7 +24,7 @@ export function isResponseCorrect(
 import { useCallback, useEffect, useState } from 'react'
 import { useGame } from '../contexts/GameContext'
 import { GameStage, ImageType, ReactionType, Response } from '../types/Task'
-const slowdown = 3
+const slowdown = 1
 const times = {
   init: 100 * slowdown,
   cue: 1150 * slowdown,
@@ -32,7 +32,7 @@ const times = {
   error: 500 * slowdown,
 } as const
 
-export default function StopSignal() {
+export default function StopSignal({ endGame }: { endGame: () => void }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<GameStage>('init')
   const {
@@ -61,6 +61,14 @@ export default function StopSignal() {
 
   function showInit() {
     setGameStage('init')
+  }
+
+  function goToNextTrialOrEndGame() {
+    if (currentTrialIndex < taskData.length - 1) {
+      setCurrentTrialIndex((prev) => prev + 1)
+    } else {
+      endGame()
+    }
   }
 
   // when reaction changes, if it is wrong, change state to error
@@ -113,7 +121,7 @@ export default function StopSignal() {
     if (gameStage === 'interval') {
       timeout = setTimeout(() => {
         showInit()
-        setCurrentTrialIndex((prev) => prev + 1)
+        goToNextTrialOrEndGame()
       }, times.init)
     }
     return () => clearTimeout(timeout)
@@ -122,7 +130,11 @@ export default function StopSignal() {
   return (
     <>
       <>
-        {'slowdown: ' + slowdown}
+        {'currentTrialIndex: ' + currentTrialIndex}
+        <br />
+        {'taskData.length: ' + taskData.length}
+        <br />
+        {'slowdown: ' + slowdown + 'x'}
         <br />
         {'gameStage: ' + gameStage}
         <br />

@@ -9,6 +9,7 @@ type PageState = 'start' | 'game' | 'results'
 export default function TaskPage({ task }: { task: TaskInfo }) {
   const [pageState, setPageState] = useState<PageState>('start')
   const startGame = () => setPageState('game')
+  const endGame = () => setPageState('results')
   return (
     <section className="section" id="gameSection">
       <div className="container" id="gameContainer">
@@ -17,9 +18,10 @@ export default function TaskPage({ task }: { task: TaskInfo }) {
         )}
         {pageState === 'game' && (
           <GameProvider>
-            {task.name === 'Stop Signal' && <StopSignal />}
+            {task.name === 'Stop Signal' && <StopSignal endGame={endGame} />}
           </GameProvider>
         )}
+        {pageState === 'results' && <div>Results</div>}
       </div>
     </section>
   )

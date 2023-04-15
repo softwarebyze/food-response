@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import StopSignal, { isResponseCorrect } from '../components/StopSignal'
 
@@ -7,7 +7,7 @@ describe('StopSignal', () => {
   let imageElement: HTMLImageElement
   let imageContainerElement: HTMLElement
   beforeEach(() => {
-    render(<StopSignal />)
+    render(<StopSignal endGame={vi.fn} />)
     imageElement = screen.getByAltText(/trial image/i)
     imageContainerElement = screen.getByTitle(/image-container/i)
   })

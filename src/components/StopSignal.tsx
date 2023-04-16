@@ -108,21 +108,23 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
   // add timeout to proceed to next stage
   useEffect(() => {
     let timeout: NodeJS.Timeout
-    if (gameStage === 'init') {
-      setResponse({ type: null, correct: null })
-      timeout = setTimeout(showCue, times.init)
-    }
-    if (gameStage === 'cue') {
-      timeout = setTimeout(() => handleReaction('omission'), times.cue)
-    }
-    if (gameStage === 'error') {
-      timeout = setTimeout(showInterval, times.error)
-    }
-    if (gameStage === 'interval') {
-      timeout = setTimeout(() => {
-        showInit()
-        goToNextTrialOrEndGame()
-      }, times.init)
+    switch (gameStage) {
+      case 'init':
+        setResponse({ type: null, correct: null })
+        timeout = setTimeout(showCue, times.init)
+        break
+      case 'cue':
+        timeout = setTimeout(() => handleReaction('omission'), times.cue)
+        break
+      case 'error':
+        timeout = setTimeout(showInterval, times.error)
+        break
+      case 'interval':
+        timeout = setTimeout(() => {
+          showInit()
+          goToNextTrialOrEndGame()
+        }, times.interval)
+        break
     }
     return () => clearTimeout(timeout)
   }, [gameStage])
@@ -138,7 +140,7 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
         <br />
         {'gameStage: ' + gameStage}
         <br />
-        {'response: ' + JSON.stringify(response)}{' '}
+        {'response: ' + JSON.stringify(response)}
       </>
       {interval ? (
         <></>

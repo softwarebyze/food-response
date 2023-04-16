@@ -38,29 +38,23 @@
       "instructions": "You will see pictures on either the left or right side of the screen, surrounded by a solid or dashed border. If you see a solid border around the picture, touch the picture. Be sure to touch the side of the screen that you see the picture and stay within the border. Do not touch the screen if you see a dashed border. Go as fast as you can but remember accuracy is more important than speed!",
       "cover": "https://projecthealthori.org/file/repo/gonogo.png",
       "stages": {
-        "init": {
-          "image": "TRUE",
-          "border": "TRUE",
-          "error": "TRUE",
-          "interval": "TRUE"
-        },
         "cue": {
-          "image": "TRUE",
-          "border": "TRUE",
-          "error": "TRUE",
-          "interval": "TRUE"
+          "image": true,
+          "border": true,
+          "error": false,
+          "interval": false
         },
         "interval": {
-          "image": "TRUE",
-          "border": "TRUE",
-          "error": "TRUE",
-          "interval": "TRUE"
+          "image": false,
+          "border": false,
+          "error": false,
+          "interval": true
         },
         "error": {
-          "image": "TRUE",
-          "border": "TRUE",
-          "error": "TRUE",
-          "interval": "TRUE"
+          "image": false,
+          "border": true,
+          "error": true,
+          "interval": false
         }
       }
     },

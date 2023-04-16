@@ -3,6 +3,7 @@ import { GameProvider } from '../contexts/GameContext'
 import { TaskInfo } from '../types/Task'
 import StartScreen from './StartScreen'
 import StopSignal from './StopSignal'
+import GoNoGo from './GoNoGo'
 
 type PageState = 'start' | 'game' | 'results'
 
@@ -19,6 +20,7 @@ export default function TaskPage({ task }: { task: TaskInfo }) {
         {pageState === 'game' && (
           <GameProvider>
             {task.name === 'Stop Signal' && <StopSignal endGame={endGame} />}
+            {task.name === 'Go/No-Go' && <GoNoGo endGame={endGame} />}
           </GameProvider>
         )}
         {pageState === 'results' && <div>Results</div>}

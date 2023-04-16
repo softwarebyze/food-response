@@ -35,3 +35,15 @@ export interface Response {
   correct: boolean | null
   type: ReactionType | null
 }
+
+export type GoNoGoBorderStyle = 'solidBorder' | 'dashedBorder'
+export type GoNoGoReaction = 'left-commission' | 'right-commission' | 'omission'
+export interface GoNoGoCue {
+  side: 'left' | 'right'
+  imageType: ImageType
+}
+export type GoNoGoGameStage = 'cue' | 'interval' | 'error'
+export interface GoNoGoResponse {
+  type: GoNoGoReaction | null
+  correct: boolean | null
+}

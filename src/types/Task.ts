@@ -44,6 +44,6 @@ export interface GoNoGoCue {
 }
 export type GoNoGoGameStage = 'cue' | 'interval' | 'error'
 export interface GoNoGoResponse {
-  type: GoNoGoReaction | null
+  reaction: GoNoGoReaction | null
   correct: boolean | null
 }

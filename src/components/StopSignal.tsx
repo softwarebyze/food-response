@@ -74,8 +74,9 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
   // when reaction changes, if it is wrong, change state to error
   // if it is correct, change state to interval
   useEffect(() => {
-    if (response?.correct === false) showError()
-    if (response?.correct === true) showInterval()
+    if (response.correct === null) return
+    if (response.correct === false) showError()
+    if (response.correct === true) showInterval()
   }, [response])
 
   const handleReaction = (reactionType: ReactionType) => {
@@ -120,10 +121,7 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
         timeout = setTimeout(showInterval, times.error)
         break
       case 'interval':
-        timeout = setTimeout(() => {
-          showInit()
-          goToNextTrialOrEndGame()
-        }, times.interval)
+        timeout = setTimeout(goToNextTrialOrEndGame, times.interval)
         break
     }
     return () => clearTimeout(timeout)

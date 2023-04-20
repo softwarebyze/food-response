@@ -1,6 +1,6 @@
 type BorderStyle = 'whiteBorder' | 'grayBorder' | 'blueBorder'
 
-function getBorderStyle(imageType: ImageType): BorderStyle {
+function getBorderStyle(imageType: ImageType) {
   switch (imageType) {
     case 'unhealthy':
       return 'grayBorder'
@@ -14,7 +14,7 @@ function getBorderStyle(imageType: ImageType): BorderStyle {
 export function isResponseCorrect(
   reactionType: ReactionType,
   borderStyle: BorderStyle
-): boolean {
+) {
   return (
     (borderStyle === 'blueBorder' && reactionType === 'commission') ||
     (borderStyle === 'grayBorder' && reactionType === 'omission')

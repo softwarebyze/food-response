@@ -1,6 +1,5 @@
 import { images } from '../data/images.json'
 import {
-  GoNoGoBorderStyle,
   GoNoGoCue,
   GoNoGoGameStage,
   GoNoGoReaction,
@@ -8,7 +7,7 @@ import {
   ImageType,
 } from '../types/Task'
 
-function getGoNoGoBorderStyle(imageType: ImageType): GoNoGoBorderStyle {
+function getGoNoGoBorderStyle(imageType: ImageType) {
   switch (imageType) {
     case 'unhealthy':
       return 'dashedBorder'
@@ -22,7 +21,7 @@ function getGoNoGoBorderStyle(imageType: ImageType): GoNoGoBorderStyle {
 function isGoNoGoResponseCorrect(
   reactionType: GoNoGoReaction,
   cue: GoNoGoCue
-): boolean {
+) {
   const { side, imageType } = cue
   return (
     (side === 'left' &&

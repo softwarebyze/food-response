@@ -132,6 +132,10 @@ blockquote i {
   overflow: hidden;
 }
 
+.imageBox .column img {
+  cursor: pointer;
+}
+
 .blueBorder {
   border: 5px solid blue;
 }

@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { GameProvider } from '../contexts/GameContext'
 import { TaskInfo } from '../types/Task'
+import GoNoGo from './GoNoGo'
 import StartScreen from './StartScreen'
 import StopSignal from './StopSignal'
-import GoNoGo from './GoNoGo'
 
 type PageState = 'start' | 'game' | 'results'
 
@@ -18,10 +17,10 @@ export default function TaskPage({ task }: { task: TaskInfo }) {
           <StartScreen task={task} startGame={startGame} />
         )}
         {pageState === 'game' && (
-          <GameProvider>
+          <div className="gameWrapper">
             {task.name === 'Stop Signal' && <StopSignal endGame={endGame} />}
             {task.name === 'Go/No-Go' && <GoNoGo endGame={endGame} />}
-          </GameProvider>
+          </div>
         )}
         {pageState === 'results' && <div>Results</div>}
       </div>

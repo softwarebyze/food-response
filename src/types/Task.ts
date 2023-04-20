@@ -34,6 +34,7 @@ export type ReactionType = 'omission' | 'commission'
 export interface Response {
   correct: boolean | null
   type: ReactionType | null
+  responseTime: number | null
 }
 
 export type GoNoGoBorderStyle = 'solidBorder' | 'dashedBorder'

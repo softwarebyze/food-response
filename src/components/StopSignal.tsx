@@ -43,10 +43,13 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
   const [response, setResponse] = useState<Response>({
     type: null,
     correct: null,
+    responseTime: null,
   })
+  const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
 
   function showCue() {
     setGameStage('cue')
+    setCueTimestamp(Date.now())
   }
 
   function showInterval() {
@@ -81,6 +84,7 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
     const newResponse = {
       type: reactionType,
       correct: isResponseCorrect(reactionType, borderStyle),
+      responseTime: cueTimestamp ? Date.now() - cueTimestamp : null,
     }
     setResponse(newResponse)
   }
@@ -109,7 +113,7 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
     let timeout: NodeJS.Timeout
     switch (gameStage) {
       case 'init':
-        setResponse({ type: null, correct: null })
+        setResponse({ type: null, correct: null, responseTime: null })
         timeout = setTimeout(showCue, times.init)
         break
       case 'cue':
@@ -137,6 +141,8 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
         {'gameStage: ' + gameStage}
         <br />
         {'response: ' + JSON.stringify(response)}
+        <br />
+        {'cueTimestamp: ' + JSON.stringify(cueTimestamp)}
       </>
       {interval ? (
         <></>

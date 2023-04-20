@@ -1,5 +1,6 @@
 import { images } from '../data/images.json'
 import {
+  GameStage,
   GoNoGoCue,
   GoNoGoGameStage,
   GoNoGoReaction,
@@ -55,24 +56,23 @@ export default function GoNoGo({ endGame }: { endGame: () => void }) {
   const { image, border, error, interval } = stages[gameStage]
   const taskData = images
   const { src, type } = taskData[currentTrialIndex]
-  const side = image ? getRandomSide() : null
-
-  const cue: GoNoGoCue = { side, imageType: type as ImageType }
-  const [response, setResponse] = useState<GoNoGoResponse>({
-    reaction: null,
-    correct: null,
-  })
-
   const borderStyle = border
     ? getGoNoGoBorderStyle(type as ImageType)
     : 'whiteBorder'
+    const [response, setResponse] = useState<GoNoGoResponse>({
+      reaction: null,
+      correct: null,
+    })
+  const side = image ? getRandomSide() : null
 
-  function showInterval() {
-    setGameStage('interval')
-  }
+  const cue: GoNoGoCue = { side, imageType: type as ImageType }
 
   function showCue() {
     setGameStage('cue')
+  }
+
+  function showInterval() {
+    setGameStage('interval')
   }
 
   function showError() {

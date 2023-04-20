@@ -1,3 +1,6 @@
+import { images } from '../data/images.json'
+import { GameStage, ImageType, ReactionType, Response } from '../types/Task'
+
 function getBorderStyle(imageType: ImageType) {
   switch (imageType) {
     case 'unhealthy':
@@ -20,9 +23,9 @@ export function isResponseCorrect(
 }
 
 import { useCallback, useEffect, useState } from 'react'
-import { useGame } from '../contexts/GameContext'
-import { GameStage, ImageType, ReactionType, Response } from '../types/Task'
-const slowdown = 1
+import { tasks } from '../data/tasks.json'
+const stages = tasks[0].stages
+const slowdown = 3
 const times = {
   init: 100 * slowdown,
   cue: 1150 * slowdown,
@@ -33,11 +36,10 @@ const times = {
 export default function StopSignal({ endGame }: { endGame: () => void }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<GameStage>('init')
-  const {
-    taskData,
-    taskInfo: { stages },
-  } = useGame()
-  const { image, border, error, interval } = stages[gameStage]
+  
+  // console.log(stages[gameStage])
+  const { image, border, error, interval } = stages[gameStage] as any
+  const taskData = images
   const { src, type } = taskData[currentTrialIndex]
   const borderStyle = border ? getBorderStyle(type as ImageType) : 'whiteBorder'
   const [response, setResponse] = useState<Response>({

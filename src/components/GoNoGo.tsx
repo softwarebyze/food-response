@@ -1,6 +1,5 @@
 import { images } from '../data/images.json'
 import {
-  GameStage,
   GoNoGoCue,
   GoNoGoGameStage,
   GoNoGoReaction,

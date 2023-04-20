@@ -147,15 +147,13 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
       {interval ? (
         <></>
       ) : (
-        <>
-          <div
-            title="image-container"
-            className={`imageBox sized ${borderStyle}`}
-          >
-            {image && <img src={src} alt="trial image" className="squeezed" />}
-            {error && <div className="redCross">X</div>}
-          </div>
-        </>
+        <div
+          title="image-container"
+          className={`imageBox sized ${borderStyle}`}
+        >
+          {image && <img src={src} alt="trial image" className="squeezed" />}
+          {error && <div className="redCross">X</div>}
+        </div>
       )}
     </>
   )

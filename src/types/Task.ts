@@ -48,3 +48,9 @@ export interface GoNoGoResponse {
   reaction: GoNoGoReaction | null
   correct: boolean | null
 }
+
+export type DotProbeReaction = 'left-commission' | 'right-commission'
+export interface DotProbeResponse {
+  reaction: DotProbeReaction | null
+  responseTime: number | null
+}

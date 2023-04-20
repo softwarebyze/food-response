@@ -21,7 +21,7 @@ export default function TaskPage({ task }: { task: TaskInfo }) {
           <div className="gameWrapper">
             {task.name === 'Stop Signal' && <StopSignal endGame={endGame} />}
             {task.name === 'Go/No-Go' && <GoNoGo endGame={endGame} />}
-            {task.name === 'Dot Probe' && <DotProbe />}
+            {task.name === 'Dot Probe' && <DotProbe endGame={endGame} />}
           </div>
         )}
         {pageState === 'results' && <div>Results</div>}

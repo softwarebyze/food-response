@@ -63,27 +63,9 @@
       "path": "dotprobe",
       "instructions": "You will see pictures on the screen followed by a dot on the left or right side of the screen. If you see the dot on the left side of the screen, touch the screen on the left side. If you see the dot on the right side of the screen, touch the right side. Be sure to touch the screen inside the box outline. Go as fast as you can but remember accuracy is more important than speed!",
       "cover": "https://projecthealthori.org/file/repo/dotprobe.png",
-      "stages": {
-        "init": {
-          "image": "TRUE",
-          "error": "TRUE",
-          "interval": "TRUE"
-        },
-        "cue": {
-          "image": "TRUE",
-          "error": "TRUE",
-          "interval": "TRUE"
-        },
-        "interval": {
-          "image": "TRUE",
-          "error": "TRUE",
-          "interval": "TRUE"
-        },
-        "error": {
-          "image": "TRUE",
-          "error": "TRUE",
-          "interval": "TRUE"
-        }
+      "times": {
+        "interval": 500,
+        "images": 500
       }
     },
     {

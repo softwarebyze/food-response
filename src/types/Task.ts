@@ -39,7 +39,7 @@ export interface Response {
 export type GoNoGoBorderStyle = 'solidBorder' | 'dashedBorder'
 export type GoNoGoReaction = 'left-commission' | 'right-commission' | 'omission'
 export interface GoNoGoCue {
-  side: 'left' | 'right'
+  side: 'left' | 'right' | null
   imageType: ImageType
 }
 export type GoNoGoGameStage = 'cue' | 'interval' | 'error'

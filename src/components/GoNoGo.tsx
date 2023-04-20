@@ -56,10 +56,8 @@ export default function GoNoGo({ endGame }: { endGame: () => void }) {
   const { image, border, error, interval } = stages[gameStage]
   const taskData = images
   const { src, type } = taskData[currentTrialIndex]
-  // const side = image ? getRandomSide() : null
-  const side = getRandomSide()
+  const side = image ? getRandomSide() : null
 
-  // const src = 'https://projecthealthori.org/file/repo/8fafc912bec1c78aaa451e519c9134c2.png'
   const cue: GoNoGoCue = { side, imageType: type as ImageType }
   const [response, setResponse] = useState<GoNoGoResponse>({
     reaction: null,
@@ -69,20 +67,6 @@ export default function GoNoGo({ endGame }: { endGame: () => void }) {
   const borderStyle = border
     ? getGoNoGoBorderStyle(type as ImageType)
     : 'whiteBorder'
-
-  function next() {
-    switch (gameStage) {
-      case 'cue':
-        setGameStage('interval')
-        break
-      case 'interval':
-        setGameStage('error')
-        break
-      case 'error':
-        setGameStage('cue')
-        break
-    }
-  }
 
   function showInterval() {
     setGameStage('interval')
@@ -173,7 +157,7 @@ export default function GoNoGo({ endGame }: { endGame: () => void }) {
               </div>
             </div>
           )}
-          {<div className="redCross">X</div>}
+          {error && <div className="redCross">X</div>}
         </div>
       )}
     </>

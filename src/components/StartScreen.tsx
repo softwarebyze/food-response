@@ -12,9 +12,9 @@ export default function StartScreen({ task, startGame }: StartScreenProps) {
         <div className="box">
           <p>{task.instructions}</p>
         </div>
-        <a onClick={startGame} className="button is-info is-large">
+        <button onClick={startGame} className="button is-info is-large" tabIndex={1}>
           Start Game
-        </a>
+        </button>
       </div>
     </>
   )

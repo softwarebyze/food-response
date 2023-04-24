@@ -4,6 +4,7 @@ import GoNoGo from './GoNoGo'
 import StartScreen from './StartScreen'
 import StopSignal from './StopSignal'
 import DotProbe from './DotProbe'
+import VisualSearch from './VisualSearch'
 
 type PageState = 'start' | 'game' | 'results'
 
@@ -22,6 +23,7 @@ export default function TaskPage({ task }: { task: TaskInfo }) {
             {task.name === 'Stop Signal' && <StopSignal endGame={endGame} />}
             {task.name === 'Go/No-Go' && <GoNoGo endGame={endGame} />}
             {task.name === 'Dot Probe' && <DotProbe endGame={endGame} />}
+            {task.name === 'Visual Search' && <VisualSearch endGame={endGame} />}
           </div>
         )}
         {pageState === 'results' && <div>Results</div>}

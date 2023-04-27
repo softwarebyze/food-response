@@ -15,16 +15,36 @@ export default function Nav() {
           <span></span>
         </span>
         <div id="navbar-menu" className="navbar-end navbar-menu">
-          <NavLink className="navbar-item is-tab is-active" to="/">
+          <NavLink
+            className={({ isActive }) =>
+              `${isActive && 'is-active'} navbar-item is-tab`
+            }
+            to="/"
+          >
             Games
           </NavLink>
-          <NavLink className="navbar-item is-tab" to="/badges">
+          <NavLink
+            className={({ isActive }) =>
+              `${isActive && 'is-active'} navbar-item is-tab`
+            }
+            to="/badges"
+          >
             Badges
           </NavLink>
-          <NavLink className="navbar-item is-tab" to="/instructions">
+          <NavLink
+            className={({ isActive }) =>
+              `${isActive && 'is-active'} navbar-item is-tab`
+            }
+            to="/instructions"
+          >
             Instructions
           </NavLink>
-          <NavLink className="navbar-item is-tab" to="/statements">
+          <NavLink
+            className={({ isActive }) =>
+              `${isActive && 'is-active'} navbar-item is-tab`
+            }
+            to="/statements"
+          >
             Statements
           </NavLink>
           <a className="navbar-item is-tab">Logout</a>

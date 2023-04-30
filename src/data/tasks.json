@@ -80,13 +80,13 @@
           "error": "TRUE",
           "interval": "TRUE"
         },
-        "init": {
+        "cue": {
           "image": "TRUE",
           "border": "TRUE",
           "error": "TRUE",
           "interval": "TRUE"
         },
-        "error": {
+        "feedback": {
           "image": "TRUE",
           "border": "TRUE",
           "error": "TRUE",
@@ -96,7 +96,7 @@
       "times": {
         "interval": 500,
         "cue": 3000,
-        ""
+        "feedback": 1000
       }
     }
   ]

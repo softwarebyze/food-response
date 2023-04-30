@@ -74,7 +74,7 @@
       "instructions": "You will see a grid of images. Select the image of a vegetable or fruit as quickly as you can. Go as fast as you can but remember accuracy is more important that speed!",
       "cover": "https://projecthealthori.org/file/repo/visualsearch.png",
       "stages": {
-        "init": {
+        "interval": {
           "image": "TRUE",
           "border": "TRUE",
           "error": "TRUE",
@@ -86,18 +86,17 @@
           "error": "TRUE",
           "interval": "TRUE"
         },
-        "interval": {
-          "image": "TRUE",
-          "border": "TRUE",
-          "error": "TRUE",
-          "interval": "TRUE"
-        },
-        "error": {
+        "feedback": {
           "image": "TRUE",
           "border": "TRUE",
           "error": "TRUE",
           "interval": "TRUE"
         }
+      },
+      "times": {
+        "interval": 500,
+        "cue": 3000,
+        "feedback": 1000
       }
     }
   ]

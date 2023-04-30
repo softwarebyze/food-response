@@ -10,23 +10,23 @@ export default function Home({ tasks }: { tasks: TaskInfo[] }) {
           <div className="columns">
             {tasks.map(({ name, path, cover }) => (
               <div key={name} className="column">
-                <div className="card" style={{ borderRadius: '1em' }}>
-                  <div className="card-image">
-                    <figure className="image is-4by3">
-                      <Link to={path}>
+                <Link to={path}>
+                  <div className="card" style={{ borderRadius: '1em' }}>
+                    <div className="card-image">
+                      <figure className="image is-4by3">
                         <img src={cover} alt={name} />
-                      </Link>
-                    </figure>
-                  </div>
-                  <div className="card-content">
-                    <div className="media">
-                      <div className="media-content">
-                        <strong>{name}</strong>
-                      </div>
+                      </figure>
                     </div>
-                    <div className="content"></div>
+                    <div className="card-content">
+                      <div className="media">
+                        <div className="media-content">
+                          <strong>{name}</strong>
+                        </div>
+                      </div>
+                      <div className="content"></div>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </div>
             ))}
           </div>

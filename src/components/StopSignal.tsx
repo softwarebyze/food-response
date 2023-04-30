@@ -1,4 +1,6 @@
+import { useCallback, useEffect, useState } from 'react'
 import { images } from '../data/images.json'
+import { tasks } from '../data/tasks.json'
 import { GameStage, ImageType, ReactionType, Response } from '../types/Task'
 
 function getBorderStyle(imageType: ImageType) {
@@ -22,21 +24,19 @@ export function isResponseCorrect(
   )
 }
 
-import { useCallback, useEffect, useState } from 'react'
-import { tasks } from '../data/tasks.json'
-const stages = tasks[0].stages
+const { stages, times: timesFromJSON } = tasks[0]
 const slowdown = 3
 const times = {
-  init: 100 * slowdown,
-  cue: 1150 * slowdown,
-  interval: 500 * slowdown,
-  error: 500 * slowdown,
+  init: (timesFromJSON?.init ?? 100) * slowdown,
+  cue: (timesFromJSON?.cue ?? 1150) * slowdown,
+  interval: (timesFromJSON?.interval ?? 500) * slowdown,
+  error: (timesFromJSON?.error ?? 500) * slowdown,
 } as const
 
 export default function StopSignal({ endGame }: { endGame: () => void }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<GameStage>('init')
-  
+
   const { image, border, error, interval } = stages![gameStage] as any
   const taskData = images
   const { src, type } = taskData[currentTrialIndex]

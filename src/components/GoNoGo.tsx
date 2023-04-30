@@ -18,10 +18,7 @@ function getGoNoGoBorderStyle(imageType: ImageType) {
   }
 }
 
-function isGoNoGoResponseCorrect(
-  reactionType: GoNoGoReaction,
-  cue: GoNoGoCue
-) {
+function isGoNoGoResponseCorrect(reactionType: GoNoGoReaction, cue: GoNoGoCue) {
   const { side, imageType } = cue
   return (
     (side === 'left' &&
@@ -40,12 +37,12 @@ function getRandomSide() {
 
 import { useEffect, useState } from 'react'
 import { tasks } from '../data/tasks.json'
-const stages = tasks[1].stages
+const { stages, times: timesFromJSON } = tasks[1]
 const slowdown = 1
 const times = {
-  cue: 1250 * slowdown,
-  interval: 500 * slowdown,
-  error: 500 * slowdown,
+  cue: (timesFromJSON?.cue ?? 1250) * slowdown,
+  interval: (timesFromJSON?.interval ?? 500) * slowdown,
+  error: (timesFromJSON?.error ?? 500) * slowdown,
 } as const
 
 export default function GoNoGo({ endGame }: { endGame: () => void }) {
@@ -58,10 +55,10 @@ export default function GoNoGo({ endGame }: { endGame: () => void }) {
   const borderStyle = border
     ? getGoNoGoBorderStyle(type as ImageType)
     : 'whiteBorder'
-    const [response, setResponse] = useState<GoNoGoResponse>({
-      reaction: null,
-      correct: null,
-    })
+  const [response, setResponse] = useState<GoNoGoResponse>({
+    reaction: null,
+    correct: null,
+  })
   const side = image ? getRandomSide() : null
 
   const cue: GoNoGoCue = { side, imageType: type as ImageType }

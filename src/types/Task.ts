@@ -43,7 +43,7 @@ export interface GoNoGoCue {
   side: 'left' | 'right' | null
   imageType: ImageType
 }
-export type GoNoGoGameStage = 'cue' | 'interval' | 'error'
+export type GoNoGoGameStage = 'cue' | 'interval' | 'error' | 'break'
 export interface GoNoGoResponse {
   reaction: GoNoGoReaction | null
   correct: boolean | null

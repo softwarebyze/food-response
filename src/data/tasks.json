@@ -29,6 +29,12 @@
           "border": true,
           "error": true,
           "interval": false
+        },
+        "break": {
+          "image": false,
+          "border": false,
+          "error": false,
+          "interval": false
         }
       },
       "times": {

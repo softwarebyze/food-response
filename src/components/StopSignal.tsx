@@ -54,12 +54,7 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<GameStage>('init')
 
-  const { image, border, error, interval } = stages[gameStage] ?? {
-    image: null,
-    border: null,
-    error: null,
-    interval: null,
-  }
+  const { image, border, error, interval } = stages![gameStage]!
   const { src, type } = taskData[currentTrialIndex]
   const borderStyle = border ? getBorderStyle(type as ImageType) : 'whiteBorder'
   const [response, setResponse] = useState<Response>({

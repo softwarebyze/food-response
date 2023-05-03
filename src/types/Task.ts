@@ -1,6 +1,6 @@
 export type ImageType = 'unhealthy' | 'healthy' | 'water'
 
-export type GameStage = 'init' | 'cue' | 'interval' | 'error'
+export type GameStage = 'init' | 'cue' | 'interval' | 'error' | 'break'
 
 export interface GameState {
   image: boolean

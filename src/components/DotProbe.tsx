@@ -8,7 +8,7 @@ const { interval, images: imageDuration } = tasks[2].times!
 const slowdown = 1
 const times = {
   interval: interval * slowdown,
-  images: imageDuration * slowdown,
+  images: imageDuration! * slowdown,
 }
 
 const healthyImages = images.filter((image) => image.type === 'healthy')

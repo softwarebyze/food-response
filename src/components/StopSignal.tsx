@@ -157,6 +157,7 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
           () => setCurrentTrialIndex((prev) => prev + 1),
           times.break
         )
+        break
     }
     return () => clearTimeout(timeout)
   }, [gameStage])

@@ -7,7 +7,9 @@ import {
   GoNoGoReaction,
   GoNoGoResponse,
   ImageType,
+  TaskData,
 } from '../types/Task'
+import Break from './Break'
 
 function getGoNoGoBorderStyle(imageType: ImageType) {
   switch (imageType) {
@@ -37,20 +39,30 @@ function getRandomSide() {
   return Math.random() < 0.5 ? 'left' : 'right'
 }
 
-const { stages, times: timesFromJSON } = tasks[1]
+function prepareTaskData(images: TaskData, totalTrials: number) {
+  return [...Array(totalTrials).fill(null)].map(
+    () => images[Math.floor(Math.random() * images.length)]
+  )
+}
+
+const { stages, times: timesFromJSON, blocks, trialsPerBlock } = tasks[1]
+const totalTrials = trialsPerBlock! * blocks!
 const slowdown = 1
+const breakSlowdown = 1
 const times = {
   cue: (timesFromJSON?.cue ?? 1250) * slowdown,
   interval: (timesFromJSON?.interval ?? 500) * slowdown,
   error: (timesFromJSON?.error ?? 500) * slowdown,
+  break: (timesFromJSON?.break ?? 10000) * breakSlowdown,
 } as const
+
+const taskData = prepareTaskData(images as TaskData, totalTrials)
 
 export default function GoNoGo({ endGame }: { endGame: () => void }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<GoNoGoGameStage>('cue')
 
-  const { image, border, error, interval } = stages[gameStage]
-  const taskData = images
+  const { image, border, error, interval } = stages![gameStage]!
   const { src, type } = taskData[currentTrialIndex]
   const borderStyle = border
     ? getGoNoGoBorderStyle(type as ImageType)
@@ -75,11 +87,21 @@ export default function GoNoGo({ endGame }: { endGame: () => void }) {
     setGameStage('error')
   }
 
-  function goToNextTrialOrEndGame() {
-    if (currentTrialIndex < taskData.length - 1) {
-      setCurrentTrialIndex((prev) => prev + 1)
-    } else {
+  function isTimeForBreak(currentTrialIndex: number, trialsPerBlock: number) {
+    return (currentTrialIndex + 1) % trialsPerBlock === 0
+  }
+
+  function onLastTrial(currentTrialIndex: number, totalTrials: number) {
+    return currentTrialIndex === totalTrials - 1
+  }
+
+  function goToNextTrialOrBreakOrEndGame() {
+    if (onLastTrial(currentTrialIndex, totalTrials)) {
       endGame()
+    } else if (isTimeForBreak(currentTrialIndex, trialsPerBlock!)) {
+      return setGameStage('break')
+    } else {
+      setCurrentTrialIndex((prev) => prev + 1)
     }
   }
 
@@ -106,14 +128,21 @@ export default function GoNoGo({ endGame }: { endGame: () => void }) {
         timeout = setTimeout(() => handleReaction('omission'), times.cue)
         break
       case 'interval':
-        timeout = setTimeout(goToNextTrialOrEndGame, times.interval)
+        timeout = setTimeout(goToNextTrialOrBreakOrEndGame, times.interval)
         break
       case 'error':
         timeout = setTimeout(showInterval, times.error)
         break
+      case 'break':
+        timeout = setTimeout(
+          () => setCurrentTrialIndex((prev) => prev + 1),
+          times.break
+        )
     }
     return () => clearTimeout(timeout)
   }, [gameStage])
+
+  if (gameStage === 'break') return <Break />
 
   return (
     <>

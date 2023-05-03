@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react'
 import { images } from '../data/images.json'
+import { tasks } from '../data/tasks.json'
 import {
   GoNoGoCue,
   GoNoGoGameStage,
@@ -35,8 +37,6 @@ function getRandomSide() {
   return Math.random() < 0.5 ? 'left' : 'right'
 }
 
-import { useEffect, useState } from 'react'
-import { tasks } from '../data/tasks.json'
 const { stages, times: timesFromJSON } = tasks[1]
 const slowdown = 1
 const times = {

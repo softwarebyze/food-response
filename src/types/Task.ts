@@ -54,3 +54,4 @@ export interface DotProbeResponse {
   reaction: DotProbeReaction | null
   responseTime: number | null
 }
+export type DotProbeGameStage = 'interval' | 'init' | 'cue' | 'break'

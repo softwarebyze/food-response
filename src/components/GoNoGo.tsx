@@ -148,7 +148,7 @@ export default function GoNoGo({ endGame }: { endGame: () => void }) {
     <>
       {'currentTrialIndex: ' + currentTrialIndex}
       <br />
-      {'taskData.length: ' + taskData.length}
+      {'totalTrials: ' + totalTrials}
       <br />
       {'slowdown: ' + slowdown + 'x'}
       <br />

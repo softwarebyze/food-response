@@ -94,8 +94,11 @@
       "cover": "https://projecthealthori.org/file/repo/dotprobe.png",
       "times": {
         "interval": 500,
-        "images": 500
-      }
+        "init": 500,
+        "break": 10000
+      },
+      "blocks": 8,
+      "trialsPerBlock": 40
     },
     {
       "name": "Visual Search",

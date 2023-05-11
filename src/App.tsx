@@ -9,11 +9,9 @@ import './main.css'
 import { TaskInfo } from './types/Task'
 
 export default function App() {
-  const location = useLocation()
-  const isLoginPage = location.pathname === '/login'
   return (
     <BrowserRouter>
-      {!isLoginPage && <Nav />}
+      <Nav />
       <Routes>
         <Route path="/" element={<Home tasks={tasks as TaskInfo[]} />} />
         <Route path="/login" element={<LoginPage />} />

@@ -45,7 +45,15 @@ function createImageMatrix(numRows: number, numCols: number, images: Image[]) {
 const task = tasks[3]
 const { times } = task
 
-export default function VisualSearch({ endGame }: { endGame: () => void }) {
+export default function VisualSearch({
+  endGame,
+  setAccuracy,
+  setAverageResponse,
+}: {
+  endGame: () => void,
+  setAccuracy: (value: number) => void,
+  setAverageResponse: (value: number) => void
+}) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const trialImages = useMemo(() => getTrialImages(), [currentTrialIndex])
   const imageMatrix = useMemo(
@@ -62,11 +70,21 @@ export default function VisualSearch({ endGame }: { endGame: () => void }) {
   const [response, setResponse] =
     useState<VisualSearchResponse>(defaultResponse)
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
+  const [numCorrect, setNumCorrect] = useState<number>(0);
+  const [totalTime, setTotalTime] = useState<number>(0);
 
   function showCue() {
     setGameStage('cue')
     setCueTimestamp(Date.now())
   }
+
+  useEffect(() => {
+    setAccuracy(Math.round(numCorrect / (currentTrialIndex + 1) * 10000) / 100)
+  }, [setAccuracy, numCorrect, currentTrialIndex])
+
+  useEffect(() => {
+    setAverageResponse(Math.round(totalTime / numCorrect))
+  }, [setAccuracy, totalTime, numCorrect])
 
   function showInterval() {
     setGameStage('interval')
@@ -116,12 +134,18 @@ export default function VisualSearch({ endGame }: { endGame: () => void }) {
   function handleImageClick(imageSrc: string, type: ImageType) {
     if (gameStage !== 'cue') return
 
+    const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null;
+
     setResponse({
       reactionType: 'commission',
       correct: type === 'healthy',
-      responseTime: cueTimestamp ? Date.now() - cueTimestamp : null,
+      responseTime: responseTime,
       selectedSrc: imageSrc,
     })
+    if (type === 'healthy') {
+      setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
+      setTotalTime(prevTotalTime => prevTotalTime + responseTime)
+    }
   }
 
   function handleOmission() {

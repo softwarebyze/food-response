@@ -45,10 +45,20 @@ const times = {
   error: (timesFromJSON?.error ?? 500) * slowdown,
 } as const
 
-export default function GoNoGo({ endGame }: { endGame: () => void }) {
+export default function GoNoGo({
+  endGame,
+  setAccuracy,
+  setAverageResponse,
+}: {
+  endGame: () => void,
+  setAccuracy: (value: number) => void,
+  setAverageResponse: (value: number) => void,
+}) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<GoNoGoGameStage>('cue')
 
+  const [numCorrect, setNumCorrect] = useState<number>(0);
+  const [totalTime, setTotalTime] = useState<number>(0);
   const { image, border, error, interval } = stages[gameStage]
   const taskData = images
   const { src, type } = taskData[currentTrialIndex]
@@ -62,6 +72,14 @@ export default function GoNoGo({ endGame }: { endGame: () => void }) {
   const side = image ? getRandomSide() : null
 
   const cue: GoNoGoCue = { side, imageType: type as ImageType }
+
+  useEffect(() => {
+    setAccuracy(Math.round(numCorrect / currentTrialIndex * 10000) / 100)
+  }, [setAccuracy, numCorrect, currentTrialIndex])
+
+  useEffect(() => {
+    setAverageResponse(Math.round(totalTime / numCorrect))
+  }, [setAccuracy, totalTime, numCorrect])
 
   function showCue() {
     setGameStage('cue')
@@ -96,6 +114,9 @@ export default function GoNoGo({ endGame }: { endGame: () => void }) {
   function handleReaction(reaction: GoNoGoReaction) {
     const correct = isGoNoGoResponseCorrect(reaction, cue)
     setResponse({ reaction, correct })
+    if (correct) {
+      setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
+    }
   }
 
   useEffect(() => {

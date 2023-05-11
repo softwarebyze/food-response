@@ -33,10 +33,20 @@ const times = {
   error: (timesFromJSON?.error ?? 500) * slowdown,
 } as const
 
-export default function StopSignal({ endGame }: { endGame: () => void }) {
+export default function StopSignal({
+  endGame,
+  setAccuracy,
+  setAverageResponse,
+}: {
+  endGame: () => void,
+  setAccuracy: (value: number) => void,
+  setAverageResponse: (value: number) => void,
+}) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<GameStage>('init')
 
+  const [numCorrect, setNumCorrect] = useState<number>(0);
+  const [totalTime, setTotalTime] = useState<number>(0);
   const { image, border, error, interval } = stages![gameStage] as any
   const taskData = images
   const { src, type } = taskData[currentTrialIndex]
@@ -52,6 +62,14 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
     setGameStage('cue')
     setCueTimestamp(Date.now())
   }
+
+  useEffect(() => {
+    setAccuracy(Math.round(numCorrect / currentTrialIndex * 10000) / 100)
+  }, [setAccuracy, numCorrect, currentTrialIndex])
+
+  useEffect(() => {
+    setAverageResponse(Math.round(totalTime / numCorrect))
+  }, [setAccuracy, totalTime, numCorrect])
 
   function showInterval() {
     setGameStage('interval')
@@ -82,12 +100,20 @@ export default function StopSignal({ endGame }: { endGame: () => void }) {
   }, [response])
 
   const handleReaction = (reactionType: ReactionType) => {
+    const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null;
+
     const newResponse = {
       type: reactionType,
       correct: isResponseCorrect(reactionType, borderStyle),
-      responseTime: cueTimestamp ? Date.now() - cueTimestamp : null,
+      responseTime: responseTime,
     }
     setResponse(newResponse)
+    if (isResponseCorrect(reactionType, borderStyle)) {
+      setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
+      if (reactionType === 'commission') {
+        setTotalTime(prevTotalTime => prevTotalTime + responseTime);
+      }     
+    }
   }
 
   const handleKeyDown = useCallback(

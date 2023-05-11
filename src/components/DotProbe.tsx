@@ -18,13 +18,23 @@ const imagePairs = healthyImages.map((healthyImage, index) => ({
   right: unhealthyImages[index],
 }))
 
-export default function DotProbe({ endGame }: { endGame: () => void }) {
+export default function DotProbe({
+  endGame,
+  setAccuracy,
+  setAverageResponse,
+}: {
+  endGame: () => void,
+  setAccuracy: (value: number) => void,
+  setAverageResponse: (value: number) => void
+}) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<DotProbeGameState>('interval')
   const [response, setResponse] = useState<DotProbeResponse>({
     reaction: null,
     responseTime: null,
   })
+  const [numCorrect, setNumCorrect] = useState<number>(0);
+  const [totalTime, setTotalTime] = useState<number>(0);
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const currentImagePair = imagePairs[currentTrialIndex]
   const healthySide =
@@ -35,6 +45,15 @@ export default function DotProbe({ endGame }: { endGame: () => void }) {
     setCueTimestamp(Date.now())
   }
 
+  useEffect(() => {
+    setAccuracy(Math.round(numCorrect / currentTrialIndex * 10000) / 100)
+  }, [setAccuracy, numCorrect, currentTrialIndex])
+
+  useEffect(() => {
+    setAverageResponse(Math.round(totalTime / numCorrect))
+  }, [setAccuracy, totalTime, numCorrect])
+
+
   function goToNextTrialOrEndGame() {
     if (currentTrialIndex < imagePairs.length - 1) {
       setCurrentTrialIndex((prev) => prev + 1)
@@ -44,11 +63,21 @@ export default function DotProbe({ endGame }: { endGame: () => void }) {
   }
 
   function handleReaction(reaction: DotProbeReaction) {
+    const isCorrect = (healthySide === 'left' && reaction === 'left-commission') ||
+      (healthySide === 'right' && reaction === 'right-commission');
+    
+    const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null
+    
     setResponse({
       reaction,
-      responseTime: cueTimestamp ? Date.now() - cueTimestamp : null,
-    })
-    goToNextTrialOrEndGame()
+      responseTime: responseTime,
+    });
+
+    if (isCorrect) {
+      setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
+      setTotalTime(prevTotalTime => prevTotalTime + responseTime)
+    }
+    goToNextTrialOrEndGame();
   }
 
   useEffect(() => {

@@ -1,6 +1,12 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 
 export default function Nav() {
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    navigate('/login')
+  }
+
   return (
     <nav className="navbar has-shadow">
       <div className="container">
@@ -47,18 +53,11 @@ export default function Nav() {
           >
             Statements
           </NavLink>
-          <a className="navbar-item is-tab">Logout</a>
+          <a onClick={handleLogout} className="navbar-item is-tab">
+            Logout
+          </a>
         </div>
       </div>
     </nav>
   )
-}
-
-{
-  /* <NavLink to="/">Games</NavLink>
-{tasks.map((task) => (
-  <NavLink key={task.name} to={task.path}>
-    {task.name}
-  </NavLink>
-))} */
 }

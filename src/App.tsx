@@ -1,6 +1,7 @@
 import 'bulma/css/bulma.min.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './components/Home'
+import LoginPage from './components/LoginPage'
 import Nav from './components/Nav'
 import TaskPage from './components/TaskPage'
 import { tasks } from './data/tasks.json'
@@ -13,6 +14,7 @@ export default function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<Home tasks={tasks as TaskInfo[]} />} />
+        <Route path="/login" element={<LoginPage />} />
         {tasks.map((task) => (
           <Route
             key={task.name}

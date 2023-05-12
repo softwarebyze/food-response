@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import { ImageType, ReactionType } from '../types/Task'
+import Break from './Break'
 interface Image {
   src: string
   type: ImageType
 }
-type VisualSearchGameStage = 'cue' | 'interval' | 'feedback'
+type VisualSearchGameStage = 'cue' | 'interval' | 'feedback' | 'break'
 type VisualSearchResponse = {
   reactionType: null | ReactionType
   correct: null | boolean
@@ -42,8 +43,8 @@ function createImageMatrix(numRows: number, numCols: number, images: Image[]) {
   return imageMatrix
 }
 
-const task = tasks[3]
-const { times } = task
+const { times, blocks, trialsPerBlock } = tasks[3]
+const totalTrials = trialsPerBlock! * blocks!
 
 export default function VisualSearch({
   endGame,
@@ -96,12 +97,21 @@ export default function VisualSearch({
     showInterval()
   }, [currentTrialIndex])
 
-  const taskData = imageMatrix.flat()
-  function goToNextTrialOrEndGame() {
-    if (currentTrialIndex < taskData.length - 1) {
-      setCurrentTrialIndex((prev) => prev + 1)
-    } else {
+  function isTimeForBreak(currentTrialIndex: number, trialsPerBlock: number) {
+    return (currentTrialIndex + 1) % trialsPerBlock === 0
+  }
+
+  function onLastTrial(currentTrialIndex: number, totalTrials: number) {
+    return currentTrialIndex === totalTrials - 1
+  }
+
+  function goToNextTrialOrBreakOrEndGame() {
+    if (onLastTrial(currentTrialIndex, totalTrials)) {
       endGame()
+    } else if (isTimeForBreak(currentTrialIndex, trialsPerBlock!)) {
+      return setGameStage('break')
+    } else {
+      setCurrentTrialIndex((prev) => prev + 1)
     }
   }
 
@@ -113,10 +123,16 @@ export default function VisualSearch({
         timeout = setTimeout(handleOmission, times?.cue)
         break
       case 'feedback':
-        timeout = setTimeout(goToNextTrialOrEndGame, times?.interval)
+        timeout = setTimeout(goToNextTrialOrBreakOrEndGame, times?.interval)
         break
       case 'interval':
         timeout = setTimeout(showCue, times?.interval)
+        break
+      case 'break':
+        timeout = setTimeout(
+          () => setCurrentTrialIndex((prev) => prev + 1),
+          times.break
+        )
     }
     return () => clearTimeout(timeout)
   }, [gameStage])
@@ -165,6 +181,8 @@ export default function VisualSearch({
       setGameStage('feedback')
     }
   }, [response])
+
+  if (gameStage === 'break') return <Break />
 
   return (
     <div>

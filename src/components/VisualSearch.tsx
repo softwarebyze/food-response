@@ -17,10 +17,10 @@ type VisualSearchResponse = {
 
 const rawImages: Image[] = images as Image[]
 
-function getTrialImages() {
-  const unhealthyImages = rawImages.filter(
-    (image) => image.type === 'unhealthy'
-  )
+function getTrialImages(numberOfImages: number = 16) {
+  const unhealthyImages = rawImages
+    .filter((image) => image.type === 'unhealthy')
+    .slice(0, numberOfImages - 1)
   const healthyImages = rawImages.filter((image) => image.type === 'healthy')
   const healthyImage = healthyImages.sort(() => Math.random() - 0.5)[0]
   const trialImages = [...unhealthyImages, healthyImage].sort(

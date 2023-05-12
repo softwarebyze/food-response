@@ -75,7 +75,7 @@ export default function DotProbe({
 
     if (isCorrect) {
       setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
-      setTotalTime(prevTotalTime => prevTotalTime + responseTime)
+      setTotalTime(prevTotalTime => responseTime ? prevTotalTime + responseTime : prevTotalTime)
     }
     goToNextTrialOrEndGame();
   }

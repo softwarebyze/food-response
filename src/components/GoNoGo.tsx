@@ -212,6 +212,7 @@ export default function GoNoGo({
                 {side === 'left' && (
                   <img
                     onClick={() => handleReaction('left-commission')}
+                    onTouchStart={() => handleReaction('left-commission')}
                     src={src}
                   />
                 )}
@@ -220,6 +221,7 @@ export default function GoNoGo({
                 {side === 'right' && (
                   <img
                     onClick={() => handleReaction('right-commission')}
+                    onTouchStart={() => handleReaction('right-commission')}
                     src={src}
                   />
                 )}

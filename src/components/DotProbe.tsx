@@ -147,6 +147,7 @@ export default function DotProbe({
                 <div
                   className="probe"
                   onClick={() => handleReaction('left-commission')}
+                  onTouchStart={() => handleReaction('left-commission')}
                 >
                   <svg width="20" height="20">
                     <circle cx="10" cy="10" r="10"></circle>
@@ -159,6 +160,7 @@ export default function DotProbe({
                 <div
                   className="probe"
                   onClick={() => handleReaction('right-commission')}
+                  onTouchStart={() => handleReaction('right-commission')}
                 >
                   <svg width="20" height="20">
                     <circle cx="10" cy="10" r="10"></circle>

@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
-import { DotProbeReaction, DotProbeResponse } from '../types/Task'
+import {
+  DotProbeGameStage,
+  DotProbeReaction,
+  DotProbeResponse,
+} from '../types/Task'
+import Break from './Break'
 
-type DotProbeGameState = 'interval' | 'images' | 'cue'
-const { interval, images: imageDuration } = tasks[2].times!
+const { times: timesFromJSON, blocks, trialsPerBlock } = tasks[2]
+const totalTrials = trialsPerBlock! * blocks!
 const slowdown = 1
 const times = {
-  interval: interval * slowdown,
-  images: imageDuration ? imageDuration * slowdown : 500 * slowdown,
-}
+  interval: (timesFromJSON?.interval ?? 500) * slowdown,
+  init: (timesFromJSON?.init ?? 500) * slowdown,
+  break: timesFromJSON?.break ?? 10000,
+} as const
 
 const healthyImages = images.filter((image) => image.type === 'healthy')
 const unhealthyImages = images.filter((image) => image.type === 'unhealthy')
@@ -28,7 +34,7 @@ export default function DotProbe({
   setAverageResponse: (value: number) => void
 }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
-  const [gameStage, setGameStage] = useState<DotProbeGameState>('interval')
+  const [gameStage, setGameStage] = useState<DotProbeGameStage>('interval')
   const [response, setResponse] = useState<DotProbeResponse>({
     reaction: null,
     responseTime: null,
@@ -89,10 +95,10 @@ export default function DotProbe({
     switch (gameStage) {
       case 'interval':
         setResponse({ reaction: null, responseTime: null })
-        timeout = setTimeout(() => setGameStage('images'), times.interval)
+        timeout = setTimeout(() => setGameStage('init'), times.interval)
         break
-      case 'images':
-        timeout = setTimeout(showCue, times.images)
+      case 'init':
+        timeout = setTimeout(showCue, times.init)
         break
       case 'cue':
         break
@@ -100,13 +106,15 @@ export default function DotProbe({
     return () => clearTimeout(timeout)
   }, [gameStage])
 
+  if (gameStage === 'break') return <Break />
+
   return (
     <>
       <div>DotProbe</div>
       <>
         {'currentTrialIndex: ' + currentTrialIndex}
         <br />
-        {'images.length: ' + images.length}
+        {'totalTrials: ' + totalTrials}
         <br />
         {'slowdown: ' + slowdown + 'x'}
         <br />
@@ -122,7 +130,7 @@ export default function DotProbe({
             <div className="fixationCross">+</div>
           </div>
         )}
-        {gameStage === 'images' && (
+        {gameStage === 'init' && (
           <>
             <div className="column">
               <img src={currentImagePair.left.src} />

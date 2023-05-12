@@ -29,14 +29,23 @@
           "border": true,
           "error": true,
           "interval": false
+        },
+        "break": {
+          "image": false,
+          "border": false,
+          "error": false,
+          "interval": false
         }
       },
       "times": {
         "init": 100,
         "cue": 1150,
         "interval": 500,
-        "error": 500
-      }
+        "error": 500,
+        "break": 10000
+      },
+      "blocks": 10,
+      "trialsPerBlock": 32
     },
     {
       "name": "Go/No-Go",
@@ -61,13 +70,22 @@
           "border": true,
           "error": true,
           "interval": false
+        },
+        "break": {
+          "image": false,
+          "border": false,
+          "error": false,
+          "interval": false
         }
       },
       "times": {
         "cue": 1250,
         "interval": 500,
-        "error": 500
-      }
+        "error": 500,
+        "break": 10000
+      },
+      "blocks": 6,
+      "trialsPerBlock": 50
     },
     {
       "name": "Dot Probe",
@@ -76,8 +94,11 @@
       "cover": "https://projecthealthori.org/file/repo/dotprobe.png",
       "times": {
         "interval": 500,
-        "images": 500
-      }
+        "init": 500,
+        "break": 10000
+      },
+      "blocks": 8,
+      "trialsPerBlock": 40
     },
     {
       "name": "Visual Search",

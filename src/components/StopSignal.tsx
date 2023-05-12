@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
-import { GameStage, ImageType, ReactionType, Response } from '../types/Task'
+import {
+  GameStage,
+  ImageType,
+  ReactionType,
+  Response,
+  TaskData,
+} from '../types/Task'
+import Break from './Break'
 
 function getBorderStyle(imageType: ImageType) {
   switch (imageType) {
@@ -24,14 +31,24 @@ export function isResponseCorrect(
   )
 }
 
-const { stages, times: timesFromJSON } = tasks[0]
-const slowdown = 3
+function prepareTaskData(images: TaskData, totalTrials: number) {
+  return [...Array(totalTrials).fill(null)].map(
+    () => images[Math.floor(Math.random() * images.length)]
+  )
+}
+
+const { stages, times: timesFromJSON, blocks, trialsPerBlock } = tasks[0]
+const totalTrials = trialsPerBlock! * blocks!
+const slowdown = 1
 const times = {
   init: (timesFromJSON?.init ?? 100) * slowdown,
   cue: (timesFromJSON?.cue ?? 1150) * slowdown,
   interval: (timesFromJSON?.interval ?? 500) * slowdown,
   error: (timesFromJSON?.error ?? 500) * slowdown,
+  break: timesFromJSON?.break ?? 10000,
 } as const
+
+const taskData = prepareTaskData(images as TaskData, totalTrials)
 
 export default function StopSignal({
   endGame,
@@ -48,7 +65,7 @@ export default function StopSignal({
   const [numCorrect, setNumCorrect] = useState<number>(0);
   const [totalTime, setTotalTime] = useState<number>(0);
   const { image, border, error, interval } = stages![gameStage] as any
-  const taskData = images
+
   const { src, type } = taskData[currentTrialIndex]
   const borderStyle = border ? getBorderStyle(type as ImageType) : 'whiteBorder'
   const [response, setResponse] = useState<Response>({
@@ -83,11 +100,21 @@ export default function StopSignal({
     setGameStage('init')
   }
 
-  function goToNextTrialOrEndGame() {
-    if (currentTrialIndex < taskData.length - 1) {
-      setCurrentTrialIndex((prev) => prev + 1)
-    } else {
+  function isTimeForBreak(currentTrialIndex: number, trialsPerBlock: number) {
+    return (currentTrialIndex + 1) % trialsPerBlock === 0
+  }
+
+  function onLastTrial(currentTrialIndex: number, totalTrials: number) {
+    return currentTrialIndex === totalTrials - 1
+  }
+
+  function goToNextTrialOrBreakOrEndGame() {
+    if (onLastTrial(currentTrialIndex, totalTrials)) {
       endGame()
+    } else if (isTimeForBreak(currentTrialIndex, trialsPerBlock!)) {
+      return setGameStage('break')
+    } else {
+      setCurrentTrialIndex((prev) => prev + 1)
     }
   }
 
@@ -150,18 +177,26 @@ export default function StopSignal({
         timeout = setTimeout(showInterval, times.error)
         break
       case 'interval':
-        timeout = setTimeout(goToNextTrialOrEndGame, times.interval)
+        timeout = setTimeout(goToNextTrialOrBreakOrEndGame, times.interval)
+        break
+      case 'break':
+        timeout = setTimeout(
+          () => setCurrentTrialIndex((prev) => prev + 1),
+          times.break
+        )
         break
     }
     return () => clearTimeout(timeout)
   }, [gameStage])
+
+  if (gameStage === 'break') return <Break />
 
   return (
     <>
       <>
         {'currentTrialIndex: ' + currentTrialIndex}
         <br />
-        {'taskData.length: ' + taskData.length}
+        {'totalTrials: ' + totalTrials}
         <br />
         {'slowdown: ' + slowdown + 'x'}
         <br />

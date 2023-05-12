@@ -1,6 +1,6 @@
 export type ImageType = 'unhealthy' | 'healthy' | 'water'
 
-export type GameStage = 'init' | 'cue' | 'interval' | 'error'
+export type GameStage = 'init' | 'cue' | 'interval' | 'error' | 'break'
 
 export interface GameState {
   image: boolean
@@ -43,7 +43,7 @@ export interface GoNoGoCue {
   side: 'left' | 'right' | null
   imageType: ImageType
 }
-export type GoNoGoGameStage = 'cue' | 'interval' | 'error'
+export type GoNoGoGameStage = 'cue' | 'interval' | 'error' | 'break'
 export interface GoNoGoResponse {
   reaction: GoNoGoReaction | null
   correct: boolean | null
@@ -55,3 +55,4 @@ export interface DotProbeResponse {
   reaction: DotProbeReaction | null
   responseTime: number | null
 }
+export type DotProbeGameStage = 'interval' | 'init' | 'cue' | 'break'

@@ -152,6 +152,7 @@ blockquote i {
   text-align: center;
   font-size: 4em;
   margin: 2em auto;
+  cursor: pointer;
 }
 
 .rightSide {

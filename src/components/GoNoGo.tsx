@@ -138,7 +138,13 @@ export default function GoNoGo({
 
   function handleReaction(reaction: GoNoGoReaction) {
     const correct = isGoNoGoResponseCorrect(reaction, cue)
-    const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null
+    const responseTime = ['left-commission', 'right-commission'].includes(
+      reaction
+    )
+      ? cueTimestamp
+        ? Date.now() - cueTimestamp
+        : null
+      : null
     setResponse({ reaction, correct, responseTime })
     if (correct) {
       setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)

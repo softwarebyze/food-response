@@ -109,7 +109,9 @@
         "interval": 500,
         "cue": 3000,
         "feedback": 1000
-      }
+      },
+      "blocks": 4,
+      "trialsPerBlock": 30
     }
   ]
 }

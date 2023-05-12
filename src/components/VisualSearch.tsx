@@ -50,8 +50,8 @@ export default function VisualSearch({
   setAccuracy,
   setAverageResponse,
 }: {
-  endGame: () => void,
-  setAccuracy: (value: number) => void,
+  endGame: () => void
+  setAccuracy: (value: number) => void
   setAverageResponse: (value: number) => void
 }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
@@ -70,8 +70,8 @@ export default function VisualSearch({
   const [response, setResponse] =
     useState<VisualSearchResponse>(defaultResponse)
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
-  const [numCorrect, setNumCorrect] = useState<number>(0);
-  const [totalTime, setTotalTime] = useState<number>(0);
+  const [numCorrect, setNumCorrect] = useState<number>(0)
+  const [totalTime, setTotalTime] = useState<number>(0)
 
   function showCue() {
     setGameStage('cue')
@@ -79,7 +79,9 @@ export default function VisualSearch({
   }
 
   useEffect(() => {
-    setAccuracy(Math.round(numCorrect / (currentTrialIndex + 1) * 10000) / 100)
+    setAccuracy(
+      Math.round((numCorrect / (currentTrialIndex + 1)) * 10000) / 100
+    )
   }, [setAccuracy, numCorrect, currentTrialIndex])
 
   useEffect(() => {
@@ -134,7 +136,7 @@ export default function VisualSearch({
   function handleImageClick(imageSrc: string, type: ImageType) {
     if (gameStage !== 'cue') return
 
-    const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null;
+    const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null
 
     setResponse({
       reactionType: 'commission',
@@ -143,8 +145,10 @@ export default function VisualSearch({
       selectedSrc: imageSrc,
     })
     if (type === 'healthy') {
-      setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
-      setTotalTime(prevTotalTime => responseTime ? prevTotalTime + responseTime : prevTotalTime)
+      setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
+      setTotalTime((prevTotalTime) =>
+        responseTime ? prevTotalTime + responseTime : prevTotalTime
+      )
     }
   }
 

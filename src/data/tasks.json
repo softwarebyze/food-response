@@ -108,7 +108,8 @@
       "times": {
         "interval": 500,
         "cue": 3000,
-        "feedback": 1000
+        "feedback": 1000,
+        "break": 10000
       },
       "blocks": 4,
       "trialsPerBlock": 30

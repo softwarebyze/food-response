@@ -50,15 +50,15 @@ export default function GoNoGo({
   setAccuracy,
   setAverageResponse,
 }: {
-  endGame: () => void,
-  setAccuracy: (value: number) => void,
-  setAverageResponse: (value: number) => void,
+  endGame: () => void
+  setAccuracy: (value: number) => void
+  setAverageResponse: (value: number) => void
 }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<GoNoGoGameStage>('cue')
 
-  const [numCorrect, setNumCorrect] = useState<number>(0);
-  const [totalTime, setTotalTime] = useState<number>(0);
+  const [numCorrect, setNumCorrect] = useState<number>(0)
+  const [totalTime, setTotalTime] = useState<number>(0)
   const { image, border, error, interval } = stages![gameStage] as any
   const taskData = images
   const { src, type } = taskData[currentTrialIndex]
@@ -76,7 +76,7 @@ export default function GoNoGo({
   const cue: GoNoGoCue = { side, imageType: type as ImageType }
 
   useEffect(() => {
-    setAccuracy(Math.round(numCorrect / currentTrialIndex * 10000) / 100)
+    setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
   }, [setAccuracy, numCorrect, currentTrialIndex])
 
   useEffect(() => {
@@ -116,13 +116,15 @@ export default function GoNoGo({
 
   function handleReaction(reaction: GoNoGoReaction) {
     const correct = isGoNoGoResponseCorrect(reaction, cue)
-    const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null;
+    const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null
     setResponse({ reaction, correct, responseTime })
     if (correct) {
-      setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
-      if (["left-commission", "right-commission"].includes(reaction)) {
-        setTotalTime(prevTotalTime => responseTime ? prevTotalTime + responseTime : prevTotalTime);
-      }   
+      setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
+      if (['left-commission', 'right-commission'].includes(reaction)) {
+        setTotalTime((prevTotalTime) =>
+          responseTime ? prevTotalTime + responseTime : prevTotalTime
+        )
+      }
     }
   }
 

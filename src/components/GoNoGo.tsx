@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
@@ -83,7 +83,10 @@ export default function GoNoGo({
     responseTime: null,
   })
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
-  const side = image ? getRandomSide() : null
+  const side = useMemo(
+    () => (image ? getRandomSide() : null),
+    [image]
+  )
 
   const cue: GoNoGoCue = { side, imageType: type as ImageType }
 
@@ -145,7 +148,8 @@ export default function GoNoGo({
         ? Date.now() - cueTimestamp
         : null
       : null
-    setResponse({ reaction, correct, responseTime })
+    const newResponse = { reaction, correct, responseTime }
+    setResponse(newResponse)
     if (correct) {
       setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
       if (['left-commission', 'right-commission'].includes(reaction)) {
@@ -206,6 +210,8 @@ export default function GoNoGo({
       {'gameStage: ' + gameStage}
       <br />
       {'side: ' + side}
+      <br />
+      {'cue: ' + JSON.stringify(cue)}
       <br />
       {'response: ' + JSON.stringify(response)}
       {interval ? (

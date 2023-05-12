@@ -111,7 +111,7 @@ export default function StopSignal({
     if (isResponseCorrect(reactionType, borderStyle)) {
       setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
       if (reactionType === 'commission') {
-        setTotalTime(prevTotalTime => prevTotalTime + responseTime);
+        setTotalTime(prevTotalTime => responseTime ? prevTotalTime + responseTime : prevTotalTime);
       }     
     }
   }

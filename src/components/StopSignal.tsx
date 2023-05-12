@@ -55,15 +55,15 @@ export default function StopSignal({
   setAccuracy,
   setAverageResponse,
 }: {
-  endGame: () => void,
-  setAccuracy: (value: number) => void,
-  setAverageResponse: (value: number) => void,
+  endGame: () => void
+  setAccuracy: (value: number) => void
+  setAverageResponse: (value: number) => void
 }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<GameStage>('init')
 
-  const [numCorrect, setNumCorrect] = useState<number>(0);
-  const [totalTime, setTotalTime] = useState<number>(0);
+  const [numCorrect, setNumCorrect] = useState<number>(0)
+  const [totalTime, setTotalTime] = useState<number>(0)
   const { image, border, error, interval } = stages![gameStage] as any
 
   const { src, type } = taskData[currentTrialIndex]
@@ -81,7 +81,7 @@ export default function StopSignal({
   }
 
   useEffect(() => {
-    setAccuracy(Math.round(numCorrect / currentTrialIndex * 10000) / 100)
+    setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
   }, [setAccuracy, numCorrect, currentTrialIndex])
 
   useEffect(() => {
@@ -127,7 +127,12 @@ export default function StopSignal({
   }, [response])
 
   const handleReaction = (reactionType: ReactionType) => {
-    const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null;
+    const responseTime =
+      reactionType === 'commission'
+        ? cueTimestamp
+          ? Date.now() - cueTimestamp
+          : null
+        : null
 
     const newResponse = {
       type: reactionType,
@@ -136,10 +141,12 @@ export default function StopSignal({
     }
     setResponse(newResponse)
     if (isResponseCorrect(reactionType, borderStyle)) {
-      setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
+      setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
       if (reactionType === 'commission') {
-        setTotalTime(prevTotalTime => responseTime ? prevTotalTime + responseTime : prevTotalTime);
-      }     
+        setTotalTime((prevTotalTime) =>
+          responseTime ? prevTotalTime + responseTime : prevTotalTime
+        )
+      }
     }
   }
 

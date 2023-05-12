@@ -74,7 +74,6 @@ export default function GoNoGo({
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
   const { image, border, error, interval } = stages![gameStage] as any
-  const taskData = images
   const { src, type } = taskData[currentTrialIndex]
   const borderStyle = border
     ? getGoNoGoBorderStyle(type as ImageType)

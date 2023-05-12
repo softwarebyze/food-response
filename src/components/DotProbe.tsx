@@ -59,12 +59,21 @@ export default function DotProbe({
     setAverageResponse(Math.round(totalTime / numCorrect))
   }, [setAccuracy, totalTime, numCorrect])
 
+  function isTimeForBreak(currentTrialIndex: number, trialsPerBlock: number) {
+    return (currentTrialIndex + 1) % trialsPerBlock === 0
+  }
 
-  function goToNextTrialOrEndGame() {
-    if (currentTrialIndex < imagePairs.length - 1) {
-      setCurrentTrialIndex((prev) => prev + 1)
-    } else {
+  function onLastTrial(currentTrialIndex: number, totalTrials: number) {
+    return currentTrialIndex === totalTrials - 1
+  }
+
+  function goToNextTrialOrBreakOrEndGame() {
+    if (onLastTrial(currentTrialIndex, totalTrials)) {
       endGame()
+    } else if (isTimeForBreak(currentTrialIndex, trialsPerBlock!)) {
+      return setGameStage('break')
+    } else {
+      setCurrentTrialIndex((prev) => prev + 1)
     }
   }
 
@@ -83,7 +92,7 @@ export default function DotProbe({
       setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
       setTotalTime(prevTotalTime => responseTime ? prevTotalTime + responseTime : prevTotalTime)
     }
-    goToNextTrialOrEndGame();
+    goToNextTrialOrBreakOrEndGame();
   }
 
   useEffect(() => {
@@ -102,6 +111,11 @@ export default function DotProbe({
         break
       case 'cue':
         break
+      case 'break':
+        timeout = setTimeout(
+          () => setCurrentTrialIndex((prev) => prev + 1),
+          times.break
+        )
     }
     return () => clearTimeout(timeout)
   }, [gameStage])

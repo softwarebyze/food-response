@@ -47,6 +47,7 @@ export type GoNoGoGameStage = 'cue' | 'interval' | 'error'
 export interface GoNoGoResponse {
   reaction: GoNoGoReaction | null
   correct: boolean | null
+  responseTime: number | null
 }
 
 export type DotProbeReaction = 'left-commission' | 'right-commission'

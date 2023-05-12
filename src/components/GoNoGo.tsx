@@ -68,7 +68,9 @@ export default function GoNoGo({
   const [response, setResponse] = useState<GoNoGoResponse>({
     reaction: null,
     correct: null,
+    responseTime: null,
   })
+  const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const side = image ? getRandomSide() : null
 
   const cue: GoNoGoCue = { side, imageType: type as ImageType }
@@ -83,6 +85,7 @@ export default function GoNoGo({
 
   function showCue() {
     setGameStage('cue')
+    setCueTimestamp(Date.now())
   }
 
   function showInterval() {
@@ -113,9 +116,13 @@ export default function GoNoGo({
 
   function handleReaction(reaction: GoNoGoReaction) {
     const correct = isGoNoGoResponseCorrect(reaction, cue)
-    setResponse({ reaction, correct })
+    const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null;
+    setResponse({ reaction, correct, responseTime })
     if (correct) {
       setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
+      if (["left-commission", "right-commission"].includes(reaction)) {
+        setTotalTime(prevTotalTime => responseTime ? prevTotalTime + responseTime : prevTotalTime);
+      }   
     }
   }
 
@@ -123,7 +130,7 @@ export default function GoNoGo({
     let timeout: NodeJS.Timeout
     switch (gameStage) {
       case 'cue':
-        setResponse({ reaction: null, correct: null })
+        setResponse({ reaction: null, correct: null, responseTime: null })
         timeout = setTimeout(() => handleReaction('omission'), times.cue)
         break
       case 'interval':

@@ -144,7 +144,7 @@ export default function VisualSearch({
     })
     if (type === 'healthy') {
       setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
-      setTotalTime(prevTotalTime => prevTotalTime + responseTime)
+      setTotalTime(prevTotalTime => responseTime ? prevTotalTime + responseTime : prevTotalTime)
     }
   }
 

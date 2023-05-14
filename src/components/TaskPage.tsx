@@ -30,7 +30,7 @@ export default function TaskPage({ task }: { task: TaskInfo }) {
           </div>
         )}
         {pageState === 'results' && (
-        <Results task={task} endGame={endGame} accuracy={accuracy} averageResponse={averageResponse}/>
+        <Results accuracy={accuracy} averageResponse={averageResponse}/>
         )}
         </div>
     </section>

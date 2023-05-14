@@ -12,22 +12,20 @@ export default function Results({
   averageResponse,
 }: ResultsProps) {
   return (
-    <>
-      <div className="box">
-        <h1 className="title">Results</h1>
-        <ul>
-          <li> Average Response Time: {averageResponse} milliseconds </li>
-          <li> Percent Correct: {accuracy} %</li>
-          <br />
-        </ul>
-        <button
-          onClick={endGame}
-          className="button is-info is-large"
-          tabIndex={1}
-        >
-          Resend Data
-        </button>
-      </div>
-    </>
+    <div className="box">
+      <h1 className="title">Results</h1>
+      <ul>
+        <li> Average Response Time: {averageResponse} milliseconds </li>
+        <li> Percent Correct: {accuracy} %</li>
+        <br />
+      </ul>
+      <button
+        onClick={endGame}
+        className="button is-info is-large"
+        tabIndex={1}
+      >
+        Resend Data
+      </button>
+    </div>
   )
 }

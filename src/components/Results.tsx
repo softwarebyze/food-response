@@ -1,30 +1,25 @@
-import { TaskInfo } from '../types/Task'
+import { useNavigate } from 'react-router-dom'
 
 interface ResultsProps {
-  task: TaskInfo
-  endGame: () => void
   accuracy: number
   averageResponse: number
 }
-export default function Results({
-  endGame,
-  accuracy,
-  averageResponse,
-}: ResultsProps) {
+export default function Results({ accuracy, averageResponse }: ResultsProps) {
+  const navigate = useNavigate()
   return (
     <div className="box">
       <h1 className="title">Results</h1>
       <ul>
         <li> Average Response Time: {averageResponse} milliseconds </li>
-        <li> Percent Correct: {accuracy} %</li>
+        <li> Percent Correct: {accuracy}%</li>
         <br />
       </ul>
       <button
-        onClick={endGame}
+        onClick={() => navigate('/')}
         className="button is-info is-large"
         tabIndex={1}
       >
-        Resend Data
+        Done
       </button>
     </div>
   )

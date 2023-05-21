@@ -220,7 +220,15 @@ export default function StopSignal({
           title="image-container"
           className={`imageBox sized ${borderStyle}`}
         >
-          {image && <img src={src} alt="trial image" className="squeezed" />}
+          {image && (
+            <img
+              onClick={() => handleReaction('commission')}
+              onTouchStart={() => handleReaction('commission')}
+              src={src}
+              alt="trial image"
+              className="squeezed"
+            />
+          )}
           {error && <div className="redCross">X</div>}
         </div>
       )}

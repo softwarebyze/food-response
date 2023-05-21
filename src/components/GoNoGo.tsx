@@ -160,21 +160,6 @@ export default function GoNoGo({
     }
   }
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (gameStage !== 'cue' || !['c', 'm'].includes(event.key)) return
-      if (event.key === 'c') handleReaction('left-commission')
-      if (event.key === 'm') handleReaction('right-commission')
-    },
-    [gameStage]
-  )
-
-  // add event listener
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyDown])
-
   useEffect(() => {
     let timeout: NodeJS.Timeout
     switch (gameStage) {

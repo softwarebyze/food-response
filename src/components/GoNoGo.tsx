@@ -83,10 +83,7 @@ export default function GoNoGo({
     responseTime: null,
   })
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
-  const side = useMemo(
-    () => (image ? getRandomSide() : null),
-    [image]
-  )
+  const side = useMemo(() => (image ? getRandomSide() : null), [image])
 
   const cue: GoNoGoCue = { side, imageType: type as ImageType }
 

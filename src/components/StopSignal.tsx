@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
@@ -150,24 +150,10 @@ export default function StopSignal({
     }
   }
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (gameStage !== 'cue' || event.key !== ' ') return
-      handleReaction('commission')
-    },
-    [gameStage]
-  )
-
   // set game stage to init and show cue after 1000ms when currentTrialIndex changes
   useEffect(() => {
     showInit()
   }, [currentTrialIndex])
-
-  // add event listener
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyDown])
 
   // add timeout to proceed to next stage
   useEffect(() => {
@@ -220,7 +206,15 @@ export default function StopSignal({
           title="image-container"
           className={`imageBox sized ${borderStyle}`}
         >
-          {image && <img src={src} alt="trial image" className="squeezed" />}
+          {image && (
+            <img
+              onClick={() => handleReaction('commission')}
+              onTouchStart={() => handleReaction('commission')}
+              src={src}
+              alt="trial image"
+              className="squeezed"
+            />
+          )}
           {error && <div className="redCross">X</div>}
         </div>
       )}

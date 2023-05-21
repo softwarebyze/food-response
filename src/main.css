@@ -132,7 +132,7 @@ blockquote i {
   overflow: hidden;
 }
 
-.imageBox .column img {
+.imageBox img {
   cursor: pointer;
 }
 

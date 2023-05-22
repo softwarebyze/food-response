@@ -1,52 +1,79 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
-  GoNoGoCue,
   GoNoGoGameStage,
   GoNoGoReaction,
   GoNoGoResponse,
+  GoNoGoTaskInfo,
+  GoNoGoTrialData,
+  GoNoGoTrialType,
+  ImageData,
   ImageType,
-  TaskData,
 } from '../types/Task'
 import Break from './Break'
 
-function getGoNoGoBorderStyle(imageType: ImageType) {
+function getGoNoGoTrialType(imageType: ImageType) {
   switch (imageType) {
     case 'unhealthy':
-      return 'dashedBorder'
+      return 'no-go'
     case 'healthy':
-      return 'solidBorder'
+      return 'go'
     case 'water':
-      return Math.random() < 0.5 ? 'solidBorder' : 'dashedBorder'
+      return Math.random() < 0.5 ? 'no-go' : 'go'
   }
 }
 
-function isGoNoGoResponseCorrect(reactionType: GoNoGoReaction, cue: GoNoGoCue) {
-  const { side, imageType } = cue
-  return (
-    (side === 'left' &&
-      imageType === 'healthy' &&
-      reactionType === 'left-commission') ||
-    (side === 'right' &&
-      imageType === 'healthy' &&
-      reactionType === 'right-commission') ||
-    (imageType === 'unhealthy' && reactionType === 'omission')
-  )
+function getGoNoGoBorderStyle(trialType: GoNoGoTrialType) {
+  switch (trialType) {
+    case 'go':
+      return 'solidBorder'
+    case 'no-go':
+      return 'dashedBorder'
+  }
 }
 
 function getRandomSide() {
   return Math.random() < 0.5 ? 'left' : 'right'
 }
 
-function prepareTaskData(images: TaskData, totalTrials: number) {
-  return [...Array(totalTrials).fill(null)].map(
-    () => images[Math.floor(Math.random() * images.length)]
-  )
+function prepareTaskData(
+  images: ImageData[],
+  totalTrials: number
+): GoNoGoTrialData[] {
+  return [...Array(totalTrials).fill(null)].map(() => {
+    const imageData = images[Math.floor(Math.random() * images.length)]
+    const trialType = getGoNoGoTrialType(imageData.type)
+    return {
+      src: imageData.src,
+      imageType: imageData.type,
+      border: getGoNoGoBorderStyle(trialType),
+      side: getRandomSide(),
+      trialType,
+    }
+  })
 }
 
-const { stages, times: timesFromJSON, blocks, trialsPerBlock } = tasks[1]
-const totalTrials = trialsPerBlock! * blocks!
+export function getNextStageAfterResponse(
+  response: GoNoGoResponse,
+  trialType: GoNoGoTrialType
+) {
+  if (response.correct) return 'interval'
+  const isIncorrect = response.correct === false
+  const isCommission = response.reaction !== 'omission'
+  const isGoTrial = trialType === 'go'
+  const isGoCommission = isCommission && isGoTrial
+  if (isIncorrect && isGoCommission) return 'interval'
+  if (isIncorrect && !isGoCommission) return 'error'
+}
+
+const {
+  stages,
+  times: timesFromJSON,
+  blocks,
+  trialsPerBlock,
+} = tasks[1] as GoNoGoTaskInfo
+const totalTrials = trialsPerBlock * blocks
 const slowdown = 1
 const breakSlowdown = 1
 const times = {
@@ -56,7 +83,7 @@ const times = {
   break: (timesFromJSON?.break ?? 10000) * breakSlowdown,
 } as const
 
-const taskData = prepareTaskData(images as TaskData, totalTrials)
+const taskData = prepareTaskData(images as ImageData[], totalTrials)
 
 export default function GoNoGo({
   endGame,
@@ -72,20 +99,15 @@ export default function GoNoGo({
 
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
-  const { image, border, error, interval } = stages![gameStage] as any
-  const { src, type } = taskData[currentTrialIndex]
-  const borderStyle = border
-    ? getGoNoGoBorderStyle(type as ImageType)
-    : 'whiteBorder'
+  const { image, error, interval } = stages[gameStage]
+  const { src, trialType, side, border, imageType } =
+    taskData[currentTrialIndex]
   const [response, setResponse] = useState<GoNoGoResponse>({
     reaction: null,
     correct: null,
     responseTime: null,
   })
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
-  const side = useMemo(() => (image ? getRandomSide() : null), [image])
-
-  const cue: GoNoGoCue = { side, imageType: type as ImageType }
 
   useEffect(() => {
     setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
@@ -126,10 +148,28 @@ export default function GoNoGo({
     }
   }
 
+  function isGoNoGoResponseCorrect(reactionType: GoNoGoReaction) {
+    return (
+      (side === 'left' &&
+        trialType === 'go' &&
+        reactionType === 'left-commission') ||
+      (side === 'right' &&
+        trialType === 'go' &&
+        reactionType === 'right-commission') ||
+      (trialType === 'no-go' && reactionType === 'omission')
+    )
+  }
+
+  function getNextGoNoGoStageAfterResponse(response: GoNoGoResponse) {
+    return getNextStageAfterResponse(response, trialType as GoNoGoTrialType)
+  }
+
   useEffect(() => {
-    if (response.correct === null) return
-    if (response.correct === false) showError()
-    if (response.correct === true) showInterval()
+    if (response.correct === null || response.reaction === null) return
+    const nextStage = getNextGoNoGoStageAfterResponse(response)
+    if (typeof nextStage === 'string') {
+      setGameStage(nextStage)
+    }
   }, [response])
 
   useEffect(() => {
@@ -137,7 +177,7 @@ export default function GoNoGo({
   }, [currentTrialIndex])
 
   function handleReaction(reaction: GoNoGoReaction) {
-    const correct = isGoNoGoResponseCorrect(reaction, cue)
+    const correct = isGoNoGoResponseCorrect(reaction)
     const responseTime = ['left-commission', 'right-commission'].includes(
       reaction
     )
@@ -193,31 +233,41 @@ export default function GoNoGo({
       <br />
       {'side: ' + side}
       <br />
-      {'cue: ' + JSON.stringify(cue)}
-      <br />
       {'response: ' + JSON.stringify(response)}
       {interval ? (
         <></>
       ) : (
-        <div className={`imageBox ${borderStyle} sized`}>
+        <div className={`imageBox ${border} sized`}>
           {image && (
             <div className="columns is-mobile">
               <div className="column">
-                {side === 'left' && (
+                {side === 'left' ? (
                   <img
                     onClick={() => handleReaction('left-commission')}
                     onTouchStart={() => handleReaction('left-commission')}
                     src={src}
                   />
+                ) : (
+                  <div
+                    onClick={() => handleReaction('left-commission')}
+                    onTouchStart={() => handleReaction('left-commission')}
+                    className="fill clickable"
+                  ></div>
                 )}
               </div>
               <div className="column">
-                {side === 'right' && (
+                {side === 'right' ? (
                   <img
                     onClick={() => handleReaction('right-commission')}
                     onTouchStart={() => handleReaction('right-commission')}
                     src={src}
                   />
+                ) : (
+                  <div
+                    onClick={() => handleReaction('right-commission')}
+                    onTouchStart={() => handleReaction('right-commission')}
+                    className="fill clickable"
+                  ></div>
                 )}
               </div>
             </div>

@@ -42,11 +42,11 @@ const totalTrials = trialsPerBlock * blocks
 const slowdown = 1
 const times = {
   init: (timesFromJSON?.init ?? 100) * slowdown,
-  cue: (timesFromJSON?.cue ?? 1150) * slowdown,
-  interval: (timesFromJSON?.interval ?? 500) * slowdown,
+  cue: (timesFromJSON.cue ?? 1150) * slowdown,
+  interval: (timesFromJSON.interval) * slowdown,
   error: (timesFromJSON?.error ?? 500) * slowdown,
-  break: timesFromJSON?.break ?? 10000,
-} as const
+  break: timesFromJSON.break,
+}
 
 const taskData = prepareTaskData(images as TaskData, totalTrials)
 

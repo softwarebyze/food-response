@@ -12,10 +12,10 @@ const { times: timesFromJSON, blocks, trialsPerBlock } = tasks[2]
 const totalTrials = trialsPerBlock! * blocks!
 const slowdown = 1
 const times = {
-  interval: (timesFromJSON?.interval ?? 500) * slowdown,
+  interval: (timesFromJSON.interval) * slowdown,
   init: (timesFromJSON?.init ?? 500) * slowdown,
-  break: timesFromJSON?.break ?? 10000,
-} as const
+  break: timesFromJSON.break,
+}
 
 const healthyImages = images.filter((image) => image.type === 'healthy')
 const unhealthyImages = images.filter((image) => image.type === 'unhealthy')

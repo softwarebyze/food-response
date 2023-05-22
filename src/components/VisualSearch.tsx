@@ -3,17 +3,6 @@ import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import { ImageType, ReactionType } from '../types/Task'
 import Break from './Break'
-interface Image {
-  src: string
-  type: ImageType
-}
-type VisualSearchGameStage = 'cue' | 'interval' | 'feedback' | 'break'
-type VisualSearchResponse = {
-  reactionType: null | ReactionType
-  correct: null | boolean
-  responseTime: null | number
-  selectedSrc: null | string
-}
 
 const rawImages: Image[] = images as Image[]
 

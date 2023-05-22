@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
@@ -10,7 +10,9 @@ import {
   GoNoGoTrialType,
   ImageData,
   ImageType,
+  ResponseWithTrialData,
 } from '../types/Task'
+import { recordResponse } from '../utils/recordResponse'
 import Break from './Break'
 
 function getGoNoGoTrialType(imageType: ImageType) {
@@ -108,6 +110,7 @@ export default function GoNoGo({
     responseTime: null,
   })
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
+  const [taskStartedAt, setTaskStartedAt] = useState(new Date())
 
   useEffect(() => {
     setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
@@ -160,9 +163,12 @@ export default function GoNoGo({
     )
   }
 
-  function getNextGoNoGoStageAfterResponse(response: GoNoGoResponse) {
-    return getNextStageAfterResponse(response, trialType as GoNoGoTrialType)
-  }
+  const getNextGoNoGoStageAfterResponse = useCallback(
+    (response: GoNoGoResponse) => {
+      return getNextStageAfterResponse(response, trialType as GoNoGoTrialType)
+    },
+    [trialType]
+  )
 
   useEffect(() => {
     if (response.correct === null || response.reaction === null) return
@@ -177,17 +183,29 @@ export default function GoNoGo({
   }, [currentTrialIndex])
 
   function handleReaction(reaction: GoNoGoReaction) {
-    const correct = isGoNoGoResponseCorrect(reaction)
-    const responseTime = ['left-commission', 'right-commission'].includes(
-      reaction
-    )
-      ? cueTimestamp
+    const responseTime =
+      ['left-commission', 'right-commission'].includes(reaction) && cueTimestamp
         ? Date.now() - cueTimestamp
         : null
-      : null
-    const newResponse = { reaction, correct, responseTime }
+
+    const newResponse = {
+      reaction,
+      correct: isGoNoGoResponseCorrect(reaction),
+      responseTime,
+    }
+    const newResponseWithTrialData: ResponseWithTrialData = {
+      ...newResponse,
+      userId: 'test',
+      taskStartedAt,
+      trialIndex: currentTrialIndex,
+      imageType,
+      trialType,
+      src,
+      gameSlug: 'gonogo'
+    }
+    recordResponse(newResponseWithTrialData)
     setResponse(newResponse)
-    if (correct) {
+    if (newResponse.correct) {
       setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
       if (['left-commission', 'right-commission'].includes(reaction)) {
         setTotalTime((prevTotalTime) =>

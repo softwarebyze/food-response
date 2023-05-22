@@ -2,39 +2,52 @@ import { useEffect, useState } from 'react'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
+  ImageData,
   ImageType,
-  Response,
+  ResponseWithTrialData,
   StopSignalGameStage,
   StopSignalReaction,
-  TaskData,
+  StopSignalResponse,
+  StopSignalTrialData,
+  StopSignalTrialType,
 } from '../types/Task'
+import { recordResponse } from '../utils/recordResponse'
 import Break from './Break'
 
-function getBorderStyle(imageType: ImageType) {
+function getStopSignalTrialType(imageType: ImageType) {
   switch (imageType) {
     case 'unhealthy':
-      return 'grayBorder'
+      return 'stop'
     case 'healthy':
-      return 'blueBorder'
+      return 'go'
     case 'water':
-      return Math.random() < 0.5 ? 'grayBorder' : 'blueBorder'
+      return Math.random() < 0.5 ? 'stop' : 'go'
   }
 }
 
-export function isResponseCorrect(
-  reactionType: StopSignalReaction,
-  borderStyle: 'whiteBorder' | 'grayBorder' | 'blueBorder'
-) {
-  return (
-    (borderStyle === 'blueBorder' && reactionType === 'commission') ||
-    (borderStyle === 'grayBorder' && reactionType === 'omission')
-  )
+function getStopSignalBorderStyle(trialType: StopSignalTrialType) {
+  switch (trialType) {
+    case 'stop':
+      return 'grayBorder'
+    case 'go':
+      return 'blueBorder'
+  }
 }
 
-function prepareTaskData(images: TaskData, totalTrials: number) {
-  return [...Array(totalTrials).fill(null)].map(
-    () => images[Math.floor(Math.random() * images.length)]
-  )
+function prepareTaskData(
+  images: ImageData[],
+  totalTrials: number
+): StopSignalTrialData[] {
+  return [...Array(totalTrials).fill(null)].map(() => {
+    const imageData = images[Math.floor(Math.random() * images.length)]
+    const trialType = getStopSignalTrialType(imageData.type)
+    return {
+      src: imageData.src,
+      imageType: imageData.type,
+      border: getStopSignalBorderStyle(trialType),
+      trialType,
+    }
+  })
 }
 
 const { stages, times: timesFromJSON, blocks, trialsPerBlock } = tasks[0]
@@ -48,7 +61,7 @@ const times = {
   break: timesFromJSON.break,
 }
 
-const taskData = prepareTaskData(images as TaskData, totalTrials)
+const taskData = prepareTaskData(images as ImageData[], totalTrials)
 
 export default function StopSignal({
   endGame,
@@ -64,21 +77,20 @@ export default function StopSignal({
 
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
-  const { image, border, error, interval } = stages![gameStage] as any
+  const {
+    image,
+    error,
+    interval,
+  } = stages![gameStage] as any
 
-  const { src, type } = taskData[currentTrialIndex]
-  const borderStyle = border ? getBorderStyle(type as ImageType) : 'whiteBorder'
-  const [response, setResponse] = useState<Response>({
+  const { src, trialType, border, imageType } = taskData[currentTrialIndex]
+  const [response, setResponse] = useState<StopSignalResponse>({
     reaction: null,
     correct: null,
     responseTime: null,
   })
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
-
-  function showCue() {
-    setGameStage('cue')
-    setCueTimestamp(Date.now())
-  }
+  const [taskStartedAt, setTaskStartedAt] = useState(new Date())
 
   useEffect(() => {
     setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
@@ -87,6 +99,11 @@ export default function StopSignal({
   useEffect(() => {
     setAverageResponse(Math.round(totalTime / numCorrect))
   }, [setAccuracy, totalTime, numCorrect])
+
+  function showCue() {
+    setGameStage('cue')
+    setCueTimestamp(Date.now())
+  }
 
   function showInterval() {
     setGameStage('interval')
@@ -118,6 +135,13 @@ export default function StopSignal({
     }
   }
 
+  function isStopSignalResponseCorrect(reactionType: StopSignalReaction) {
+    return (
+      (trialType === 'go' && reactionType === 'commission') ||
+      (trialType === 'stop' && reactionType === 'omission')
+    )
+  }
+
   // when reaction changes, if it is wrong, change state to error
   // if it is correct, change state to interval
   useEffect(() => {
@@ -128,19 +152,28 @@ export default function StopSignal({
 
   const handleReaction = (reaction: StopSignalReaction) => {
     const responseTime =
-      reaction === 'commission'
-        ? cueTimestamp
-          ? Date.now() - cueTimestamp
-          : null
+      reaction === 'commission' && cueTimestamp
+        ? Date.now() - cueTimestamp
         : null
 
     const newResponse = {
-      reaction: reaction,
-      correct: isResponseCorrect(reaction, borderStyle),
-      responseTime: responseTime,
+      reaction,
+      correct: isStopSignalResponseCorrect(reaction),
+      responseTime,
     }
+    const newResponseWithTrialData: ResponseWithTrialData = {
+      ...newResponse,
+      userId: 'test',
+      taskStartedAt,
+      trialIndex: currentTrialIndex,
+      imageType,
+      trialType,
+      src,
+      gameSlug: 'stopsignal'
+    }
+    recordResponse(newResponseWithTrialData)
     setResponse(newResponse)
-    if (isResponseCorrect(reaction, borderStyle)) {
+    if (newResponse.correct) {
       setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
       if (reaction === 'commission') {
         setTotalTime((prevTotalTime) =>
@@ -202,10 +235,7 @@ export default function StopSignal({
       {interval ? (
         <></>
       ) : (
-        <div
-          title="image-container"
-          className={`imageBox sized ${borderStyle}`}
-        >
+        <div title="image-container" className={`imageBox sized ${border}`}>
           {image && (
             <img
               onClick={() => handleReaction('commission')}

@@ -5,14 +5,16 @@ import {
   DotProbeGameStage,
   DotProbeReaction,
   DotProbeResponse,
+  ResponseWithTrialData,
 } from '../types/Task'
 import Break from './Break'
+import { recordResponse } from '../utils/recordResponse'
 
 const { times: timesFromJSON, blocks, trialsPerBlock } = tasks[2]
 const totalTrials = trialsPerBlock! * blocks!
 const slowdown = 1
 const times = {
-  interval: (timesFromJSON.interval) * slowdown,
+  interval: timesFromJSON.interval * slowdown,
   init: (timesFromJSON?.init ?? 500) * slowdown,
   break: timesFromJSON.break,
 }
@@ -29,8 +31,8 @@ export default function DotProbe({
   setAccuracy,
   setAverageResponse,
 }: {
-  endGame: () => void,
-  setAccuracy: (value: number) => void,
+  endGame: () => void
+  setAccuracy: (value: number) => void
   setAverageResponse: (value: number) => void
 }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
@@ -39,25 +41,26 @@ export default function DotProbe({
     reaction: null,
     responseTime: null,
   })
-  const [numCorrect, setNumCorrect] = useState<number>(0);
-  const [totalTime, setTotalTime] = useState<number>(0);
+  const [numCorrect, setNumCorrect] = useState<number>(0)
+  const [totalTime, setTotalTime] = useState<number>(0)
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
+  const [taskStartedAt, setTaskStartedAt] = useState(new Date())
   const currentImagePair = imagePairs[currentTrialIndex]
   const healthySide =
     currentImagePair.left.type === 'healthy' ? 'left' : 'right'
 
-  function showCue() {
-    setGameStage('cue')
-    setCueTimestamp(Date.now())
-  }
-
   useEffect(() => {
-    setAccuracy(Math.round(numCorrect / currentTrialIndex * 10000) / 100)
+    setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
   }, [setAccuracy, numCorrect, currentTrialIndex])
 
   useEffect(() => {
     setAverageResponse(Math.round(totalTime / numCorrect))
   }, [setAccuracy, totalTime, numCorrect])
+
+  function showCue() {
+    setGameStage('cue')
+    setCueTimestamp(Date.now())
+  }
 
   function isTimeForBreak(currentTrialIndex: number, trialsPerBlock: number) {
     return (currentTrialIndex + 1) % trialsPerBlock === 0
@@ -78,21 +81,34 @@ export default function DotProbe({
   }
 
   function handleReaction(reaction: DotProbeReaction) {
-    const isCorrect = (healthySide === 'left' && reaction === 'left-commission') ||
-      (healthySide === 'right' && reaction === 'right-commission');
-    
     const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null
-    
-    setResponse({
-      reaction,
-      responseTime: responseTime,
-    });
+
+    const isCorrect =
+      (healthySide === 'left' && reaction === 'left-commission') ||
+      (healthySide === 'right' && reaction === 'right-commission')
+
+    const newResponse = { reaction, responseTime }
+    const newResponseWithTrialData: ResponseWithTrialData = {
+      ...newResponse,
+      correct: isCorrect,
+      userId: 'test',
+      taskStartedAt,
+      trialIndex: currentTrialIndex,
+      imageType: 'healthy',
+      trialType: healthySide,
+      src: [currentImagePair.left.src, currentImagePair.right.src].join(', '),
+      gameSlug: 'dotprobe',
+    }
+    recordResponse(newResponseWithTrialData)
+    setResponse(newResponse)
 
     if (isCorrect) {
-      setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
-      setTotalTime(prevTotalTime => responseTime ? prevTotalTime + responseTime : prevTotalTime)
+      setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
+      setTotalTime((prevTotalTime) =>
+        responseTime ? prevTotalTime + responseTime : prevTotalTime
+      )
     }
-    goToNextTrialOrBreakOrEndGame();
+    goToNextTrialOrBreakOrEndGame()
   }
 
   useEffect(() => {

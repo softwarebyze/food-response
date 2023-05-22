@@ -38,7 +38,7 @@ function prepareTaskData(images: TaskData, totalTrials: number) {
 }
 
 const { stages, times: timesFromJSON, blocks, trialsPerBlock } = tasks[0]
-const totalTrials = trialsPerBlock! * blocks!
+const totalTrials = trialsPerBlock * blocks
 const slowdown = 1
 const times = {
   init: (timesFromJSON?.init ?? 100) * slowdown,

@@ -1,7 +1,15 @@
 export type ImageType = 'unhealthy' | 'healthy' | 'water'
+export type ImageData = {
+  src: string
+  foodType: string
+  type: ImageType
+}
 
-export type GameStage = 'init' | 'cue' | 'interval' | 'error' | 'break'
-
+export type GameStage =
+  | StopSignalGameStage
+  | GoNoGoGameStage
+  | DotProbeGameStage
+  | VisualSearchGameStage
 export interface GameState {
   image: boolean
   border: boolean
@@ -10,44 +18,78 @@ export interface GameState {
 }
 
 type TaskName = 'Stop Signal' | 'Go/No-Go' | 'Dot Probe' | 'Visual Search'
-
 export type TaskInfo = {
   name: TaskName
-  instructions: string
   path: string
+  instructions: string
   cover: string
-  stages: {
+  stages?: {
     [key in GameStage]: GameState
   }
+  times: {
+    [key in GameStage]: number
+  }
+  blocks: number
+  trialsPerBlock: number
 }
 
+export type StopSignalGameStage =
+  | 'init'
+  | 'cue'
+  | 'interval'
+  | 'error'
+  | 'break'
 export interface StopSignalTrialData {
   src: string
   type: ImageType
 }
+export type StopSignalReaction = 'commission' | 'omission'
 
 export type TrialData = StopSignalTrialData
 export type TaskData = TrialData[]
 
-export type ReactionType = 'omission' | 'commission'
+export type Reaction =
+  | StopSignalReaction
+  | GoNoGoReaction
+  | DotProbeReaction
+  | VisualSearchReaction
 
 export interface Response {
   correct: boolean | null
-  type: ReactionType | null
+  reaction: Reaction | null
   responseTime: number | null
 }
 
-export type GoNoGoBorderStyle = 'solidBorder' | 'dashedBorder'
 export type GoNoGoReaction = 'left-commission' | 'right-commission' | 'omission'
-export interface GoNoGoCue {
-  side: 'left' | 'right' | null
-  imageType: ImageType
-}
-export type GoNoGoGameStage = 'cue' | 'interval' | 'error' | 'break'
 export interface GoNoGoResponse {
   reaction: GoNoGoReaction | null
   correct: boolean | null
   responseTime: number | null
+}
+export type GoNoGoBorderStyle = 'solidBorder' | 'dashedBorder'
+export type GoNoGoTrialType = 'go' | 'no-go'
+export interface GoNoGoTrialData {
+  src: string
+  imageType: ImageType
+  border: GoNoGoBorderStyle
+  side: 'left' | 'right'
+  trialType: GoNoGoTrialType
+}
+export type GoNoGoGameStage = 'cue' | 'interval' | 'error' | 'break'
+type GoNoGoTimes = {
+  [key in GoNoGoGameStage]: number
+}
+export interface GoNoGoTaskInfo {
+  name: TaskName
+  path: string
+  instructions: string
+  cover: string
+  stages: {
+    [key in GoNoGoGameStage]: GameState
+  }
+  times: GoNoGoTimes
+  blocks: number
+  trialsPerBlock: number
 }
 
 export type DotProbeReaction = 'left-commission' | 'right-commission'
@@ -56,3 +98,12 @@ export interface DotProbeResponse {
   responseTime: number | null
 }
 export type DotProbeGameStage = 'interval' | 'init' | 'cue' | 'break'
+
+export type VisualSearchGameStage = 'cue' | 'feedback' | 'interval' | 'break'
+export type VisualSearchReaction = 'commission' | 'omission'
+export interface VisualSearchResponse {
+  reaction: VisualSearchReaction | null
+  responseTime: number | null
+  correct: boolean | null
+  selectedSrc: string | null
+}

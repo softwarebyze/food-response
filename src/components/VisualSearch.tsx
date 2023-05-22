@@ -1,21 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
-import { ImageType, ReactionType } from '../types/Task'
+import {
+  ImageData,
+  ImageType,
+  VisualSearchGameStage,
+  VisualSearchResponse,
+} from '../types/Task'
 import Break from './Break'
-interface Image {
-  src: string
-  type: ImageType
-}
-type VisualSearchGameStage = 'cue' | 'interval' | 'feedback' | 'break'
-type VisualSearchResponse = {
-  reactionType: null | ReactionType
-  correct: null | boolean
-  responseTime: null | number
-  selectedSrc: null | string
-}
 
-const rawImages: Image[] = images as Image[]
+const rawImages: ImageData[] = images as ImageData[]
 
 function getTrialImages(numberOfImages: number = 16) {
   const unhealthyImages = rawImages
@@ -29,7 +23,11 @@ function getTrialImages(numberOfImages: number = 16) {
   return trialImages
 }
 
-function createImageMatrix(numRows: number, numCols: number, images: Image[]) {
+function createImageMatrix(
+  numRows: number,
+  numCols: number,
+  images: ImageData[]
+) {
   const imageMatrix = []
   let imageIndex = 0
   for (let row = 0; row < numRows; row++) {
@@ -58,12 +56,12 @@ export default function VisualSearch({
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const trialImages = useMemo(() => getTrialImages(), [currentTrialIndex])
   const imageMatrix = useMemo(
-    () => createImageMatrix(4, 4, trialImages as Image[]),
+    () => createImageMatrix(4, 4, trialImages as ImageData[]),
     [currentTrialIndex]
   )
   const [gameStage, setGameStage] = useState<VisualSearchGameStage>('interval')
   const defaultResponse: VisualSearchResponse = {
-    reactionType: null,
+    reaction: null,
     correct: null,
     responseTime: null,
     selectedSrc: null,
@@ -155,7 +153,7 @@ export default function VisualSearch({
     const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null
 
     setResponse({
-      reactionType: 'commission',
+      reaction: 'commission',
       correct: type === 'healthy',
       responseTime: responseTime,
       selectedSrc: imageSrc,
@@ -170,14 +168,14 @@ export default function VisualSearch({
 
   function handleOmission() {
     setResponse({
-      reactionType: 'omission',
+      reaction: 'omission',
       correct: false,
       responseTime: null,
       selectedSrc: null,
     })
   }
   useEffect(() => {
-    if (response.reactionType) {
+    if (response.reaction) {
       setGameStage('feedback')
     }
   }, [response])

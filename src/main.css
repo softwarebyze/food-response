@@ -127,6 +127,15 @@ blockquote i {
   overflow: hidden;
 }
 
+.fill {
+  width: 100%;
+  height: 100%;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
 .imageBox {
   text-align: center;
   overflow: hidden;

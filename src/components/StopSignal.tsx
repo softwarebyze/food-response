@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
-  GameStage,
   ImageType,
-  ReactionType,
   Response,
+  StopSignalGameStage,
+  StopSignalReaction,
   TaskData,
 } from '../types/Task'
 import Break from './Break'
@@ -22,7 +22,7 @@ function getBorderStyle(imageType: ImageType) {
 }
 
 export function isResponseCorrect(
-  reactionType: ReactionType,
+  reactionType: StopSignalReaction,
   borderStyle: 'whiteBorder' | 'grayBorder' | 'blueBorder'
 ) {
   return (
@@ -60,7 +60,7 @@ export default function StopSignal({
   setAverageResponse: (value: number) => void
 }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
-  const [gameStage, setGameStage] = useState<GameStage>('init')
+  const [gameStage, setGameStage] = useState<StopSignalGameStage>('init')
 
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
@@ -69,7 +69,7 @@ export default function StopSignal({
   const { src, type } = taskData[currentTrialIndex]
   const borderStyle = border ? getBorderStyle(type as ImageType) : 'whiteBorder'
   const [response, setResponse] = useState<Response>({
-    type: null,
+    reaction: null,
     correct: null,
     responseTime: null,
   })
@@ -126,23 +126,23 @@ export default function StopSignal({
     if (response.correct === true) showInterval()
   }, [response])
 
-  const handleReaction = (reactionType: ReactionType) => {
+  const handleReaction = (reaction: StopSignalReaction) => {
     const responseTime =
-      reactionType === 'commission'
+      reaction === 'commission'
         ? cueTimestamp
           ? Date.now() - cueTimestamp
           : null
         : null
 
     const newResponse = {
-      type: reactionType,
-      correct: isResponseCorrect(reactionType, borderStyle),
+      reaction: reaction,
+      correct: isResponseCorrect(reaction, borderStyle),
       responseTime: responseTime,
     }
     setResponse(newResponse)
-    if (isResponseCorrect(reactionType, borderStyle)) {
+    if (isResponseCorrect(reaction, borderStyle)) {
       setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
-      if (reactionType === 'commission') {
+      if (reaction === 'commission') {
         setTotalTime((prevTotalTime) =>
           responseTime ? prevTotalTime + responseTime : prevTotalTime
         )
@@ -160,7 +160,7 @@ export default function StopSignal({
     let timeout: NodeJS.Timeout
     switch (gameStage) {
       case 'init':
-        setResponse({ type: null, correct: null, responseTime: null })
+        setResponse({ reaction: null, correct: null, responseTime: null })
         timeout = setTimeout(showCue, times.init)
         break
       case 'cue':

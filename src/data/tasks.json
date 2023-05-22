@@ -8,31 +8,26 @@
       "stages": {
         "init": {
           "image": true,
-          "border": false,
           "error": false,
           "interval": false
         },
         "cue": {
           "image": true,
-          "border": true,
           "error": false,
           "interval": false
         },
         "interval": {
           "image": false,
-          "border": false,
           "error": false,
           "interval": true
         },
         "error": {
           "image": false,
-          "border": true,
           "error": true,
           "interval": false
         },
         "break": {
           "image": false,
-          "border": false,
           "error": false,
           "interval": false
         }

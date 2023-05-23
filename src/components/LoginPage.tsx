@@ -1,4 +1,30 @@
+import { useState } from 'react'
+import { supabase } from '../supabaseClient'
+import { useNavigate } from 'react-router-dom'
+
 export default function LoginPage() {
+  const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState('zack@test')
+  const [password, setPassword] = useState('test')
+  const navigate = useNavigate()
+
+  const handleLogin = async (event: any) => {
+    event.preventDefault()
+
+    setLoading(true)
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      alert(error.message)
+    } else {
+      navigate('/')
+    }
+    setLoading(false)
+  }
+
   return (
     <div>
       <section>
@@ -13,12 +39,15 @@ export default function LoginPage() {
                 />
               </p>
               <div className="box" style={{ margin: '0.7em' }}>
-                <form>
+                <form onSubmit={handleLogin}>
                   <p className="control">
                     <input
                       className="input"
                       placeholder="Username"
-                      type="text"
+                      type="email"
+                      value={email}
+                      required={true}
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                   </p>
                   <br />
@@ -27,6 +56,9 @@ export default function LoginPage() {
                       className="input"
                       placeholder="Password"
                       type="password"
+                      value={password}
+                      required={true}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                   </p>
                   <hr />
@@ -34,6 +66,7 @@ export default function LoginPage() {
                     <button
                       className="button is-fullwidth is-success"
                       type="submit"
+                      disabled={loading}
                     >
                       Let's Go!
                     </button>

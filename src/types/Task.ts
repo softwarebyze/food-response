@@ -24,10 +24,15 @@ export type TaskInfo = {
   instructions: string
   cover: string
   stages?: {
-    [key in GameStage]: GameState
+    [key: string]: GameState
   }
   times: {
-    [key in GameStage]: number
+    interval: number
+    cue: number
+    feedback: number
+    break: number
+    init?: number
+    error?: number
   }
   blocks: number
   trialsPerBlock: number

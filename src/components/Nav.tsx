@@ -1,10 +1,16 @@
 import { NavLink, useNavigate } from 'react-router-dom'
+import { supabase } from '../supabaseClient'
 
 export default function Nav() {
   const navigate = useNavigate()
+  async function handleLogout() {
+    const { error } = await supabase.auth.signOut()
 
-  function handleLogout() {
-    navigate('/login')
+    if (error) {
+      alert(error.message)
+    } else {
+      return navigate('/login')
+    }
   }
 
   return (

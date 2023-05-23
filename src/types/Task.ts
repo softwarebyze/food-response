@@ -33,6 +33,14 @@ export type TaskInfo = {
   trialsPerBlock: number
 }
 
+export type StopSignalReaction = 'commission' | 'omission'
+export interface StopSignalResponse {
+  reaction: StopSignalReaction | null
+  correct: boolean | null
+  responseTime: number | null
+}
+export type StopSignalBorderStyle = 'grayBorder' | 'blueBorder'
+export type StopSignalTrialType = 'go' | 'stop'
 export type StopSignalGameStage =
   | 'init'
   | 'cue'
@@ -41,12 +49,10 @@ export type StopSignalGameStage =
   | 'break'
 export interface StopSignalTrialData {
   src: string
-  type: ImageType
+  imageType: ImageType
+  border: StopSignalBorderStyle
+  trialType: StopSignalTrialType
 }
-export type StopSignalReaction = 'commission' | 'omission'
-
-export type TrialData = StopSignalTrialData
-export type TaskData = TrialData[]
 
 export type Reaction =
   | StopSignalReaction
@@ -58,6 +64,20 @@ export interface Response {
   correct: boolean | null
   reaction: Reaction | null
   responseTime: number | null
+}
+type TrialType =
+  | StopSignalTrialType
+  | GoNoGoTrialType
+  | DotProbeTrialType
+  | VisualSearchTrialType
+export interface ResponseWithTrialData extends Response {
+  userId: string
+  taskStartedAt: Date
+  trialIndex: number
+  imageType: ImageType
+  src: string
+  trialType: TrialType
+  gameSlug: string
 }
 
 export type GoNoGoReaction = 'left-commission' | 'right-commission' | 'omission'
@@ -98,6 +118,7 @@ export interface DotProbeResponse {
   responseTime: number | null
 }
 export type DotProbeGameStage = 'interval' | 'init' | 'cue' | 'break'
+export type DotProbeTrialType = 'left' | 'right'
 
 export type VisualSearchGameStage = 'cue' | 'feedback' | 'interval' | 'break'
 export type VisualSearchReaction = 'commission' | 'omission'
@@ -107,3 +128,20 @@ export interface VisualSearchResponse {
   correct: boolean | null
   selectedSrc: string | null
 }
+type VisualSearchTrialType =
+  | '0'
+  | '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | '10'
+  | '11'
+  | '12'
+  | '13'
+  | '14'
+  | '15'

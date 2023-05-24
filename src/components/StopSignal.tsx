@@ -13,6 +13,7 @@ import {
 } from '../types/Task'
 import { recordResponse } from '../utils/recordResponse'
 import Break from './Break'
+import { useAuth } from '../contexts/AuthContext'
 
 function getStopSignalTrialType(imageType: ImageType) {
   switch (imageType) {
@@ -91,6 +92,7 @@ export default function StopSignal({
   })
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [taskStartedAt, setTaskStartedAt] = useState(new Date())
+  const { session } = useAuth()
 
   useEffect(() => {
     setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
@@ -163,7 +165,7 @@ export default function StopSignal({
     }
     const newResponseWithTrialData: ResponseWithTrialData = {
       ...newResponse,
-      userId: 'test',
+      userId: session!.user.id,
       taskStartedAt,
       trialIndex: currentTrialIndex,
       imageType,

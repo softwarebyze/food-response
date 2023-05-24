@@ -1,40 +1,24 @@
 import { Session } from '@supabase/supabase-js'
 import 'bulma/css/bulma.min.css'
-import { useEffect, useState } from 'react'
-import { BrowserRouter, Navigate, Route, Routes, redirect } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Home from './components/Home'
 import LoginPage from './components/LoginPage'
 import Nav from './components/Nav'
 import TaskPage from './components/TaskPage'
+import { useAuth } from './contexts/AuthContext'
 import { tasks } from './data/tasks.json'
 import './main.css'
-import { supabase } from './supabaseClient'
 import { TaskInfo } from './types/Task'
 
-type PrivateRouteProps = { session: Session | null; children: any }
 
-function PrivateRoute({ session, children }: PrivateRouteProps) {
+function PrivateRoute({ children }: { children: JSX.Element }) {
+  const { session } = useAuth()
   return session ? children : <Navigate to="/login" />
 }
 
 export default function App() {
-  const [session, setSession] = useState<Session | null>(null)
+  const { session } = useAuth()
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
-
-    supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session)
-      if (event === 'SIGNED_IN') {
-        redirect('/')
-      }
-      if (event === 'SIGNED_OUT') {
-        redirect('/login')
-      }
-    })
-  }, [])
   return (
     <BrowserRouter>
       {session && <Nav />}
@@ -42,7 +26,7 @@ export default function App() {
         <Route
           path="/"
           element={
-            <PrivateRoute session={session}>
+            <PrivateRoute>
               <Home tasks={tasks as TaskInfo[]} />
             </PrivateRoute>
           }

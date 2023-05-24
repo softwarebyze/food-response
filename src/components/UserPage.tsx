@@ -15,7 +15,6 @@ export default function UserPage() {
     if (error) {
       alert(error.message)
     } else {
-      console.log({ data })
       setResponses(data)
     }
     setLoading(false)

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
@@ -14,7 +15,6 @@ import {
 } from '../types/Task'
 import { recordResponse } from '../utils/recordResponse'
 import Break from './Break'
-import { useAuth } from '../contexts/AuthContext'
 
 function getGoNoGoTrialType(imageType: ImageType) {
   switch (imageType) {
@@ -70,21 +70,8 @@ export function getNextStageAfterResponse(
   if (isIncorrect && !isGoCommission) return 'error'
 }
 
-const {
-  stages,
-  times: timesFromJSON,
-  blocks,
-  trialsPerBlock,
-} = tasks[1] as GoNoGoTaskInfo
+const { stages, times, blocks, trialsPerBlock } = tasks[1] as GoNoGoTaskInfo
 const totalTrials = trialsPerBlock * blocks
-const slowdown = 1
-const breakSlowdown = 1
-const times = {
-  cue: (timesFromJSON.cue) * slowdown,
-  interval: (timesFromJSON.interval) * slowdown,
-  error: (timesFromJSON.error) * slowdown,
-  break: (timesFromJSON.break) * breakSlowdown,
-}
 
 const taskData = prepareTaskData(images as ImageData[], totalTrials)
 
@@ -203,7 +190,7 @@ export default function GoNoGo({
       imageType,
       trialType,
       src,
-      gameSlug: 'gonogo'
+      gameSlug: 'gonogo',
     }
     recordResponse(newResponseWithTrialData)
     setResponse(newResponse)
@@ -241,60 +228,45 @@ export default function GoNoGo({
 
   if (gameStage === 'break') return <Break />
 
-  return (
-    <>
-      {'currentTrialIndex: ' + currentTrialIndex}
-      <br />
-      {'totalTrials: ' + totalTrials}
-      <br />
-      {'slowdown: ' + slowdown + 'x'}
-      <br />
-      {'gameStage: ' + gameStage}
-      <br />
-      {'side: ' + side}
-      <br />
-      {'response: ' + JSON.stringify(response)}
-      {interval ? (
-        <></>
-      ) : (
-        <div className={`imageBox ${border} sized`}>
-          {image && (
-            <div className="columns is-mobile">
-              <div className="column">
-                {side === 'left' ? (
-                  <img
-                    onClick={() => handleReaction('left-commission')}
-                    onTouchStart={() => handleReaction('left-commission')}
-                    src={src}
-                  />
-                ) : (
-                  <div
-                    onClick={() => handleReaction('left-commission')}
-                    onTouchStart={() => handleReaction('left-commission')}
-                    className="fill clickable"
-                  ></div>
-                )}
-              </div>
-              <div className="column">
-                {side === 'right' ? (
-                  <img
-                    onClick={() => handleReaction('right-commission')}
-                    onTouchStart={() => handleReaction('right-commission')}
-                    src={src}
-                  />
-                ) : (
-                  <div
-                    onClick={() => handleReaction('right-commission')}
-                    onTouchStart={() => handleReaction('right-commission')}
-                    className="fill clickable"
-                  ></div>
-                )}
-              </div>
-            </div>
-          )}
-          {error && <div className="redCross">X</div>}
+  return interval ? (
+    <></>
+  ) : (
+    <div className={`imageBox ${border} sized`}>
+      {image && (
+        <div className="columns is-mobile">
+          <div className="column">
+            {side === 'left' ? (
+              <img
+                onClick={() => handleReaction('left-commission')}
+                onTouchStart={() => handleReaction('left-commission')}
+                src={src}
+              />
+            ) : (
+              <div
+                onClick={() => handleReaction('left-commission')}
+                onTouchStart={() => handleReaction('left-commission')}
+                className="fill clickable"
+              ></div>
+            )}
+          </div>
+          <div className="column">
+            {side === 'right' ? (
+              <img
+                onClick={() => handleReaction('right-commission')}
+                onTouchStart={() => handleReaction('right-commission')}
+                src={src}
+              />
+            ) : (
+              <div
+                onClick={() => handleReaction('right-commission')}
+                onTouchStart={() => handleReaction('right-commission')}
+                className="fill clickable"
+              ></div>
+            )}
+          </div>
         </div>
       )}
-    </>
+      {error && <div className="redCross">X</div>}
+    </div>
   )
 }

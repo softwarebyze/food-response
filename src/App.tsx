@@ -40,7 +40,11 @@ export default function App() {
           <Route
             key={task.name}
             path={task.path}
-            element={<TaskPage task={task as TaskInfo} />}
+            element={
+              <PrivateRoute>
+                <TaskPage task={task as TaskInfo} />
+              </PrivateRoute>
+            }
           />
         ))}
       </Routes>

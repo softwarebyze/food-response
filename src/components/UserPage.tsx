@@ -27,10 +27,11 @@ export default function UserPage() {
   return (
     <section className="section">
       <div className="container swing-in-top-fwd">
-        <h1 className="title is-1">Responses</h1>
+        <h1 className="title is-1">User Page</h1>
+        <hr />
+        <p className="title">Responses Table</p>
+        <ResponsesTable responses={responses} loading={loading} />
       </div>
-      <hr />
-      <ResponsesTable responses={responses} loading={loading} />
     </section>
   )
 }

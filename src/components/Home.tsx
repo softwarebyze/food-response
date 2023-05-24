@@ -1,12 +1,16 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import { TaskInfo } from '../types/Task'
 
 export default function Home({ tasks }: { tasks: TaskInfo[] }) {
+  const { session } = useAuth()
   return (
     <section className="hero is-primary">
       <div className="hero-body">
         <div className="container">
-          <h1 className="title is-1">Welcome, USERNAME</h1>
+          <h1 className="title is-1">
+            Welcome, {session?.user?.email?.split('@')[0]}
+          </h1>
           <div className="columns">
             {tasks.map(({ name, path, cover }) => (
               <div key={name} className="column">

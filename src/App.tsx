@@ -1,16 +1,14 @@
-import { Session } from '@supabase/supabase-js'
 import 'bulma/css/bulma.min.css'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Home from './components/Home'
 import LoginPage from './components/LoginPage'
 import Nav from './components/Nav'
 import TaskPage from './components/TaskPage'
+import UserPage from './components/UserPage'
 import { useAuth } from './contexts/AuthContext'
 import { tasks } from './data/tasks.json'
 import './main.css'
 import { TaskInfo } from './types/Task'
-import UserPage from './components/UserPage'
-
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { session } = useAuth()
@@ -18,7 +16,11 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
 }
 
 export default function App() {
-  const { session } = useAuth()
+  const { session, loading } = useAuth()
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <BrowserRouter>
@@ -32,7 +34,7 @@ export default function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/user" element={ <UserPage/> } />
+        <Route path="/user" element={<UserPage />} />
         <Route path="/login" element={<LoginPage />} />
         {tasks.map((task) => (
           <Route

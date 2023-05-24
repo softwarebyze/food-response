@@ -198,3 +198,7 @@ blockquote i {
 .hover-underline:hover {
   text-decoration: underline;
 }
+
+.overflow-x-scroll {
+  overflow-x: scroll;
+}

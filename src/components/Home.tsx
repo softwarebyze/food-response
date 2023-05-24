@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { TaskInfo } from '../types/Task'
+import MyFoods from './MyFoods'
 
 export default function Home({ tasks }: { tasks: TaskInfo[] }) {
   const { session } = useAuth()
@@ -41,6 +42,7 @@ export default function Home({ tasks }: { tasks: TaskInfo[] }) {
           </div>
         </div>
       </div>
+      <MyFoods/>
     </section>
   )
 }

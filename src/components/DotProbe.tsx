@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
@@ -7,8 +8,8 @@ import {
   DotProbeResponse,
   ResponseWithTrialData,
 } from '../types/Task'
-import Break from './Break'
 import { recordResponse } from '../utils/recordResponse'
+import Break from './Break'
 
 const { times: timesFromJSON, blocks, trialsPerBlock } = tasks[2]
 const totalTrials = trialsPerBlock! * blocks!
@@ -45,6 +46,7 @@ export default function DotProbe({
   const [totalTime, setTotalTime] = useState<number>(0)
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [taskStartedAt, setTaskStartedAt] = useState(new Date())
+  const { session } = useAuth()
   const currentImagePair = imagePairs[currentTrialIndex]
   const healthySide =
     currentImagePair.left.type === 'healthy' ? 'left' : 'right'
@@ -91,7 +93,7 @@ export default function DotProbe({
     const newResponseWithTrialData: ResponseWithTrialData = {
       ...newResponse,
       correct: isCorrect,
-      userId: 'test',
+      userId: session!.user.id,
       taskStartedAt,
       trialIndex: currentTrialIndex,
       imageType: 'healthy',

@@ -1,0 +1,5 @@
+# https://blog.sapegin.me/til/misc/caching-static-assets-on-netlify/
+# Cache images for a week
+/images/*
+  Cache-Control: public
+  Cache-Control: max-age=604800

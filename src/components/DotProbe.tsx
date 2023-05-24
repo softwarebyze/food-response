@@ -16,10 +16,14 @@ const totalTrials = trialsPerBlock! * blocks!
 
 const healthyImages = images.filter((image) => image.type === 'healthy')
 const unhealthyImages = images.filter((image) => image.type === 'unhealthy')
-const imagePairs = healthyImages.map((healthyImage, index) => ({
-  left: healthyImage,
-  right: unhealthyImages[index],
-}))
+const imagePairs = healthyImages.map((healthyImage, index) => {
+  const randomSide = Math.random() < 0.5 ? 'left' : 'right'
+  const otherSide = randomSide === 'left' ? 'right' : 'left'
+  return {
+    [`${randomSide}`]: healthyImage,
+    [`${otherSide}`]: unhealthyImages[index],
+  }
+})
 
 export default function DotProbe({
   endGame,
@@ -154,7 +158,7 @@ export default function DotProbe({
       {gameStage === 'cue' && (
         <>
           <div className="column">
-            {healthySide === 'left' && (
+            {healthySide === 'left' ? (
               <div
                 className="probe"
                 onClick={() => handleReaction('left-commission')}
@@ -164,10 +168,12 @@ export default function DotProbe({
                   <circle cx="10" cy="10" r="10"></circle>
                 </svg>
               </div>
+            ) : (
+              <div className="fill"></div>
             )}
           </div>
           <div className="column">
-            {healthySide === 'right' && (
+            {healthySide === 'right' ? (
               <div
                 className="probe"
                 onClick={() => handleReaction('right-commission')}
@@ -177,6 +183,8 @@ export default function DotProbe({
                   <circle cx="10" cy="10" r="10"></circle>
                 </svg>
               </div>
+            ) : (
+              <div className="fill"></div>
             )}
           </div>
         </>

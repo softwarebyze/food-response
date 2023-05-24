@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
@@ -13,7 +14,6 @@ import {
 } from '../types/Task'
 import { recordResponse } from '../utils/recordResponse'
 import Break from './Break'
-import { useAuth } from '../contexts/AuthContext'
 
 function getStopSignalTrialType(imageType: ImageType) {
   switch (imageType) {
@@ -51,16 +51,8 @@ function prepareTaskData(
   })
 }
 
-const { stages, times: timesFromJSON, blocks, trialsPerBlock } = tasks[0]
+const { stages, times, blocks, trialsPerBlock } = tasks[0]
 const totalTrials = trialsPerBlock * blocks
-const slowdown = 1
-const times = {
-  init: (timesFromJSON?.init ?? 100) * slowdown,
-  cue: (timesFromJSON.cue ?? 1150) * slowdown,
-  interval: (timesFromJSON.interval) * slowdown,
-  error: (timesFromJSON?.error ?? 500) * slowdown,
-  break: timesFromJSON.break,
-}
 
 const taskData = prepareTaskData(images as ImageData[], totalTrials)
 
@@ -78,11 +70,7 @@ export default function StopSignal({
 
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
-  const {
-    image,
-    error,
-    interval,
-  } = stages![gameStage] as any
+  const { image, error, interval } = stages![gameStage] as any
 
   const { src, trialType, border, imageType } = taskData[currentTrialIndex]
   const [response, setResponse] = useState<StopSignalResponse>({
@@ -171,7 +159,7 @@ export default function StopSignal({
       imageType,
       trialType,
       src,
-      gameSlug: 'stopsignal'
+      gameSlug: 'stopsignal',
     }
     recordResponse(newResponseWithTrialData)
     setResponse(newResponse)
@@ -221,19 +209,6 @@ export default function StopSignal({
 
   return (
     <>
-      <>
-        {'currentTrialIndex: ' + currentTrialIndex}
-        <br />
-        {'totalTrials: ' + totalTrials}
-        <br />
-        {'slowdown: ' + slowdown + 'x'}
-        <br />
-        {'gameStage: ' + gameStage}
-        <br />
-        {'response: ' + JSON.stringify(response)}
-        <br />
-        {'cueTimestamp: ' + JSON.stringify(cueTimestamp)}
-      </>
       {interval ? (
         <></>
       ) : (

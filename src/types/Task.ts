@@ -76,6 +76,7 @@ type TrialType =
   | DotProbeTrialType
   | VisualSearchTrialType
 export interface ResponseWithTrialData extends Response {
+  id?: number
   userId: string
   taskStartedAt: Date
   trialIndex: number

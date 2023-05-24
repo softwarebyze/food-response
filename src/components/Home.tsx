@@ -9,7 +9,12 @@ export default function Home({ tasks }: { tasks: TaskInfo[] }) {
       <div className="hero-body">
         <div className="container">
           <h1 className="title is-1">
-            Welcome, {session?.user?.email?.split('@')[0]}
+            Welcome,{' '}
+            {
+              <Link className="hover-underline" to="/user">
+                {session?.user?.email?.split('@')[0]}
+              </Link>
+            }
           </h1>
           <div className="columns">
             {tasks.map(({ name, path, cover }) => (

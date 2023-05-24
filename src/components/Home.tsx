@@ -11,7 +11,7 @@ export default function Home({ tasks }: { tasks: TaskInfo[] }) {
           <h1 className="title is-1">
             Welcome,{' '}
             {
-              <Link className="hover-underline" to="/user">
+              <Link className="hover-underline is-italic" to="/user">
                 {session?.user?.email?.split('@')[0]}
               </Link>
             }

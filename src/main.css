@@ -194,3 +194,7 @@ blockquote i {
 .gray {
   background: #efefef;
 }
+
+.hover-underline:hover {
+  text-decoration: underline;
+}

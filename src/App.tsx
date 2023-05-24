@@ -9,6 +9,7 @@ import { useAuth } from './contexts/AuthContext'
 import { tasks } from './data/tasks.json'
 import './main.css'
 import { TaskInfo } from './types/Task'
+import UserPage from './components/UserPage'
 
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
@@ -31,6 +32,7 @@ export default function App() {
             </PrivateRoute>
           }
         />
+        <Route path="/user" element={ <UserPage/> } />
         <Route path="/login" element={<LoginPage />} />
         {tasks.map((task) => (
           <Route

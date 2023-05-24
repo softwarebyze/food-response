@@ -33,9 +33,9 @@ export default function ResponsesTable({
               <td>{response.reaction}</td>
               <td>{response.taskStartedAt.toString()}</td>
               <td>{response.imageType}</td>
-              <td>{response.correct}</td>
+              <td>{response.correct?.toString()}</td>
               <td>{response.gameSlug}</td>
-              <td>{response.responseTime}</td>
+              <td>{response.responseTime ?? "null"}</td>
               <td>{response.trialType}</td>
             </tr>
           ))}

@@ -9,6 +9,7 @@ import { useAuth } from './contexts/AuthContext'
 import { tasks } from './data/tasks.json'
 import './main.css'
 import { TaskInfo } from './types/Task'
+import RateFoodPage from './components/RateFoodPage'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { session } = useAuth()
@@ -47,6 +48,7 @@ export default function App() {
             }
           />
         ))}
+        <Route path="/rate" element={<RateFoodPage />} />
       </Routes>
     </BrowserRouter>
   )

@@ -70,20 +70,27 @@ export interface Response {
   reaction: Reaction | null
   responseTime: number | null
 }
-type TrialType =
-  | StopSignalTrialType
-  | GoNoGoTrialType
-  | DotProbeTrialType
-  | VisualSearchTrialType
-export interface ResponseWithTrialData extends Response {
-  id?: number
-  userId: string
-  taskStartedAt: Date
-  trialIndex: number
-  imageType: ImageType
-  src: string
-  trialType: TrialType
-  gameSlug: string
+export interface TaskResponse {
+  id: number;
+  user_id: string | null;
+  gsession_created_at: Date | null;
+  game_slug: string | null;
+  assessment: string | null;
+  phase: number | null;
+  sort: number | null;
+  picture_delta: number | null;
+  picture_dur: number | null;
+  border_delta: number | null;
+  jitter_dur: number | null;
+  correct_resp_delta: number | null;
+  commission_resp_delta: number | null;
+  has_selection: boolean | null;
+  is_valid: boolean | null;
+  is_omission: boolean | null;
+  is_commission: boolean | null;
+  target_index: number | null;
+  picture_offset: string | null;
+  picture_list: string | null;
 }
 
 export type GoNoGoReaction = 'left-commission' | 'right-commission' | 'omission'

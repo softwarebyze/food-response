@@ -1,10 +1,10 @@
-import { ResponseWithTrialData } from '../types/Task'
+import { TaskResponse } from '../types/Task'
 
 export default function ResponsesTable({
   responses,
   loading,
 }: {
-  responses: any[]
+  responses: TaskResponse[]
   loading: boolean
 }) {
   return (
@@ -13,30 +13,50 @@ export default function ResponsesTable({
         <thead>
           <tr>
             <th>id</th>
-            <th>userId</th>
-            <th>trialIndex</th>
-            <th>reaction</th>
-            <th>taskStartedAt</th>
-            <th>imageType</th>
-            <th>correct</th>
-            <th>gameSlug</th>
-            <th>responseTime</th>
-            <th>trialType</th>
+            <th>user_id</th>
+            <th>gsession_created_at</th>
+            <th>game_slug</th>
+            <th>assessment</th>
+            <th>phase</th>
+            <th>sort</th>
+            <th>picture_delta</th>
+            <th>picture_dur</th>
+            <th>border_delta</th>
+            <th>jitter_dur</th>
+            <th>correct_resp_delta</th>
+            <th>commission_resp_delta</th>
+            <th>has_selection</th>
+            <th>is_valid</th>
+            <th>is_omission</th>
+            <th>is_commission</th>
+            <th>target_index</th>
+            <th>picture_offset</th>
+            <th>picture_list</th>
           </tr>
         </thead>
         <tbody>
-          {responses.map((response: ResponseWithTrialData) => (
+          {responses.map((response) => (
             <tr key={response.id}>
               <td>{response.id}</td>
-              <td>{response.userId}</td>
-              <td>{response.trialIndex}</td>
-              <td>{response.reaction}</td>
-              <td>{response.taskStartedAt.toString()}</td>
-              <td>{response.imageType}</td>
-              <td>{response.correct?.toString()}</td>
-              <td>{response.gameSlug}</td>
-              <td>{response.responseTime ?? "null"}</td>
-              <td>{response.trialType}</td>
+              <td>{response.user_id}</td>
+              <td>{response.gsession_created_at?.toString()}</td>
+              <td>{response.game_slug}</td>
+              <td>{response.assessment}</td>
+              <td>{response.phase}</td>
+              <td>{response.sort}</td>
+              <td>{response.picture_delta}</td>
+              <td>{response.picture_dur}</td>
+              <td>{response.border_delta}</td>
+              <td>{response.jitter_dur}</td>
+              <td>{response.correct_resp_delta}</td>
+              <td>{response.commission_resp_delta}</td>
+              <td>{response.has_selection}</td>
+              <td>{response.is_valid}</td>
+              <td>{response.is_omission}</td>
+              <td>{response.is_commission}</td>
+              <td>{response.target_index}</td>
+              <td>{response.picture_offset}</td>
+              <td>{response.picture_list}</td>
             </tr>
           ))}
         </tbody>

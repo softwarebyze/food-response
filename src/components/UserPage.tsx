@@ -10,7 +10,7 @@ export default function UserPage() {
 
   const getResponses = async () => {
     setLoading(true)
-    const { data, error } = await supabase.from('responses').select('*')
+    const { data, error } = await supabase.from('task_responses').select('*')
 
     if (error) {
       alert(error.message)

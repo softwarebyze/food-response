@@ -6,15 +6,15 @@ import { tasks } from '../data/tasks.json'
 import {
   ImageData,
   ImageType,
-  ResponseWithTrialData,
   StopSignalBorderStyle,
   StopSignalGameStage,
   StopSignalReaction,
   StopSignalResponse,
   StopSignalTrialData,
   StopSignalTrialType,
+  TaskResponse,
 } from '../types/Task'
-import { recordResponse } from '../utils/recordResponse'
+import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
 
 function getStopSignalTrialType(imageType: ImageType): StopSignalTrialType {
@@ -124,6 +124,10 @@ export default function StopSignal({
   })
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [taskStartedAt, setTaskStartedAt] = useState(new Date())
+  const [pictureDelta, setPictureDelta] = useState<number | null>(null)
+  const [pictureShownAt, setPictureShownAt] = useState<number | null>(null)
+  const [intervalShownAt, setIntervalShownAt] = useState<number | null>(null)
+  const [jitterDur, setJitterDur] = useState<number | null>(null)
   const { session } = useAuth()
 
   useEffect(() => {
@@ -141,6 +145,7 @@ export default function StopSignal({
 
   function showInterval() {
     setGameStage('interval')
+    setIntervalShownAt(Date.now())
   }
 
   function showError() {
@@ -149,6 +154,10 @@ export default function StopSignal({
 
   function showInit() {
     setGameStage('init')
+    setPictureShownAt(Date.now())
+    setPictureDelta(
+      pictureShownAt ? pictureShownAt - taskStartedAt.getTime() : null
+    )
   }
 
   function isTimeForBreak(currentTrialIndex: number, trialsPerBlock: number) {
@@ -160,6 +169,7 @@ export default function StopSignal({
   }
 
   function goToNextTrialOrBreakOrEndGame() {
+    setJitterDur(Date.now() - intervalShownAt!)
     if (onLastTrial(currentTrialIndex, totalTrials)) {
       endGame()
     } else if (isTimeForBreak(currentTrialIndex, trialsPerBlock!)) {
@@ -190,22 +200,40 @@ export default function StopSignal({
         ? Date.now() - cueTimestamp
         : null
 
+    const isCorrect = isStopSignalResponseCorrect(reaction)
+
     const newResponse = {
       reaction,
-      correct: isStopSignalResponseCorrect(reaction),
+      correct: isCorrect,
       responseTime,
     }
-    const newResponseWithTrialData: ResponseWithTrialData = {
-      ...newResponse,
-      userId: session!.user.id,
-      taskStartedAt,
-      trialIndex: currentTrialIndex,
-      imageType,
-      trialType,
-      src,
-      gameSlug: 'stopsignal',
+
+    const taskResponseData: Partial<TaskResponse> = {
+      user_id: session!.user.id,
+      gsession_created_at: taskStartedAt,
+      game_slug: 'stopsignal',
+      assessment: 'TEST',
+      phase: 0,
+      sort: currentTrialIndex,
+      picture_delta: pictureDelta,
+      picture_dur: pictureShownAt ? Date.now() - pictureShownAt : null,
+      border_delta:
+        cueTimestamp && pictureShownAt ? cueTimestamp - pictureShownAt : null,
+      jitter_dur: jitterDur,
+      correct_resp_delta: isCorrect ? responseTime : null,
+      commission_resp_delta:
+        !isCorrect && reaction === 'commission' ? responseTime : null,
+      has_selection: reaction === 'commission',
+      is_valid: isCorrect,
+      is_omission: !isCorrect && reaction === 'omission',
+      is_commission: !isCorrect && reaction === 'commission',
+      target_index: 0,
+      picture_offset: 'NONE',
+      picture_list: src,
     }
-    recordResponse(newResponseWithTrialData)
+
+    recordTaskResponse(taskResponseData)
+
     setResponse(newResponse)
     if (newResponse.correct) {
       setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)

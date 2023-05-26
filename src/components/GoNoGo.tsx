@@ -118,6 +118,7 @@ const percentages = `
   Unhealthy: ${Math.round(unhealthyPercent * 100)}%
   Water: ${Math.round(waterPercent * 100)}%
 `
+console.log(percentages)
 
 export default function GoNoGo({
   endGame,
@@ -144,8 +145,6 @@ export default function GoNoGo({
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [taskStartedAt, setTaskStartedAt] = useState(new Date())
   const { session } = useAuth()
-
-  useEffect(() => alert(percentages), [])
 
   useEffect(() => {
     setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)

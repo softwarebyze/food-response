@@ -85,18 +85,6 @@ function prepareTaskData(
   )
 
   return taskData
-
-  // return [...Array(totalTrials).fill(null)].map(() => {
-  //   const imageData = images[Math.floor(Math.random() * images.length)]
-  //   const trialType = getGoNoGoTrialType(imageData.type)
-  //   return {
-  //     src: imageData.src,
-  //     imageType: imageData.type,
-  //     border: getGoNoGoBorderStyle(trialType),
-  //     side: getRandomSide(),
-  //     trialType,
-  //   }
-  // })
 }
 
 export function getNextStageAfterResponse(

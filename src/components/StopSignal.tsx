@@ -210,7 +210,7 @@ export default function StopSignal({
 
     const taskResponseData: Partial<TaskResponse> = {
       user_id: session!.user.id,
-      gsession_created_at: new Date(),
+      gsession_created_at: taskStartedAt,
       game_slug: 'stopsignal',
       assessment: 'TEST',
       phase: 0,

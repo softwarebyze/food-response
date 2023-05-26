@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { useEffect, useMemo, useState } from 'react'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
@@ -9,18 +10,39 @@ import {
 } from '../types/Task'
 import Break from './Break'
 
-const rawImages: ImageData[] = images as ImageData[]
+function prepareTaskData(
+  images: ImageData[],
+  totalNumberOfTrials: number,
+  healthyImagesPerTrial: number = 1,
+  unhealthyImagesPerTrial: number = 15
+) {
+  const healthyImages = images.filter((image) => image.type === 'healthy')
+  const unhealthyImages = images.filter((image) => image.type === 'unhealthy')
 
-function getTrialImages(numberOfImages: number = 16) {
-  const unhealthyImages = rawImages
-    .filter((image) => image.type === 'unhealthy')
-    .slice(0, numberOfImages - 1)
-  const healthyImages = rawImages.filter((image) => image.type === 'healthy')
-  const healthyImage = healthyImages.sort(() => Math.random() - 0.5)[0]
-  const trialImages = [...unhealthyImages, healthyImage].sort(
-    () => Math.random() - 0.5
-  )
-  return trialImages
+  while (healthyImages.length < healthyImagesPerTrial * totalNumberOfTrials) {
+    healthyImages.push(..._.shuffle([...healthyImages]))
+  }
+
+  while (
+    unhealthyImages.length <
+    unhealthyImagesPerTrial * totalNumberOfTrials
+  ) {
+    unhealthyImages.push(..._.shuffle([...unhealthyImages]))
+  }
+
+  const taskData = []
+  for (let i = 0; i < totalNumberOfTrials; i++) {
+    const healthyImageForTrial = healthyImages.splice(0, healthyImagesPerTrial)
+    const unhealthyImagesForTrial = unhealthyImages.splice(
+      0,
+      unhealthyImagesPerTrial
+    )
+    taskData.push(
+      _.shuffle([...healthyImageForTrial, ...unhealthyImagesForTrial])
+    )
+  }
+
+  return taskData
 }
 
 function createImageMatrix(
@@ -44,6 +66,8 @@ function createImageMatrix(
 const { times, blocks, trialsPerBlock } = tasks[3]
 const totalTrials = trialsPerBlock! * blocks!
 
+const taskData = prepareTaskData(images as ImageData[], totalTrials, 1, 15)
+
 export default function VisualSearch({
   endGame,
   setAccuracy,
@@ -54,10 +78,10 @@ export default function VisualSearch({
   setAverageResponse: (value: number) => void
 }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
-  const trialImages = useMemo(() => getTrialImages(), [currentTrialIndex])
+  const trialImages = taskData[currentTrialIndex]
   const imageMatrix = useMemo(
-    () => createImageMatrix(4, 4, trialImages as ImageData[]),
-    [currentTrialIndex]
+    () => createImageMatrix(4, 4, trialImages),
+    [trialImages]
   )
   const [gameStage, setGameStage] = useState<VisualSearchGameStage>('interval')
   const defaultResponse: VisualSearchResponse = {

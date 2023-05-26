@@ -46,6 +46,25 @@ function prepareTaskData(images: ImageData[], totalTrials: number) {
 }
 
 const imagePairs = prepareTaskData(images as ImageData[], totalTrials)
+const leftPercent =
+  imagePairs.filter((imgData) => imgData.left.type === 'healthy').length /
+  imagePairs.length
+const rightPercent =
+  imagePairs.filter((imgData) => imgData.right.type === 'healthy').length /
+  imagePairs.length
+const leftWater =
+  imagePairs.filter((imgData) => imgData.left.foodType.toLowerCase() === 'water').length /
+  imagePairs.length
+const rightWater =
+  imagePairs.filter((imgData) => imgData.right.foodType.toLowerCase() === 'water').length /
+  imagePairs.length
+const percentages = `
+  LeftHealthy: ${Math.round(leftPercent * 100)}%
+  RightHealthy: ${Math.round(rightPercent * 100)}%
+  LeftWater: ${Math.round(leftWater * 100)}%
+  RightWater: ${Math.round(rightWater * 100)}%
+`
+console.log('Dot Probe', percentages)
 
 export default function DotProbe({
   endGame,
@@ -155,7 +174,7 @@ export default function DotProbe({
     }
 
     recordTaskResponse(taskResponseData)
-    
+
     setResponse(newResponse)
 
     if (isCorrect) {

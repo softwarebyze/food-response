@@ -99,6 +99,21 @@ const { stages, times, blocks, trialsPerBlock } = tasks[0]
 const totalTrials = trialsPerBlock * blocks
 
 const taskData = prepareTaskData(images as ImageData[], totalTrials)
+const healthyPercent =
+  taskData.filter((imgData) => imgData.imageType === 'healthy').length /
+  taskData.length
+const unhealthyPercent =
+  taskData.filter((imgData) => imgData.imageType === 'unhealthy').length /
+  taskData.length
+const waterPercent =
+  taskData.filter((imgData) => imgData.imageType === 'water').length /
+  taskData.length
+const percentages = `
+  Healthy: ${Math.round(healthyPercent * 100)}%
+  Unhealthy: ${Math.round(unhealthyPercent * 100)}%
+  Water: ${Math.round(waterPercent * 100)}%
+`
+console.log('Stop-Signal', percentages)
 
 export default function StopSignal({
   endGame,

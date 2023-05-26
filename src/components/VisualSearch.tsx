@@ -1,13 +1,17 @@
 import _ from 'lodash'
 import { useEffect, useMemo, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
   ImageData,
   ImageType,
+  TaskResponse,
   VisualSearchGameStage,
+  VisualSearchReaction,
   VisualSearchResponse,
 } from '../types/Task'
+import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
 
 function prepareTaskData(
@@ -16,8 +20,12 @@ function prepareTaskData(
   healthyImagesPerTrial: number = 1,
   unhealthyImagesPerTrial: number = 15
 ) {
-  const healthyImages = images.filter((image) => image.type === 'healthy')
-  const unhealthyImages = images.filter((image) => image.type === 'unhealthy')
+  const healthyImages = _.shuffle(
+    images.filter((image) => image.type === 'healthy')
+  )
+  const unhealthyImages = _.shuffle(
+    images.filter((image) => image.type === 'unhealthy')
+  )
 
   while (healthyImages.length < healthyImagesPerTrial * totalNumberOfTrials) {
     healthyImages.push(..._.shuffle([...healthyImages]))
@@ -79,6 +87,7 @@ export default function VisualSearch({
 }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const trialImages = taskData[currentTrialIndex]
+  const targetIndex = trialImages.findIndex((image) => image.type === 'healthy')
   const imageMatrix = useMemo(
     () => createImageMatrix(4, 4, trialImages),
     [trialImages]
@@ -95,10 +104,20 @@ export default function VisualSearch({
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
+  const [taskStartedAt, setTaskStartedAt] = useState(new Date())
+  const [pictureDelta, setPictureDelta] = useState<number | null>(null)
+  const [pictureShownAt, setPictureShownAt] = useState<number | null>(null)
+  const [intervalShownAt, setIntervalShownAt] = useState<number | null>(null)
+  const [jitterDur, setJitterDur] = useState<number | null>(null)
+  const { session } = useAuth()
 
   function showCue() {
     setGameStage('cue')
     setCueTimestamp(Date.now())
+    setPictureShownAt(Date.now())
+    setPictureDelta(
+      pictureShownAt ? pictureShownAt - taskStartedAt.getTime() : null
+    )
   }
 
   useEffect(() => {
@@ -113,6 +132,7 @@ export default function VisualSearch({
 
   function showInterval() {
     setGameStage('interval')
+    setIntervalShownAt(Date.now())
   }
 
   useEffect(() => {
@@ -128,6 +148,7 @@ export default function VisualSearch({
   }
 
   function goToNextTrialOrBreakOrEndGame() {
+    setJitterDur(Date.now() - intervalShownAt!)
     if (onLastTrial(currentTrialIndex, totalTrials)) {
       endGame()
     } else if (isTimeForBreak(currentTrialIndex, trialsPerBlock!)) {
@@ -142,7 +163,7 @@ export default function VisualSearch({
     switch (gameStage) {
       case 'cue':
         setResponse(defaultResponse)
-        timeout = setTimeout(handleOmission, times?.cue)
+        timeout = setTimeout(() => handleResponse(null, null), times?.cue)
         break
       case 'feedback':
         timeout = setTimeout(goToNextTrialOrBreakOrEndGame, times?.interval)
@@ -171,18 +192,46 @@ export default function VisualSearch({
     }
   }
 
-  function handleImageClick(imageSrc: string, type: ImageType) {
+  function handleResponse(imageSrc: string | null, type: ImageType | null) {
     if (gameStage !== 'cue') return
 
     const responseTime = cueTimestamp ? Date.now() - cueTimestamp : null
 
-    setResponse({
-      reaction: 'commission',
-      correct: type === 'healthy',
+    const isCorrect = type === 'healthy'
+
+    const newResponse = {
+      reaction: 'commission' as VisualSearchReaction,
+      correct: isCorrect,
       responseTime: responseTime,
       selectedSrc: imageSrc,
-    })
-    if (type === 'healthy') {
+    }
+
+    const taskResponseData: Partial<TaskResponse> = {
+      user_id: session?.user.id,
+      gsession_created_at: taskStartedAt,
+      game_slug: 'visualsearch',
+      assessment: 'TEST',
+      phase: 0,
+      sort: currentTrialIndex,
+      picture_delta: pictureDelta,
+      picture_dur: pictureShownAt ? Date.now() - pictureShownAt : null,
+      border_delta: 0,
+      jitter_dur: jitterDur,
+      correct_resp_delta: isCorrect ? responseTime : null,
+      commission_resp_delta: !isCorrect && type !== null ? responseTime : null,
+      has_selection: type !== null,
+      is_valid: isCorrect,
+      is_omission: type === null,
+      is_commission: !isCorrect && type !== null,
+      target_index: targetIndex,
+      picture_offset: 'LEFT',
+      picture_list: trialImages.map((image) => image.src).join(','),
+    }
+
+    recordTaskResponse(taskResponseData)
+
+    setResponse(newResponse)
+    if (isCorrect) {
       setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
       setTotalTime((prevTotalTime) =>
         responseTime ? prevTotalTime + responseTime : prevTotalTime
@@ -190,14 +239,6 @@ export default function VisualSearch({
     }
   }
 
-  function handleOmission() {
-    setResponse({
-      reaction: 'omission',
-      correct: false,
-      responseTime: null,
-      selectedSrc: null,
-    })
-  }
   useEffect(() => {
     if (response.reaction) {
       setGameStage('feedback')
@@ -223,8 +264,8 @@ export default function VisualSearch({
                     key={`col${colIndex}`}
                     className={getBorderStyle(image.src, image.type)}
                     src={image.src}
-                    onClick={() => handleImageClick(image.src, image.type)}
-                    onTouchStart={() => handleImageClick(image.src, image.type)}
+                    onClick={() => handleResponse(image.src, image.type)}
+                    onTouchStart={() => handleResponse(image.src, image.type)}
                   />
                 ))}
               </div>

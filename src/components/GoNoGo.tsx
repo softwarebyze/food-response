@@ -13,9 +13,9 @@ import {
   GoNoGoTrialType,
   ImageData,
   ImageType,
-  ResponseWithTrialData,
+  // ResponseWithTrialData,
 } from '../types/Task'
-import { recordResponse } from '../utils/recordResponse'
+// import { recordResponse } from '../utils/recordResponse'
 import Break from './Break'
 
 function getGoNoGoTrialType(imageType: ImageType): GoNoGoTrialType {
@@ -228,17 +228,17 @@ export default function GoNoGo({
       correct: isGoNoGoResponseCorrect(reaction),
       responseTime,
     }
-    const newResponseWithTrialData: ResponseWithTrialData = {
-      ...newResponse,
-      userId: session!.user.id,
-      taskStartedAt,
-      trialIndex: currentTrialIndex,
-      imageType,
-      trialType,
-      src,
-      gameSlug: 'gonogo',
-    }
-    recordResponse(newResponseWithTrialData)
+    // const newResponseWithTrialData: ResponseWithTrialData = {
+    //   ...newResponse,
+    //   userId: session!.user.id,
+    //   taskStartedAt,
+    //   trialIndex: currentTrialIndex,
+    //   imageType,
+    //   trialType,
+    //   src,
+    //   gameSlug: 'gonogo',
+    // }
+    // recordResponse(newResponseWithTrialData)
     setResponse(newResponse)
     if (newResponse.correct) {
       setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)

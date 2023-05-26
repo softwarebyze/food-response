@@ -8,9 +8,9 @@ import {
   DotProbeReaction,
   DotProbeResponse,
   ImageData,
-  ResponseWithTrialData,
+  TaskResponse,
 } from '../types/Task'
-import { recordResponse } from '../utils/recordResponse'
+import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
 
 const { times, blocks, trialsPerBlock } = tasks[2]
@@ -66,6 +66,10 @@ export default function DotProbe({
   const [totalTime, setTotalTime] = useState<number>(0)
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [taskStartedAt, setTaskStartedAt] = useState(new Date())
+  const [pictureDelta, setPictureDelta] = useState<number | null>(null)
+  const [pictureShownAt, setPictureShownAt] = useState<number | null>(null)
+  const [intervalShownAt, setIntervalShownAt] = useState<number | null>(null)
+  const [jitterDur, setJitterDur] = useState<number | null>(null)
   const { session } = useAuth()
   const currentImagePair = imagePairs[currentTrialIndex]
   const healthySide =
@@ -84,6 +88,14 @@ export default function DotProbe({
     setCueTimestamp(Date.now())
   }
 
+  function showInit() {
+    setGameStage('init')
+    setPictureShownAt(Date.now())
+    setPictureDelta(
+      pictureShownAt ? pictureShownAt - taskStartedAt.getTime() : null
+    )
+  }
+
   function isTimeForBreak(currentTrialIndex: number, trialsPerBlock: number) {
     return (currentTrialIndex + 1) % trialsPerBlock === 0
   }
@@ -93,6 +105,7 @@ export default function DotProbe({
   }
 
   function goToNextTrialOrBreakOrEndGame() {
+    setJitterDur(Date.now() - intervalShownAt!)
     if (onLastTrial(currentTrialIndex, totalTrials)) {
       endGame()
     } else if (isTimeForBreak(currentTrialIndex, trialsPerBlock!)) {
@@ -110,18 +123,39 @@ export default function DotProbe({
       (healthySide === 'right' && reaction === 'right-commission')
 
     const newResponse = { reaction, responseTime }
-    const newResponseWithTrialData: ResponseWithTrialData = {
-      ...newResponse,
-      correct: isCorrect,
-      userId: session!.user.id,
-      taskStartedAt,
-      trialIndex: currentTrialIndex,
-      imageType: 'healthy',
-      trialType: healthySide,
-      src: [currentImagePair.left.src, currentImagePair.right.src].join(', '),
-      gameSlug: 'dotprobe',
+
+    const taskResponseData: Partial<TaskResponse> = {
+      user_id: session!.user.id,
+      gsession_created_at: taskStartedAt,
+      game_slug: 'dotprobe',
+      assessment: 'TEST',
+      phase: 0,
+      sort: currentTrialIndex,
+      picture_delta: pictureDelta,
+      picture_dur: pictureShownAt ? Date.now() - pictureShownAt : null,
+      border_delta: 0,
+      jitter_dur: jitterDur,
+      correct_resp_delta: isCorrect ? responseTime : null,
+      commission_resp_delta:
+        !isCorrect && ['left-commission', 'right-commission'].includes(reaction)
+          ? responseTime
+          : null,
+      has_selection: ['left-commission', 'right-commission'].includes(reaction),
+      is_valid: isCorrect,
+      is_omission: false,
+      is_commission:
+        !isCorrect &&
+        ['left-commission', 'right-commission'].includes(reaction),
+      target_index: healthySide === 'left' ? 0 : 1,
+      picture_offset: 'LEFT',
+      picture_list: [
+        currentImagePair.left.src,
+        currentImagePair.right.src,
+      ].join(', '),
     }
-    recordResponse(newResponseWithTrialData)
+
+    recordTaskResponse(taskResponseData)
+    
     setResponse(newResponse)
 
     if (isCorrect) {
@@ -135,6 +169,7 @@ export default function DotProbe({
 
   useEffect(() => {
     setGameStage('interval')
+    setIntervalShownAt(Date.now())
   }, [currentTrialIndex])
 
   useEffect(() => {
@@ -142,7 +177,7 @@ export default function DotProbe({
     switch (gameStage) {
       case 'interval':
         setResponse({ reaction: null, responseTime: null })
-        timeout = setTimeout(() => setGameStage('init'), times.interval)
+        timeout = setTimeout(showInit, times.interval)
         break
       case 'init':
         timeout = setTimeout(showCue, times.init)

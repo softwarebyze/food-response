@@ -44,7 +44,7 @@
         "error": 500,
         "break": 10000
       },
-      "blocks": 10,
+      "blocks": 5,
       "trialsPerBlock": 32
     },
     {
@@ -84,7 +84,7 @@
         "error": 500,
         "break": 10000
       },
-      "blocks": 6,
+      "blocks": 3,
       "trialsPerBlock": 50
     },
     {
@@ -97,7 +97,7 @@
         "init": 500,
         "break": 10000
       },
-      "blocks": 8,
+      "blocks": 4,
       "trialsPerBlock": 40
     },
     {
@@ -111,7 +111,7 @@
         "feedback": 1000,
         "break": 10000
       },
-      "blocks": 4,
+      "blocks": 2,
       "trialsPerBlock": 30
     }
   ]

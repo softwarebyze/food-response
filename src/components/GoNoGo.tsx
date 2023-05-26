@@ -1,8 +1,10 @@
+import _ from 'lodash'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
+  GoNoGoBorderStyle,
   GoNoGoGameStage,
   GoNoGoReaction,
   GoNoGoResponse,
@@ -16,7 +18,7 @@ import {
 import { recordResponse } from '../utils/recordResponse'
 import Break from './Break'
 
-function getGoNoGoTrialType(imageType: ImageType) {
+function getGoNoGoTrialType(imageType: ImageType): GoNoGoTrialType {
   switch (imageType) {
     case 'unhealthy':
       return 'no-go'
@@ -27,7 +29,7 @@ function getGoNoGoTrialType(imageType: ImageType) {
   }
 }
 
-function getGoNoGoBorderStyle(trialType: GoNoGoTrialType) {
+function getGoNoGoBorderStyle(trialType: GoNoGoTrialType): GoNoGoBorderStyle {
   switch (trialType) {
     case 'go':
       return 'solidBorder'
@@ -36,7 +38,7 @@ function getGoNoGoBorderStyle(trialType: GoNoGoTrialType) {
   }
 }
 
-function getRandomSide() {
+function getRandomSide(): 'left' | 'right' {
   return Math.random() < 0.5 ? 'left' : 'right'
 }
 
@@ -44,17 +46,57 @@ function prepareTaskData(
   images: ImageData[],
   totalTrials: number
 ): GoNoGoTrialData[] {
-  return [...Array(totalTrials).fill(null)].map(() => {
-    const imageData = images[Math.floor(Math.random() * images.length)]
-    const trialType = getGoNoGoTrialType(imageData.type)
-    return {
-      src: imageData.src,
-      imageType: imageData.type,
-      border: getGoNoGoBorderStyle(trialType),
-      side: getRandomSide(),
-      trialType,
+  const healthyImages = _.shuffle(
+    images.filter((image) => image.type === 'healthy')
+  )
+  const unhealthyImages = _.shuffle(
+    images.filter((image) => image.type === 'unhealthy')
+  )
+  const waterImages = _.shuffle(
+    images.filter((image) => image.type === 'water')
+  )
+
+  while (healthyImages.length < totalTrials) {
+    healthyImages.push(..._.shuffle([...healthyImages]))
+  }
+
+  while (unhealthyImages.length < totalTrials) {
+    unhealthyImages.push(..._.shuffle([...unhealthyImages]))
+  }
+
+  while (waterImages.length < totalTrials) {
+    waterImages.push(..._.shuffle([...waterImages]))
+  }
+
+  const combinedImages = healthyImages.concat(unhealthyImages, waterImages)
+  const combinedImagesShuffled = _.shuffle(combinedImages)
+
+  const taskData = _.take(combinedImagesShuffled, totalTrials).map(
+    (imageData) => {
+      const trialType = getGoNoGoTrialType(imageData.type)
+      return {
+        src: imageData.src,
+        imageType: imageData.type,
+        border: getGoNoGoBorderStyle(trialType),
+        side: getRandomSide(),
+        trialType,
+      }
     }
-  })
+  )
+
+  return taskData
+
+  // return [...Array(totalTrials).fill(null)].map(() => {
+  //   const imageData = images[Math.floor(Math.random() * images.length)]
+  //   const trialType = getGoNoGoTrialType(imageData.type)
+  //   return {
+  //     src: imageData.src,
+  //     imageType: imageData.type,
+  //     border: getGoNoGoBorderStyle(trialType),
+  //     side: getRandomSide(),
+  //     trialType,
+  //   }
+  // })
 }
 
 export function getNextStageAfterResponse(
@@ -74,6 +116,20 @@ const { stages, times, blocks, trialsPerBlock } = tasks[1] as GoNoGoTaskInfo
 const totalTrials = trialsPerBlock * blocks
 
 const taskData = prepareTaskData(images as ImageData[], totalTrials)
+const healthyPercent =
+  taskData.filter((imgData) => imgData.imageType === 'healthy').length /
+  taskData.length
+const unhealthyPercent =
+  taskData.filter((imgData) => imgData.imageType === 'unhealthy').length /
+  taskData.length
+const waterPercent =
+  taskData.filter((imgData) => imgData.imageType === 'water').length /
+  taskData.length
+const percentages = `
+  Healthy: ${Math.round(healthyPercent * 100)}%
+  Unhealthy: ${Math.round(unhealthyPercent * 100)}%
+  Water: ${Math.round(waterPercent * 100)}%
+`
 
 export default function GoNoGo({
   endGame,
@@ -100,6 +156,8 @@ export default function GoNoGo({
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [taskStartedAt, setTaskStartedAt] = useState(new Date())
   const { session } = useAuth()
+
+  useEffect(() => alert(percentages), [])
 
   useEffect(() => {
     setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)

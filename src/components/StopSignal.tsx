@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { images } from '../data/images.json'
@@ -6,6 +7,7 @@ import {
   ImageData,
   ImageType,
   ResponseWithTrialData,
+  StopSignalBorderStyle,
   StopSignalGameStage,
   StopSignalReaction,
   StopSignalResponse,
@@ -15,7 +17,7 @@ import {
 import { recordResponse } from '../utils/recordResponse'
 import Break from './Break'
 
-function getStopSignalTrialType(imageType: ImageType) {
+function getStopSignalTrialType(imageType: ImageType): StopSignalTrialType {
   switch (imageType) {
     case 'unhealthy':
       return 'stop'
@@ -26,7 +28,9 @@ function getStopSignalTrialType(imageType: ImageType) {
   }
 }
 
-function getStopSignalBorderStyle(trialType: StopSignalTrialType) {
+function getStopSignalBorderStyle(
+  trialType: StopSignalTrialType
+): StopSignalBorderStyle {
   switch (trialType) {
     case 'stop':
       return 'grayBorder'
@@ -37,18 +41,58 @@ function getStopSignalBorderStyle(trialType: StopSignalTrialType) {
 
 function prepareTaskData(
   images: ImageData[],
-  totalTrials: number
+  blocks: number,
+  healthyImagesPerBlock: number = 14,
+  unhealthyImagesPerBlock: number = 14,
+  waterImagesPerBlock: number = 4
 ): StopSignalTrialData[] {
-  return [...Array(totalTrials).fill(null)].map(() => {
-    const imageData = images[Math.floor(Math.random() * images.length)]
-    const trialType = getStopSignalTrialType(imageData.type)
-    return {
-      src: imageData.src,
-      imageType: imageData.type,
-      border: getStopSignalBorderStyle(trialType),
-      trialType,
-    }
-  })
+  const healthyImages = _.shuffle(
+    images.filter((image) => image.type === 'healthy')
+  )
+  const unhealthyImages = _.shuffle(
+    images.filter((image) => image.type === 'unhealthy')
+  )
+  const waterImages = _.shuffle(
+    images.filter((image) => image.type === 'water')
+  )
+
+  while (healthyImages.length < healthyImagesPerBlock * blocks) {
+    healthyImages.push(..._.shuffle([...healthyImages]))
+  }
+
+  while (unhealthyImages.length < unhealthyImagesPerBlock * blocks) {
+    unhealthyImages.push(..._.shuffle([...unhealthyImages]))
+  }
+
+  while (waterImages.length < waterImagesPerBlock * blocks) {
+    waterImages.push(..._.shuffle([...waterImages]))
+  }
+
+  const taskData = []
+  for (let i = 0; i < blocks; i++) {
+    const healthyImagesBlock = healthyImages.splice(0, healthyImagesPerBlock)
+    const unhealthyImagesBlock = unhealthyImages.splice(
+      0,
+      unhealthyImagesPerBlock
+    )
+    const waterImagesBlock = waterImages.splice(0, waterImagesPerBlock)
+    const combinedImages = healthyImagesBlock.concat(
+      unhealthyImagesBlock,
+      waterImagesBlock
+    )
+    const combinedImagesShuffled = _.shuffle(combinedImages)
+    const combinedWithTrialData = combinedImagesShuffled.map((imageData) => {
+      const trialType = getStopSignalTrialType(imageData.type)
+      return {
+        src: imageData.src,
+        imageType: imageData.type,
+        border: getStopSignalBorderStyle(trialType),
+        trialType,
+      }
+    })
+    taskData.push(...combinedWithTrialData)
+  }
+  return taskData
 }
 
 const { stages, times, blocks, trialsPerBlock } = tasks[0]

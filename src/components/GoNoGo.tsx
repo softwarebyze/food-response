@@ -118,7 +118,7 @@ const percentages = `
   Unhealthy: ${Math.round(unhealthyPercent * 100)}%
   Water: ${Math.round(waterPercent * 100)}%
 `
-console.log(percentages)
+console.log('Go/No-Go', percentages)
 
 export default function GoNoGo({
   endGame,

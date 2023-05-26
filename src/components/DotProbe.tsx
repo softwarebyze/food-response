@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { images } from '../data/images.json'
@@ -6,6 +7,7 @@ import {
   DotProbeGameStage,
   DotProbeReaction,
   DotProbeResponse,
+  ImageData,
   ResponseWithTrialData,
 } from '../types/Task'
 import { recordResponse } from '../utils/recordResponse'
@@ -14,16 +16,36 @@ import Break from './Break'
 const { times, blocks, trialsPerBlock } = tasks[2]
 const totalTrials = trialsPerBlock! * blocks!
 
-const healthyImages = images.filter((image) => image.type === 'healthy')
-const unhealthyImages = images.filter((image) => image.type === 'unhealthy')
-const imagePairs = healthyImages.map((healthyImage, index) => {
-  const randomSide = Math.random() < 0.5 ? 'left' : 'right'
-  const otherSide = randomSide === 'left' ? 'right' : 'left'
-  return {
-    [`${randomSide}`]: healthyImage,
-    [`${otherSide}`]: unhealthyImages[index],
+function prepareTaskData(images: ImageData[], totalTrials: number) {
+  const healthyImages = _.shuffle(
+    images.filter((image) => image.type === 'healthy')
+  )
+  const unhealthyImages = _.shuffle(
+    images.filter((image) => image.type === 'unhealthy')
+  )
+
+  while (healthyImages.length < totalTrials) {
+    healthyImages.push(..._.shuffle([...healthyImages]))
   }
-})
+
+  while (unhealthyImages.length < totalTrials) {
+    unhealthyImages.push(..._.shuffle([...unhealthyImages]))
+  }
+
+  const imagePairs = _.take(healthyImages, totalTrials).map(
+    (healthyImage, index) => {
+      const randomSide = Math.random() < 0.5 ? 'left' : 'right'
+      const otherSide = randomSide === 'left' ? 'right' : 'left'
+      return {
+        [`${randomSide}`]: healthyImage,
+        [`${otherSide}`]: unhealthyImages[index],
+      }
+    }
+  )
+  return imagePairs
+}
+
+const imagePairs = prepareTaskData(images as ImageData[], totalTrials)
 
 export default function DotProbe({
   endGame,

@@ -3,6 +3,14 @@ export type ImageData = {
   src: string
   foodType: string
   type: ImageType
+  id: number
+}
+
+export type FoodRatingData = {
+  id?: number,
+  food_id: number,
+  user_id: string,
+  rating: number,
 }
 
 export type GameStage =

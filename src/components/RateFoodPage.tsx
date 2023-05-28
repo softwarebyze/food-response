@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useUserData } from '../contexts/UserDataContext'
 import { supabase } from '../supabaseClient'
-import { images } from '../data/images.json'
 
 async function recordRating({
   rating,
@@ -9,106 +10,202 @@ async function recordRating({
   userId,
 }: {
   rating: number
-  foodId: string
+  foodId: number
   userId: string
 }) {
-  return await supabase.from('food-ratings').insert({ rating, foodId, userId })
+  return await supabase
+    .from('food_ratings')
+    .insert({ rating, food_id: foodId, user_id: userId })
 }
 
 export default function RateFoodPage() {
-  const [loading, setLoading] = useState(false)
-  const [currentFoodIndex, setCurrentFoodIndex] = useState(0)
-  const [foods, setFoods] = useState<{ [x: string]: any }[]>(images)
   const [currentRating, setCurrentRating] = useState('')
-  const [ratings, setRatings] = useState([])
   const { session } = useAuth()
-  const currentFood = foods?.[currentFoodIndex]
-  console.log({ currentFood })
+  const {
+    loading,
+    setLoading,
+    allFoods,
+    foodRatings,
+    unratedFoods,
+    fetchFoodRatings,
+  } = useUserData()
+  const currentFood = unratedFoods?.length ? unratedFoods[0] : null
 
-  //   useEffect(() => {
-  //     async function getRatings() {
-  //       const { data, error } = await supabase
-  //         .from('food-ratings')
-  //         .select('*')
-  //         .eq('userId', session!.user!.id)
-  //       console.log({ data, error })
-  //     }
-  //     getRatings()
-  //   }, [])
+  function randomlyRateCurrentFood() {
+    const randomRating = Math.floor(Math.random() * 9) + 1
+    handleKeyDown({ key: `${randomRating}` } as KeyboardEvent)
+  }
 
-//   useEffect(() => {
-//     const fetchUnratedFoods = async (userId: string) => {
-//       const { data, error } = await supabase
-//         .from('food-ratings')
-//         .select('foodId')
-//         .eq('userId', userId)
+  const randomlyRateRemainingFoods = useCallback(async () => {
+    setLoading(true)
 
-//       if (error) {
-//         console.error('Error fetching unrated foods:', error)
-//         return []
-//       }
-//       const ratedFoodIds = data.map((rating) => rating.foodId)
-//       console.log({ ratedFoodIds })
+    const ratingPromises = (unratedFoods || []).map(async (food) => {
+      const randomRating = Math.floor(Math.random() * 9) + 1
+      setCurrentRating(`${randomRating}`)
 
-//       // Fetch all foods except the ones that the user has already rated
-//       const { data: foodsData, error: foodsError } = await supabase
-//         .from('foods')
-//         .select()
-//         .not('id', 'in', ratedFoodIds)
+      const { error } = await recordRating({
+        rating: randomRating,
+        foodId: food.id,
+        userId: session!.user!.id,
+      })
 
-//       if (foodsError) {
-//         console.error('Error fetching unrated foods:', foodsError)
-//         return []
-//       }
-
-//       setFoods(foodsData)
-//     }
-//     fetchUnratedFoods(session!.user!.id)
-//   }, [])
-
-  useEffect(() => {
-    const handleKeyDown = async (event: KeyboardEvent) => {
-      if (loading) return console.log('loading')
-      const { key } = event
-      if (key >= '1' && key <= '9') {
-        setLoading(true)
-        setCurrentRating(key)
-        const keyNumber = parseInt(key)
-        await recordRating({
-          rating: keyNumber,
-          foodId: currentFood.id,
-          userId: session!.user!.id,
-        })
-        setLoading(false)
-        setCurrentRating('')
-        setCurrentFoodIndex((prevIndex) => prevIndex + 1)
+      if (error) {
+        console.error(error)
       }
-    }
+
+      setCurrentRating('')
+    })
+
+    await Promise.all(ratingPromises)
+
+    fetchFoodRatings()
+    setLoading(false)
+  }, [unratedFoods])
+
+  async function resetFoodRatings() {
+    setLoading(true)
+
+    const { data, error } = await supabase
+      .from('food_ratings')
+      .delete()
+      .eq('user_id', session!.user!.id)
+
+    fetchFoodRatings()
+    setLoading(false)
+  }
+
+  const handleKeyDown = async (event: KeyboardEvent) => {
+    const { key } = event
+    if (!(key >= '1' && key <= '9')) return
+    if (loading) return console.log('loading')
+    if (!currentFood) return console.log('no current food')
+    if (!currentFood?.id) return console.log('no current food id')
+    setLoading(true)
+    setCurrentRating(key)
+    const keyNumber = parseInt(key)
+    await recordRating({
+      rating: keyNumber,
+      foodId: currentFood!.id,
+      userId: session!.user!.id,
+    })
+    setCurrentRating('')
+    fetchFoodRatings()
+    setLoading(false)
+  }
+  useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [])
+  }, [currentFood])
   return (
-    <div className="columns is-centered">
-      {currentFood ? (
-        <div className="column is-narrow">
-          <img src={currentFood.src} alt="food to rate" />
-          <p className="has-text-centered">
-            Rate the food from 1 to 9 with your keyboard
-          </p>
-          <div className="has-text-centered">
-            <h1 className="is-size-1">{currentRating}</h1>
-          </div>
-
-          {loading && <progress className="progress is-primary" max="100" />}
-          <br />
-          <br />
-          {JSON.stringify(ratings)}
-        </div>
+    <div className="container">
+      <h1 className="title">Rate Food Page</h1>
+      <h2 className="subtitle">
+        Rated {foodRatings?.length ?? 0} of {allFoods?.length} foods
+      </h2>
+      {loading ? (
+        <progress className="progress is-primary" max="100" />
       ) : (
-        <p>Done rating foods</p>
+        <>
+          <div className="columns is-centered">
+            {currentFood ? (
+              <div className="column is-narrow">
+                <img
+                  src={'images/' + currentFood.foodType + '/' + currentFood.src}
+                  alt="food to rate"
+                />
+                <p className="has-text-centered">
+                  Rate the food from 1 to 9 with your keyboard
+                </p>
+                <p className="has-text-centered">
+                  <button onClick={randomlyRateCurrentFood}>Click Here</button>
+                  <span> to rate the current food randomly</span>
+                </p>
+                <p className="has-text-centered">
+                  <span>Or </span>
+                  <button onClick={randomlyRateRemainingFoods}>
+                    Click Here
+                  </button>
+                  <span>
+                    {' '}
+                    to rate all {unratedFoods?.length} remaining foods randomly
+                  </span>
+                </p>
+                <div className="has-text-centered">
+                  <h1 className="is-size-1">{currentRating}</h1>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <p>
+                  Done rating foods! <Link to="/">Go to Games</Link>
+                </p>
+                <p>
+                  Or{' '}
+                  <button onClick={resetFoodRatings}>
+                    Clear all of my food ratings
+                  </button>
+                </p>
+              </div>
+            )}
+          </div>
+          <div className="columns is-centered">
+            {allFoods?.length && (
+              <div className="column is-narrow">
+                <p className="title">Foods {`(${allFoods.length})`}</p>
+                <table className="table is-fullwidth">
+                  <thead>
+                    <tr>
+                      <th>Food Id</th>
+                      <th>Food Type</th>
+                      <th>Image</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allFoods.map((food) => (
+                      <tr key={food.id}>
+                        <td>{food.id}</td>
+                        <td>{food.foodType}</td>
+                        <td>
+                          <img
+                            className="image is-64x64"
+                            src={'images/' + food.foodType + '/' + food.src}
+                            alt={food.foodType}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <div className="column is-narrow">
+              <p className="title">Food Ratings {`(${foodRatings.length})`}</p>
+              <table className="table is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Rating Id</th>
+                    <th>Food Id</th>
+                    <th>Rating</th>
+                    <th>User Id</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {foodRatings.map((foodRating) => (
+                    <tr key={foodRating.id}>
+                      <td>{foodRating.id}</td>
+                      <td>{foodRating.food_id}</td>
+                      <td>{foodRating.rating}</td>
+                      <td>{foodRating.user_id}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
     </div>
   )

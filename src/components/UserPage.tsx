@@ -5,7 +5,6 @@ import ResponsesTable from './ResponsesTable'
 
 export default function UserPage() {
   const [loading, setLoading] = useState(false)
-  const { session } = useAuth()
   const [responses, setResponses] = useState<any>([])
 
   const getResponses = async () => {
@@ -13,7 +12,7 @@ export default function UserPage() {
     const { data, error } = await supabase.from('responses').select('*')
 
     if (error) {
-      alert(error.message)
+      console.error(error)
     } else {
       setResponses(data)
     }

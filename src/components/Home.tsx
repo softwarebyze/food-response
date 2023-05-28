@@ -10,7 +10,7 @@ export default function Home({ tasks }: { tasks: TaskInfo[] }) {
       <div className="hero-body">
         <div className="container">
           <h1 className="title is-1">
-            Welcome,{' '}
+            <span>Welcome, </span>
             {
               <Link className="hover-underline is-italic" to="/user">
                 {session?.user?.email?.split('@')[0]}

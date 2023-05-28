@@ -81,14 +81,14 @@ export default function LoginPage() {
                   Not already a member of the Project Health study?
                 </strong>
                 <br />
-                Click{' '}
+                <span>Click </span>
                 <a
                   href="https://ori.qualtrics.com/jfe/form/SV_6fKk68N8gugEoT3"
                   target="_blank"
                 >
                   here
-                </a>{' '}
-                to see if you're eligible to participate!
+                </a>
+                <span> to see if you're eligible to participate!</span>
                 <br />
               </h4>
             </div>

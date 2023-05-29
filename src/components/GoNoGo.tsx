@@ -1,7 +1,7 @@
 import _ from 'lodash'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { images } from '../data/images.json'
+import { useUserData } from '../contexts/UserDataContext'
 import { tasks } from '../data/tasks.json'
 import {
   GoNoGoBorderStyle,
@@ -103,23 +103,6 @@ export function getNextStageAfterResponse(
 const { stages, times, blocks, trialsPerBlock } = tasks[1] as GoNoGoTaskInfo
 const totalTrials = trialsPerBlock * blocks
 
-const taskData = prepareTaskData(images as ImageData[], totalTrials)
-const healthyPercent =
-  taskData.filter((imgData) => imgData.imageType === 'healthy').length /
-  taskData.length
-const unhealthyPercent =
-  taskData.filter((imgData) => imgData.imageType === 'unhealthy').length /
-  taskData.length
-const waterPercent =
-  taskData.filter((imgData) => imgData.imageType === 'water').length /
-  taskData.length
-const percentages = `
-  Healthy: ${Math.round(healthyPercent * 100)}%
-  Unhealthy: ${Math.round(unhealthyPercent * 100)}%
-  Water: ${Math.round(waterPercent * 100)}%
-`
-console.log('Go/No-Go', percentages)
-
 export default function GoNoGo({
   endGame,
   setAccuracy,
@@ -135,6 +118,32 @@ export default function GoNoGo({
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
   const { image, error, interval } = stages[gameStage]
+
+  const { userImages } = useUserData()
+
+  const taskData = useMemo(
+    () => prepareTaskData(userImages, totalTrials),
+    [userImages, totalTrials]
+  )
+
+  useEffect(() => {
+    const healthyPercent =
+      taskData.filter((imgData) => imgData.imageType === 'healthy').length /
+      taskData.length
+    const unhealthyPercent =
+      taskData.filter((imgData) => imgData.imageType === 'unhealthy').length /
+      taskData.length
+    const waterPercent =
+      taskData.filter((imgData) => imgData.imageType === 'water').length /
+      taskData.length
+    const percentages = `
+    Healthy: ${Math.round(healthyPercent * 100)}%
+    Unhealthy: ${Math.round(unhealthyPercent * 100)}%
+    Water: ${Math.round(waterPercent * 100)}%
+    `
+    console.log('Go/No-Go', percentages)
+  }, [])
+
   const { src, trialType, side, border, imageType } =
     taskData[currentTrialIndex]
   const [response, setResponse] = useState<GoNoGoResponse>({

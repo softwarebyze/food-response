@@ -19,12 +19,8 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
 
 function RatingCompletedRoute({ children }: { children: JSX.Element }) {
   // Check if the user has completed rating all the foods
-  const { foodRatings, allFoods } = useUserData()
-  const RATINGS_REQUIRED = allFoods?.length ?? 300
-  const hasCompletedRating = foodRatings?.length
-    ? foodRatings?.length >= RATINGS_REQUIRED
-    : false
-
+  const { foodRatings, allFoodImages } = useUserData()
+  const hasCompletedRating = foodRatings.length >= allFoodImages.length
   return hasCompletedRating ? children : <Navigate to="/rate" />
 }
 

@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { images } from '../data/images.json'
+import { useUserData } from '../contexts/UserDataContext'
 import { tasks } from '../data/tasks.json'
 import {
   ImageData,
@@ -74,8 +74,6 @@ function createImageMatrix(
 const { times, blocks, trialsPerBlock } = tasks[3]
 const totalTrials = trialsPerBlock! * blocks!
 
-const taskData = prepareTaskData(images as ImageData[], totalTrials, 1, 15)
-
 export default function VisualSearch({
   endGame,
   setAccuracy,
@@ -86,6 +84,14 @@ export default function VisualSearch({
   setAverageResponse: (value: number) => void
 }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
+
+  const { userImages } = useUserData()
+
+  const taskData = useMemo(
+    () => prepareTaskData(userImages, totalTrials, 1, 15),
+    [userImages]
+  )
+
   const trialImages = taskData[currentTrialIndex]
   const targetIndex = trialImages.findIndex((image) => image.type === 'healthy')
   const imageMatrix = useMemo(

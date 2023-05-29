@@ -1,7 +1,7 @@
 import _ from 'lodash'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { images } from '../data/images.json'
+import { useUserData } from '../contexts/UserDataContext'
 import { tasks } from '../data/tasks.json'
 import {
   DotProbeGameStage,
@@ -45,27 +45,6 @@ function prepareTaskData(images: ImageData[], totalTrials: number) {
   return imagePairs
 }
 
-const imagePairs = prepareTaskData(images as ImageData[], totalTrials)
-const leftPercent =
-  imagePairs.filter((imgData) => imgData.left.type === 'healthy').length /
-  imagePairs.length
-const rightPercent =
-  imagePairs.filter((imgData) => imgData.right.type === 'healthy').length /
-  imagePairs.length
-const leftWater =
-  imagePairs.filter((imgData) => imgData.left.foodType.toLowerCase() === 'water').length /
-  imagePairs.length
-const rightWater =
-  imagePairs.filter((imgData) => imgData.right.foodType.toLowerCase() === 'water').length /
-  imagePairs.length
-const percentages = `
-  LeftHealthy: ${Math.round(leftPercent * 100)}%
-  RightHealthy: ${Math.round(rightPercent * 100)}%
-  LeftWater: ${Math.round(leftWater * 100)}%
-  RightWater: ${Math.round(rightWater * 100)}%
-`
-console.log('Dot Probe', percentages)
-
 export default function DotProbe({
   endGame,
   setAccuracy,
@@ -90,6 +69,37 @@ export default function DotProbe({
   const [intervalShownAt, setIntervalShownAt] = useState<number | null>(null)
   const [jitterDur, setJitterDur] = useState<number | null>(null)
   const { session } = useAuth()
+
+  const { userImages } = useUserData()
+
+  const imagePairs = useMemo(
+    () => prepareTaskData(userImages, totalTrials),
+    [userImages, totalTrials]
+  )
+  useEffect(() => {
+    const leftPercent =
+      imagePairs.filter((imgData) => imgData.left.type === 'healthy').length /
+      imagePairs.length
+    const rightPercent =
+      imagePairs.filter((imgData) => imgData.right.type === 'healthy').length /
+      imagePairs.length
+    const leftWater =
+      imagePairs.filter(
+        (imgData) => imgData.left.foodType.toLowerCase() === 'water'
+      ).length / imagePairs.length
+    const rightWater =
+      imagePairs.filter(
+        (imgData) => imgData.right.foodType.toLowerCase() === 'water'
+      ).length / imagePairs.length
+    const percentages = `
+    LeftHealthy: ${Math.round(leftPercent * 100)}%
+    RightHealthy: ${Math.round(rightPercent * 100)}%
+    LeftWater: ${Math.round(leftWater * 100)}%
+    RightWater: ${Math.round(rightWater * 100)}%
+    `
+    console.log('Dot Probe', percentages)
+  }, [])
+
   const currentImagePair = imagePairs[currentTrialIndex]
   const healthySide =
     currentImagePair.left.type === 'healthy' ? 'left' : 'right'

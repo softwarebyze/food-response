@@ -12,6 +12,8 @@ import { supabase } from '../supabaseClient'
 import { FoodRatingData, ImageData } from '../types/Task'
 
 const images = imagesFromJson as ImageData[]
+const HEALTHY_IMAGE_COUNT = 60
+const UNHEALTHY_IMAGE_COUNT = 80
 
 interface UserData {
   loading: boolean
@@ -29,6 +31,7 @@ interface UserData {
     setCurrentRating: (rating: string) => void,
     userId: string
   ) => Promise<void>
+  userImages: ImageData[]
 }
 
 const UserDataContext = createContext<UserData>({
@@ -46,7 +49,8 @@ const UserDataContext = createContext<UserData>({
   randomlyRateRemainingFoods: async (
     setCurrentRating: (rating: string) => void,
     userId: string
-  ) => {},
+  ) => { },
+  userImages: [],
 })
 
 export function UserDataProvider({ children }: { children: JSX.Element }) {
@@ -61,6 +65,7 @@ export function UserDataProvider({ children }: { children: JSX.Element }) {
   )
   const [loading, setLoading] = useState(false)
   const [unratedFoods, setUnratedFoods] = useState<ImageData[] | []>([])
+  const [userImages, setUserImages] = useState<ImageData[] | []>([])
 
   const allImages = images
   const allFoodImages = allImages.filter((image) => image.type !== 'water')
@@ -153,6 +158,46 @@ export function UserDataProvider({ children }: { children: JSX.Element }) {
     setUnratedFoods(updatedUnratedFoods)
   }, [foodRatings])
 
+  useEffect(() => {
+    const sortImagesByRanking = (
+      images: ImageData[],
+      ratings: FoodRatingData[]
+    ) => {
+      return images.sort((imageA, imageB) => {
+        const imageARating =
+          ratings.find((rating) => rating.food_id === imageA.id)?.rating ?? 0
+        const imageBRating =
+          ratings.find((rating) => rating.food_id === imageB.id)?.rating ?? 0
+        return imageARating - imageBRating
+      })
+    }
+
+    const healthyImagesSortedByRating = sortImagesByRanking(
+      allHealthyImages,
+      foodRatings
+    )
+    const unhealthyImagesSortedByRating = sortImagesByRanking(
+      allUnhealthyImages,
+      foodRatings
+    )
+
+    const userHealthyImages = healthyImagesSortedByRating.slice(
+      0,
+      HEALTHY_IMAGE_COUNT
+    )
+    const userUnhealthyImages = unhealthyImagesSortedByRating.slice(
+      0,
+      UNHEALTHY_IMAGE_COUNT
+    )
+
+    const allUserImages = [
+      ...userHealthyImages,
+      ...userUnhealthyImages,
+      ...allWaterImages,
+    ]
+    setUserImages(allUserImages)
+  }, [foodRatings])
+
   return (
     <UserDataContext.Provider
       value={{
@@ -168,6 +213,7 @@ export function UserDataProvider({ children }: { children: JSX.Element }) {
         recordRating,
         resetFoodRatings,
         randomlyRateRemainingFoods,
+        userImages,
       }}
     >
       {children}

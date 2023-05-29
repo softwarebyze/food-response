@@ -1,7 +1,7 @@
 import _ from 'lodash'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { images } from '../data/images.json'
+// import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
 import {
   ImageData,
@@ -16,6 +16,7 @@ import {
 } from '../types/Task'
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
+import { useUserData } from '../contexts/UserDataContext'
 
 function getStopSignalTrialType(imageType: ImageType): StopSignalTrialType {
   switch (imageType) {
@@ -98,23 +99,6 @@ function prepareTaskData(
 const { stages, times, blocks, trialsPerBlock } = tasks[0]
 const totalTrials = trialsPerBlock * blocks
 
-const taskData = prepareTaskData(images as ImageData[], totalTrials)
-const healthyPercent =
-  taskData.filter((imgData) => imgData.imageType === 'healthy').length /
-  taskData.length
-const unhealthyPercent =
-  taskData.filter((imgData) => imgData.imageType === 'unhealthy').length /
-  taskData.length
-const waterPercent =
-  taskData.filter((imgData) => imgData.imageType === 'water').length /
-  taskData.length
-const percentages = `
-  Healthy: ${Math.round(healthyPercent * 100)}%
-  Unhealthy: ${Math.round(unhealthyPercent * 100)}%
-  Water: ${Math.round(waterPercent * 100)}%
-`
-console.log('Stop-Signal', percentages)
-
 export default function StopSignal({
   endGame,
   setAccuracy,
@@ -130,6 +114,30 @@ export default function StopSignal({
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
   const { image, error, interval } = stages![gameStage] as any
+
+  const { userImages } = useUserData()
+
+  const taskData = useMemo(
+    () => prepareTaskData(userImages, totalTrials),
+    [userImages, totalTrials]
+  )
+  useEffect(() => {
+    const healthyPercent =
+      taskData.filter((imgData) => imgData.imageType === 'healthy').length /
+      taskData.length
+    const unhealthyPercent =
+      taskData.filter((imgData) => imgData.imageType === 'unhealthy').length /
+      taskData.length
+    const waterPercent =
+      taskData.filter((imgData) => imgData.imageType === 'water').length /
+      taskData.length
+    const percentages = `
+    Healthy: ${Math.round(healthyPercent * 100)}%
+    Unhealthy: ${Math.round(unhealthyPercent * 100)}%
+    Water: ${Math.round(waterPercent * 100)}%
+    `
+    console.log('Stop-Signal', percentages)
+  }, [])
 
   const { src, trialType, border, imageType } = taskData[currentTrialIndex]
   const [response, setResponse] = useState<StopSignalResponse>({

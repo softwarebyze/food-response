@@ -34,12 +34,20 @@ blockquote i {
   border: 3px solid green;
   transition: all 0.1s ease-in-out;
   transform: scale(2);
+  position: relative;
+  z-index: 5;
 }
 
 .red-shrink {
   border: 3px solid red;
   transition: all 0.1s ease-in-out;
   transform: scale(0.5);
+}
+
+.shrink {
+  transition: all 0.1s ease-in-out;
+  transform: scale(0.5);
+  z-index: 3;
 }
 
 .gameWrapper {
@@ -53,6 +61,18 @@ blockquote i {
   font-weight: bold;
   text-align: center;
   margin-top: 1em;
+}
+
+.bigRedX {
+  color: red;
+  font-size: 40em;
+  font-weight: bold;
+  margin: auto;
+  z-index: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .notification {

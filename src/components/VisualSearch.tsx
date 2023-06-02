@@ -190,11 +190,12 @@ export default function VisualSearch({
     if (gameStage !== 'feedback') {
       return ''
     }
-    if (type === 'healthy') {
-      return 'green-grow'
-    }
-    if (response.correct === false && imageSrc === response.selectedSrc) {
-      return 'red-shrink'
+    if (response.correct === true) {
+      if (type === 'healthy') {
+        return 'green-grow'
+      } else {
+        return 'shrink'
+      }
     }
   }
 
@@ -263,6 +264,7 @@ export default function VisualSearch({
         )}
         {['cue', 'feedback'].includes(gameStage) && (
           <>
+            {response.correct === false && gameStage === 'feedback' && <div className='bigRedX'>X</div>}
             {imageMatrix.map((row, rowIndex) => (
               <div key={`row${rowIndex}`} className="column">
                 {row.map((image, colIndex) => (

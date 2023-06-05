@@ -92,7 +92,7 @@ export interface TaskResponse {
   jitter_dur: number | null;
   correct_resp_delta: number | null;
   commission_resp_delta: number | null;
-  has_selection: boolean | null;
+  has_selection: 0 | 1 | null;
   is_valid: boolean | null;
   is_omission: boolean | null;
   is_commission: boolean | null;

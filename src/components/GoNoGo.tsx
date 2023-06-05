@@ -263,12 +263,12 @@ export default function GoNoGo({
         !isCorrect && ['left-commission', 'right-commission'].includes(reaction)
           ? responseTime
           : null,
-      has_selection: ['left-commission', 'right-commission'].includes(reaction),
-      is_valid: isCorrect,
-      is_omission: !isCorrect && reaction === 'omission',
+      has_selection: ['left-commission', 'right-commission'].includes(reaction) ? 1 : 0,
+      is_valid: isCorrect ? 1 : 0,
+      is_omission: (!isCorrect && reaction === 'omission') ? 1 : 0,
       is_commission:
-        !isCorrect &&
-        ['left-commission', 'right-commission'].includes(reaction),
+        (!isCorrect &&
+        ['left-commission', 'right-commission'].includes(reaction)) ? 1 : 0,
       target_index: side === 'left' ? 0 : 1,
       picture_offset: side === 'left' ? 'LEFT' : 'RIGHT',
       picture_list: src,

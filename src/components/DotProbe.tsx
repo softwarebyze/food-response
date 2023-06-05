@@ -169,12 +169,12 @@ export default function DotProbe({
         !isCorrect && ['left-commission', 'right-commission'].includes(reaction)
           ? responseTime
           : null,
-      has_selection: ['left-commission', 'right-commission'].includes(reaction),
-      is_valid: isCorrect,
-      is_omission: false,
+      has_selection: ['left-commission', 'right-commission'].includes(reaction) ? 1 : 0,
+      is_valid: isCorrect ? 1 : 0,
+      is_omission: false ? 1 : 0,
       is_commission:
-        !isCorrect &&
-        ['left-commission', 'right-commission'].includes(reaction),
+        (!isCorrect &&
+        ['left-commission', 'right-commission'].includes(reaction)) ? 1 : 0,
       target_index: healthySide === 'left' ? 0 : 1,
       picture_offset: 'LEFT',
       picture_list: [

@@ -94,8 +94,8 @@ export interface TaskResponse {
   commission_resp_delta: number | null;
   has_selection: 0 | 1 | null;
   is_valid: 0 | 1 | null;
-  is_omission: boolean | null;
-  is_commission: boolean | null;
+  is_omission: 0 | 1 | null;
+  is_commission: 0 | 1 | null;
   target_index: number | null;
   picture_offset: string | null;
   picture_list: string | null;

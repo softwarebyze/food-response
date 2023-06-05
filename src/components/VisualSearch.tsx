@@ -226,7 +226,7 @@ export default function VisualSearch({
       jitter_dur: jitterDur,
       correct_resp_delta: isCorrect ? responseTime : null,
       commission_resp_delta: !isCorrect && type !== null ? responseTime : null,
-      has_selection: type !== null ? 0 : 1,
+      has_selection: type !== null ? 1 : 0,
       is_valid: isCorrect,
       is_omission: type === null,
       is_commission: !isCorrect && type !== null,

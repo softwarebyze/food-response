@@ -246,7 +246,7 @@ export default function StopSignal({
       correct_resp_delta: isCorrect ? responseTime : null,
       commission_resp_delta:
         !isCorrect && reaction === 'commission' ? responseTime : null,
-      has_selection: reaction === 'commission' ? 0 : 1,
+      has_selection: reaction === 'commission' ? 1 : 0,
       is_valid: isCorrect,
       is_omission: !isCorrect && reaction === 'omission',
       is_commission: !isCorrect && reaction === 'commission',

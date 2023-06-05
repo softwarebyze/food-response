@@ -263,7 +263,7 @@ export default function GoNoGo({
         !isCorrect && ['left-commission', 'right-commission'].includes(reaction)
           ? responseTime
           : null,
-      has_selection: ['left-commission', 'right-commission'].includes(reaction) ? 0 : 1,
+      has_selection: ['left-commission', 'right-commission'].includes(reaction) ? 1 : 0,
       is_valid: isCorrect,
       is_omission: !isCorrect && reaction === 'omission',
       is_commission:

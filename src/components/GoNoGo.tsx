@@ -264,7 +264,7 @@ export default function GoNoGo({
           ? responseTime
           : null,
       has_selection: ['left-commission', 'right-commission'].includes(reaction) ? 1 : 0,
-      is_valid: isCorrect,
+      is_valid: isCorrect ? 1 : 0,
       is_omission: !isCorrect && reaction === 'omission',
       is_commission:
         !isCorrect &&

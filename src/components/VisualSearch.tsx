@@ -227,7 +227,7 @@ export default function VisualSearch({
       correct_resp_delta: isCorrect ? responseTime : null,
       commission_resp_delta: !isCorrect && type !== null ? responseTime : null,
       has_selection: type !== null ? 1 : 0,
-      is_valid: isCorrect,
+      is_valid: isCorrect ? 1 : 0,
       is_omission: type === null,
       is_commission: !isCorrect && type !== null,
       target_index: targetIndex,

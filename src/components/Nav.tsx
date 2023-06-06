@@ -18,7 +18,7 @@ export default function Nav() {
       <div className="container">
         <div className="navbar-start">
           <NavLink className="navbar-item" to="/">
-            <img src="https://projecthealthori.org/file/repo/logo.png" />
+            <img src="assets/project_health_logo.webp" />
           </NavLink>
         </div>
         <span className="navbar-toggle">

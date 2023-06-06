@@ -34,7 +34,7 @@ export default function LoginPage() {
               <p style={{ textAlign: 'center' }}>
                 <img
                   className="logo is-vcentered"
-                  src="https://projecthealthori.org/file/repo/logo.png"
+                  src="assets/project_health_logo.webp"
                   style={{ maxWidth: '600px', width: '80%', marginTop: '25px' }}
                 />
               </p>

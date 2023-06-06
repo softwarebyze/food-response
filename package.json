@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.22.0",
+    "@tanstack/react-query": "^4.29.12",
+    "@tanstack/react-query-devtools": "^4.29.12",
     "bulma": "^0.9.4",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
@@ -18,6 +20,7 @@
     "react-router-dom": "^6.10.0"
   },
   "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^4.29.9",
     "@testing-library/react": "^14.0.0",
     "@types/lodash": "^4.14.195",
     "@types/react": "^18.0.28",

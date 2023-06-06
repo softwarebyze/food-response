@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useUserData } from '../contexts/UserDataContext'
 import { TaskInfo } from '../types/Task'
-import MyFoods from './MyFoods'
 
 export default function Home({ tasks }: { tasks: TaskInfo[] }) {
   const { session } = useAuth()
+  const { allFoodImages } = useUserData()
   return (
     <section className="hero is-primary">
       <div className="hero-body">
@@ -40,9 +41,16 @@ export default function Home({ tasks }: { tasks: TaskInfo[] }) {
               </div>
             ))}
           </div>
+          {allFoodImages?.map((food) => (
+            <img
+              key={food.id}
+              src={food.src}
+              alt={'food'}
+              style={{ visibility: 'hidden', height: '1px' }}
+            />
+          ))}
         </div>
       </div>
-      <MyFoods/>
     </section>
   )
 }

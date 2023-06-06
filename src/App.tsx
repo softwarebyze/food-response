@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import 'bulma/css/bulma.min.css'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import './animation.css'
 import Home from './components/Home'
 import LoginPage from './components/LoginPage'
 import Nav from './components/Nav'
@@ -12,7 +13,6 @@ import { fetchFoodRatings, useUserData } from './contexts/UserDataContext'
 import { images } from './data/images.json'
 import { tasks } from './data/tasks.json'
 import './main.css'
-import './animation.css'
 import { TaskInfo } from './types/Task'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {

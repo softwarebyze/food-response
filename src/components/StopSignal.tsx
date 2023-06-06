@@ -2,6 +2,7 @@ import _ from 'lodash'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 // import { images } from '../data/images.json'
+import { useUserData } from '../contexts/UserDataContext'
 import { tasks } from '../data/tasks.json'
 import {
   ImageData,
@@ -9,14 +10,12 @@ import {
   StopSignalBorderStyle,
   StopSignalGameStage,
   StopSignalReaction,
-  StopSignalResponse,
   StopSignalTrialData,
   StopSignalTrialType,
   TaskResponse,
 } from '../types/Task'
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
-import { useUserData } from '../contexts/UserDataContext'
 
 function getStopSignalTrialType(imageType: ImageType): StopSignalTrialType {
   switch (imageType) {
@@ -140,11 +139,6 @@ export default function StopSignal({
   }, [])
 
   const { src, trialType, border, imageType } = taskData[currentTrialIndex]
-  const [response, setResponse] = useState<StopSignalResponse>({
-    reaction: null,
-    correct: null,
-    responseTime: null,
-  })
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [taskStartedAt, setTaskStartedAt] = useState(new Date())
   const [pictureDelta, setPictureDelta] = useState<number | null>(null)
@@ -209,14 +203,6 @@ export default function StopSignal({
     )
   }
 
-  // when reaction changes, if it is wrong, change state to error
-  // if it is correct, change state to interval
-  useEffect(() => {
-    if (response.correct === null) return
-    if (response.correct === false) showError()
-    if (response.correct === true) showInterval()
-  }, [response])
-
   const handleReaction = (reaction: StopSignalReaction) => {
     const responseTime =
       reaction === 'commission' && cueTimestamp
@@ -248,8 +234,8 @@ export default function StopSignal({
         !isCorrect && reaction === 'commission' ? responseTime : null,
       has_selection: reaction === 'commission' ? 1 : 0,
       is_valid: isCorrect ? 1 : 0,
-      is_omission: (!isCorrect && reaction === 'omission') ? 1 : 0,
-      is_commission: (!isCorrect && reaction === 'commission') ? 1 : 0,
+      is_omission: !isCorrect && reaction === 'omission' ? 1 : 0,
+      is_commission: !isCorrect && reaction === 'commission' ? 1 : 0,
       target_index: 0,
       picture_offset: 'NONE',
       picture_list: src,
@@ -257,7 +243,6 @@ export default function StopSignal({
 
     recordTaskResponse(taskResponseData)
 
-    setResponse(newResponse)
     if (newResponse.correct) {
       setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
       if (reaction === 'commission') {
@@ -266,6 +251,8 @@ export default function StopSignal({
         )
       }
     }
+
+    newResponse.correct ? showInterval() : showError()
   }
 
   // set game stage to init and show cue after 1000ms when currentTrialIndex changes
@@ -278,7 +265,6 @@ export default function StopSignal({
     let timeout: NodeJS.Timeout
     switch (gameStage) {
       case 'init':
-        setResponse({ reaction: null, correct: null, responseTime: null })
         timeout = setTimeout(showCue, times.init)
         break
       case 'cue':

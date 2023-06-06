@@ -146,11 +146,6 @@ export default function GoNoGo({
 
   const { src, trialType, side, border, imageType } =
     taskData[currentTrialIndex]
-  const [response, setResponse] = useState<GoNoGoResponse>({
-    reaction: null,
-    correct: null,
-    responseTime: null,
-  })
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [taskStartedAt, setTaskStartedAt] = useState(new Date())
   const [pictureDelta, setPictureDelta] = useState<number | null>(null)
@@ -218,18 +213,10 @@ export default function GoNoGo({
 
   const getNextGoNoGoStageAfterResponse = useCallback(
     (response: GoNoGoResponse) => {
-      return getNextStageAfterResponse(response, trialType as GoNoGoTrialType)
+      return getNextStageAfterResponse(response, trialType)
     },
     [trialType]
   )
-
-  useEffect(() => {
-    if (response.correct === null || response.reaction === null) return
-    const nextStage = getNextGoNoGoStageAfterResponse(response)
-    if (typeof nextStage === 'string') {
-      setGameStage(nextStage)
-    }
-  }, [response])
 
   useEffect(() => {
     showCue()
@@ -263,12 +250,15 @@ export default function GoNoGo({
         !isCorrect && ['left-commission', 'right-commission'].includes(reaction)
           ? responseTime
           : null,
-      has_selection: ['left-commission', 'right-commission'].includes(reaction) ? 1 : 0,
+      has_selection: ['left-commission', 'right-commission'].includes(reaction)
+        ? 1
+        : 0,
       is_valid: isCorrect ? 1 : 0,
-      is_omission: (!isCorrect && reaction === 'omission') ? 1 : 0,
+      is_omission: !isCorrect && reaction === 'omission' ? 1 : 0,
       is_commission:
-        (!isCorrect &&
-        ['left-commission', 'right-commission'].includes(reaction)) ? 1 : 0,
+        !isCorrect && ['left-commission', 'right-commission'].includes(reaction)
+          ? 1
+          : 0,
       target_index: side === 'left' ? 0 : 1,
       picture_offset: side === 'left' ? 'LEFT' : 'RIGHT',
       picture_list: src,
@@ -276,7 +266,6 @@ export default function GoNoGo({
 
     recordTaskResponse(taskResponseData)
 
-    setResponse(newResponse)
     if (newResponse.correct) {
       setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
       if (['left-commission', 'right-commission'].includes(reaction)) {
@@ -285,13 +274,17 @@ export default function GoNoGo({
         )
       }
     }
+
+    const nextStage = getNextGoNoGoStageAfterResponse(newResponse)
+    if (nextStage) {
+      setGameStage(nextStage)
+    }
   }
 
   useEffect(() => {
     let timeout: NodeJS.Timeout
     switch (gameStage) {
       case 'cue':
-        setResponse({ reaction: null, correct: null, responseTime: null })
         timeout = setTimeout(() => handleReaction('omission'), times.cue)
         break
       case 'interval':

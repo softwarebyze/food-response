@@ -92,7 +92,14 @@ export default function App() {
             }
           />
         ))}
-        <Route path="/rate" element={<RateFoodPage />} />
+        <Route
+          path="/rate"
+          element={
+            <PrivateRoute>
+              <RateFoodPage />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   )

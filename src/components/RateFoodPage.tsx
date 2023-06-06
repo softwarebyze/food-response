@@ -69,10 +69,26 @@ export default function RateFoodPage() {
           </h2>
           <div className="columns is-centered">
             {currentFood ? (
-              <div className="column is-narrow">
-                <img src={currentFood.src} alt="food to rate" />
+              <div className="column is-narrow is-centered">
+                <div className="is-flex is-justify-content-center">
+                  <img src={currentFood.src} alt="food to rate" />
+                </div>
                 <div className="has-text-centered">
                   <h1 className="is-size-1">{currentRating}</h1>
+                </div>
+                <div className="is-flex m-3">
+                  {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((i) => (
+                    <div
+                      key={i}
+                      className="tile button is-outlined p-6 is-align-items-center mr-1"
+                      onClick={() => handleKeyDown({ key: i } as KeyboardEvent)}
+                      onTouchStart={() =>
+                        handleKeyDown({ key: i } as KeyboardEvent)
+                      }
+                    >
+                      <p>{i}</p>
+                    </div>
+                  ))}
                 </div>
                 <p className="has-text-centered">
                   Rate the food from 1 to 9 with your keyboard

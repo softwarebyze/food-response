@@ -18,7 +18,7 @@ export default function Nav() {
       <div className="container">
         <div className="navbar-start">
           <NavLink className="navbar-item" to="/">
-            <img src="assets/project_health_logo.webp" />
+            <img src="https://klaugybhpmnhtpggpgtq.supabase.co/storage/v1/object/public/foodresponse/project_health_logo.webp?t=2023-06-06T20%3A31%3A01.017Z" />
           </NavLink>
         </div>
         <span className="navbar-toggle">

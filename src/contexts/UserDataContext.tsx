@@ -13,7 +13,6 @@ interface UserData {
   loading: boolean
   setLoading: (loading: boolean) => void
   allFoodImages: ImageData[]
-  unratedFoods: ImageData[] | []
   userImages: ImageData[]
 }
 
@@ -21,7 +20,6 @@ const UserDataContext = createContext<UserData>({
   loading: false,
   setLoading: () => {},
   allFoodImages: [],
-  unratedFoods: [],
   userImages: [],
 })
 
@@ -54,7 +52,6 @@ export function UserDataProvider({ children }: { children: JSX.Element }) {
     initialFoodRatings
   )
   const [loading, setLoading] = useState(false)
-  const [unratedFoods, setUnratedFoods] = useState<ImageData[] | []>([])
   const [userImages, setUserImages] = useState<ImageData[] | []>([])
 
   const allImages = images
@@ -66,14 +63,6 @@ export function UserDataProvider({ children }: { children: JSX.Element }) {
   const allWaterImages = allImages.filter((image) => image.type === 'water')
 
 
-  useEffect(() => {
-    // Get food_id for each of the user's food ratings
-    const ratedFoodIds = foodRatings.map((foodRating) => foodRating.food_id)
-    const updatedUnratedFoods = allFoodImages.filter(
-      (food) => !ratedFoodIds.includes(food.id)
-    )
-    setUnratedFoods(updatedUnratedFoods)
-  }, [foodRatings])
 
   useEffect(() => {
     const sortImagesByRanking = (
@@ -121,7 +110,6 @@ export function UserDataProvider({ children }: { children: JSX.Element }) {
         loading,
         setLoading,
         allFoodImages,
-        unratedFoods,
         userImages,
       }}
     >

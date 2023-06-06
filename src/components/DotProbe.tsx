@@ -6,7 +6,6 @@ import { tasks } from '../data/tasks.json'
 import {
   DotProbeGameStage,
   DotProbeReaction,
-  DotProbeResponse,
   ImageData,
   TaskResponse,
 } from '../types/Task'
@@ -56,10 +55,6 @@ export default function DotProbe({
 }) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<DotProbeGameStage>('interval')
-  const [response, setResponse] = useState<DotProbeResponse>({
-    reaction: null,
-    responseTime: null,
-  })
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
@@ -151,8 +146,6 @@ export default function DotProbe({
       (healthySide === 'left' && reaction === 'left-commission') ||
       (healthySide === 'right' && reaction === 'right-commission')
 
-    const newResponse = { reaction, responseTime }
-
     const taskResponseData: Partial<TaskResponse> = {
       user_id: session!.user.id,
       gsession_created_at: taskStartedAt,
@@ -188,8 +181,6 @@ export default function DotProbe({
 
     recordTaskResponse(taskResponseData)
 
-    setResponse(newResponse)
-
     if (isCorrect) {
       setNumCorrect((prevNumCorrect) => prevNumCorrect + 1)
       setTotalTime((prevTotalTime) =>
@@ -208,7 +199,6 @@ export default function DotProbe({
     let timeout: NodeJS.Timeout
     switch (gameStage) {
       case 'interval':
-        setResponse({ reaction: null, responseTime: null })
         timeout = setTimeout(showInit, times.interval)
         break
       case 'init':

@@ -34,7 +34,8 @@ export default function LoginPage() {
               <p style={{ textAlign: 'center' }}>
                 <img
                   className="logo is-vcentered"
-                  src="https://klaugybhpmnhtpggpgtq.supabase.co/storage/v1/object/public/foodresponse/project_health_logo.webp?t=2023-06-06T20%3A31%3A01.017Z"
+                  src="project_health_logo.webp"
+                  // src="https://klaugybhpmnhtpggpgtq.supabase.co/storage/v1/object/public/foodresponse/project_health_logo.webp?t=2023-06-06T20%3A31%3A01.017Z"
                   style={{ maxWidth: '600px', width: '80%', marginTop: '25px' }}
                 />
               </p>

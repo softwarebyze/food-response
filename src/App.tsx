@@ -9,6 +9,7 @@ import TaskPage from './components/TaskPage'
 import UserPage from './components/UserPage'
 import { useAuth } from './contexts/AuthContext'
 import { fetchFoodRatings, useUserData } from './contexts/UserDataContext'
+import { images } from './data/images.json'
 import { tasks } from './data/tasks.json'
 import './main.css'
 import { TaskInfo } from './types/Task'
@@ -39,7 +40,6 @@ function RatingCompletedRoute({ children }: { children: JSX.Element }) {
 
 export default function App() {
   const { session, loading } = useAuth()
-  const { allFoodImages } = useUserData()
 
   if (loading) {
     return <div>Loading...</div>
@@ -48,12 +48,15 @@ export default function App() {
   return (
     <BrowserRouter>
       {session && <Nav />}
-      {allFoodImages?.map((food) => (
+      {images?.map((food) => (
         <img
           key={food.id}
           src={food.src}
           alt={'food'}
-          style={{ visibility: 'hidden', height: '1px' }}
+          style={{
+            visibility: 'hidden',
+            height: '1px',
+          }}
         />
       ))}
       <Routes>

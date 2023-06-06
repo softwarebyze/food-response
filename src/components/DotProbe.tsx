@@ -136,6 +136,8 @@ export default function DotProbe({
       return setGameStage('break')
     } else {
       setCurrentTrialIndex((prev) => prev + 1)
+      setGameStage('interval')
+      setIntervalShownAt(Date.now())
     }
   }
 
@@ -191,11 +193,6 @@ export default function DotProbe({
   }
 
   useEffect(() => {
-    setGameStage('interval')
-    setIntervalShownAt(Date.now())
-  }, [currentTrialIndex])
-
-  useEffect(() => {
     let timeout: NodeJS.Timeout
     switch (gameStage) {
       case 'interval':
@@ -207,10 +204,12 @@ export default function DotProbe({
       case 'cue':
         break
       case 'break':
-        timeout = setTimeout(
-          () => setCurrentTrialIndex((prev) => prev + 1),
-          times.break
-        )
+        timeout = setTimeout(() => {
+          setCurrentTrialIndex((prev) => prev + 1)
+          setGameStage('interval')
+          setIntervalShownAt(Date.now())
+        }, times.break)
+        break
     }
     return () => clearTimeout(timeout)
   }, [gameStage])

@@ -39,6 +39,7 @@ function RatingCompletedRoute({ children }: { children: JSX.Element }) {
 
 export default function App() {
   const { session, loading } = useAuth()
+  const { allFoodImages } = useUserData()
 
   if (loading) {
     return <div>Loading...</div>
@@ -47,6 +48,14 @@ export default function App() {
   return (
     <BrowserRouter>
       {session && <Nav />}
+      {allFoodImages?.map((food) => (
+        <img
+          key={food.id}
+          src={food.src}
+          alt={'food'}
+          style={{ visibility: 'hidden', height: '1px' }}
+        />
+      ))}
       <Routes>
         <Route
           path="/"

@@ -42,7 +42,6 @@ export default function Home({ tasks }: { tasks: TaskInfo[] }) {
           </div>
         </div>
       </div>
-      <MyFoods/>
     </section>
   )
 }

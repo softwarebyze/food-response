@@ -19,11 +19,7 @@ interface UserData {
   loading: boolean
   setLoading: (loading: boolean) => void
   foodRatings: FoodRatingData[] | []
-  allImages: ImageData[]
   allFoodImages: ImageData[]
-  allHealthyImages: ImageData[]
-  allUnhealthyImages: ImageData[]
-  allWaterImages: ImageData[]
   unratedFoods: ImageData[] | []
   recordRating: (foodRating: FoodRatingData) => Promise<void>
   resetFoodRatings: (userId: string) => Promise<void>
@@ -38,11 +34,7 @@ const UserDataContext = createContext<UserData>({
   loading: false,
   setLoading: () => {},
   foodRatings: [],
-  allImages: [],
   allFoodImages: [],
-  allHealthyImages: [],
-  allUnhealthyImages: [],
-  allWaterImages: [],
   unratedFoods: [],
   recordRating: async () => {},
   resetFoodRatings: async (userId: string) => {},
@@ -204,11 +196,7 @@ export function UserDataProvider({ children }: { children: JSX.Element }) {
         loading,
         setLoading,
         foodRatings,
-        allImages,
         allFoodImages,
-        allHealthyImages,
-        allUnhealthyImages,
-        allWaterImages,
         unratedFoods,
         recordRating,
         resetFoodRatings,

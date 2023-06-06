@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchFoodRatings, useUserData } from '../contexts/UserDataContext'
@@ -10,11 +10,7 @@ export default function RateFoodPage() {
   const queryClient = useQueryClient()
   const [currentRating, setCurrentRating] = useState('')
   const { session } = useAuth()
-  const {
-    loading,
-    setLoading,
-    allFoodImages,
-  } = useUserData()
+  const { allFoodImages } = useUserData()
   const {
     data: foodRatings,
     isLoading,
@@ -40,10 +36,8 @@ export default function RateFoodPage() {
   const handleKeyDown = async (event: KeyboardEvent) => {
     const { key } = event
     if (!(key >= '1' && key <= '9')) return
-    if (loading) return console.log('loading')
     if (!currentFood) return console.log('no current food')
     if (!currentFood?.id) return console.log('no current food id')
-    setLoading(true)
     setCurrentRating(key)
     const keyNumber = parseInt(key)
     recordRating({
@@ -52,7 +46,6 @@ export default function RateFoodPage() {
       user_id: session!.user!.id,
     })
     setCurrentRating('')
-    setLoading(false)
   }
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
@@ -81,9 +74,6 @@ export default function RateFoodPage() {
                 <div className="has-text-centered">
                   <h1 className="is-size-1">{currentRating}</h1>
                 </div>
-                {loading && (
-                  <progress className="progress is-primary" max="100" />
-                )}
                 <p className="has-text-centered">
                   Rate the food from 1 to 9 with your keyboard
                 </p>

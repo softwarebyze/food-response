@@ -1,16 +1,19 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
+import Error from './Error'
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState('test@test')
-  const [password, setPassword] = useState('test')
+  const [error, setError] = useState<string | null>(null)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const navigate = useNavigate()
 
   const handleLogin = async (event: any) => {
     event.preventDefault()
 
+    setError(null)
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -18,7 +21,7 @@ export default function LoginPage() {
     })
 
     if (error) {
-      alert(error.message)
+      setError(`Error logging in: ${error.message}`)
     } else {
       navigate('/')
     }
@@ -73,6 +76,7 @@ export default function LoginPage() {
                   </p>
                 </form>
               </div>
+              {error && <Error message={error} />}
               <h4
                 className="is-4 subtitle is-centered"
                 style={{ textAlign: 'center' }}

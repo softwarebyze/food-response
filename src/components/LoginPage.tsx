@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { supabase } from '../supabaseClient'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../supabaseClient'
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
@@ -35,7 +35,6 @@ export default function LoginPage() {
                 <img
                   className="logo is-vcentered"
                   src="project_health_logo.webp"
-                  // src="https://klaugybhpmnhtpggpgtq.supabase.co/storage/v1/object/public/foodresponse/project_health_logo.webp?t=2023-06-06T20%3A31%3A01.017Z"
                   style={{ maxWidth: '600px', width: '80%', marginTop: '25px' }}
                 />
               </p>

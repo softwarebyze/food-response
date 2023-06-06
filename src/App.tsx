@@ -12,6 +12,7 @@ import { fetchFoodRatings, useUserData } from './contexts/UserDataContext'
 import { images } from './data/images.json'
 import { tasks } from './data/tasks.json'
 import './main.css'
+import './animation.css'
 import { TaskInfo } from './types/Task'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {

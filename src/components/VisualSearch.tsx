@@ -14,7 +14,7 @@ import {
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
 
-function prepareTaskData(
+export function prepareTaskData(
   images: ImageData[],
   totalNumberOfTrials: number,
   healthyImagesPerTrial: number = 1,

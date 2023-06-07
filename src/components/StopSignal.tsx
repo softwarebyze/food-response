@@ -117,8 +117,8 @@ export default function StopSignal({
   const { userImages } = useUserData()
 
   const taskData = useMemo(
-    () => prepareTaskData(userImages, totalTrials),
-    [userImages, totalTrials]
+    () => prepareTaskData(userImages, blocks),
+    [userImages, blocks]
   )
   useEffect(() => {
     const healthyPercent =

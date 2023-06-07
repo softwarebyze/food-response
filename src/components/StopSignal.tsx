@@ -119,23 +119,6 @@ export default function StopSignal({
     () => prepareTaskData(userImages, blocks),
     [userImages, blocks]
   )
-  useEffect(() => {
-    const healthyPercent =
-      taskData.filter((imgData) => imgData.imageType === 'healthy').length /
-      taskData.length
-    const unhealthyPercent =
-      taskData.filter((imgData) => imgData.imageType === 'unhealthy').length /
-      taskData.length
-    const waterPercent =
-      taskData.filter((imgData) => imgData.imageType === 'water').length /
-      taskData.length
-    const percentages = `
-    Healthy: ${Math.round(healthyPercent * 100)}%
-    Unhealthy: ${Math.round(unhealthyPercent * 100)}%
-    Water: ${Math.round(waterPercent * 100)}%
-    `
-    console.log('Stop-Signal', percentages)
-  }, [])
 
   const { src, trialType, border, imageType } = taskData[currentTrialIndex]
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)

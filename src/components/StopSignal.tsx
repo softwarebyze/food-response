@@ -39,7 +39,7 @@ function getStopSignalBorderStyle(
   }
 }
 
-function prepareTaskData(
+export function prepareTaskData(
   images: ImageData[],
   blocks: number,
   healthyImagesPerBlock: number = 14,

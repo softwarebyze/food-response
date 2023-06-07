@@ -38,6 +38,19 @@ function getStopSignalBorderStyle(
   }
 }
 
+function sampleImagesByType(images: ImageData[], type: ImageType, n: number) {
+  const imagesOfType = images.filter((image) => image.type === type)
+  const hasEnoughImagesOfType = imagesOfType.length >= n
+
+  const sample = hasEnoughImagesOfType
+    ? _.sampleSize(imagesOfType, n)
+    : Array(n)
+        .fill(null)
+        .map(() => _.sample(imagesOfType)!)
+
+  return sample
+}
+
 export function prepareTaskData(
   images: ImageData[],
   blocks: number,
@@ -45,52 +58,30 @@ export function prepareTaskData(
   unhealthyImagesPerBlock: number = 14,
   waterImagesPerBlock: number = 4
 ): StopSignalTrialData[] {
-  const healthyImages = _.shuffle(
-    images.filter((image) => image.type === 'healthy')
-  )
-  const unhealthyImages = _.shuffle(
-    images.filter((image) => image.type === 'unhealthy')
-  )
-  const waterImages = _.shuffle(
-    images.filter((image) => image.type === 'water')
-  )
-
-  while (healthyImages.length < healthyImagesPerBlock * blocks) {
-    healthyImages.push(..._.shuffle([...healthyImages]))
+  const counts = {
+    healthy: healthyImagesPerBlock,
+    unhealthy: unhealthyImagesPerBlock,
+    water: waterImagesPerBlock,
   }
-
-  while (unhealthyImages.length < unhealthyImagesPerBlock * blocks) {
-    unhealthyImages.push(..._.shuffle([...unhealthyImages]))
-  }
-
-  while (waterImages.length < waterImagesPerBlock * blocks) {
-    waterImages.push(..._.shuffle([...waterImages]))
-  }
-
-  const taskData = []
-  for (let i = 0; i < blocks; i++) {
-    const healthyImagesBlock = healthyImages.splice(0, healthyImagesPerBlock)
-    const unhealthyImagesBlock = unhealthyImages.splice(
-      0,
-      unhealthyImagesPerBlock
+  const imageTypes: ImageType[] = ['healthy', 'unhealthy', 'water']
+  const trialImages = _.times(blocks, () =>
+    _.shuffle(
+      imageTypes.flatMap((imageType) =>
+        sampleImagesByType(images, imageType, counts[imageType])
+      )
     )
-    const waterImagesBlock = waterImages.splice(0, waterImagesPerBlock)
-    const combinedImages = healthyImagesBlock.concat(
-      unhealthyImagesBlock,
-      waterImagesBlock
-    )
-    const combinedImagesShuffled = _.shuffle(combinedImages)
-    const combinedWithTrialData = combinedImagesShuffled.map((imageData) => {
-      const trialType = getStopSignalTrialType(imageData.type)
-      return {
-        src: imageData.src,
-        imageType: imageData.type,
-        border: getStopSignalBorderStyle(trialType),
-        trialType,
-      }
-    })
-    taskData.push(...combinedWithTrialData)
-  }
+  ).flat()
+
+  // Add the trial type and border to each image
+  const taskData = trialImages.map((imageData) => {
+    const trialType = getStopSignalTrialType(imageData.type)
+    return {
+      src: imageData.src,
+      imageType: imageData.type,
+      border: getStopSignalBorderStyle(trialType),
+      trialType,
+    }
+  })
   return taskData
 }
 

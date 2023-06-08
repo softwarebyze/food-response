@@ -1,4 +1,6 @@
-export const sampleUserImages = [
+import { ImageData } from "../types/Task";
+
+export const sampleUserImages: ImageData[] = [
     {
         "src": "images/Fruit/PHHealthy19.webp",
         "foodType": "Fruit",

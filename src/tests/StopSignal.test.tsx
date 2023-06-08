@@ -14,7 +14,7 @@ describe('Stop Signal prepareTaskData', () => {
       stopSignal.blocks * stopSignal.trialsPerBlock
     )
   })
-  it('Each block should have 14 unique low-cal foods, 14 unique high-cal foods, and 4 glasses of water', () => {
+  it('Has 14 unique low-cal foods, 14 unique high-cal foods, and 4 glasses of water', () => {
     const testTaskDataBlocks = _.chunk(testTaskData, stopSignal.trialsPerBlock)
     testTaskDataBlocks.forEach((testTaskData) => {
       const healthyImages = testTaskData.filter(
@@ -33,9 +33,12 @@ describe('Stop Signal prepareTaskData', () => {
       expect(waterImages.length).toBe(4)
     })
   })
-  it('Should not use the same image back to back', () => {
+  it('No back-to-back food image src repeats', () => {
     const allTrialImagesBackToBack = testTaskData.filter(
-      (trialImage, i) => trialImage === testTaskData[i - 1] && i > 0
+      (trialImage, i) =>
+        i > 0 &&
+        trialImage.imageType !== 'water' &&
+        trialImage.src === testTaskData[i - 1].src
     )
     expect(allTrialImagesBackToBack.length).toBe(0)
   })

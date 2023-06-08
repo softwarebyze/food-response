@@ -17,7 +17,7 @@ describe('Visual Search prepareTaskData', () => {
   it(`Gives enough task data for all trials`, () => {
     expect(testTaskData.length).toBe(totalTrials)
   })
-  it('Each trial should have 1 unique healthy food and 15 unique unhealthy foods', () => {
+  it('Each trial has 1 unique healthy food and 15 unique unhealthy foods', () => {
     testTaskData.forEach((trialImages) => {
       const healthyImages = trialImages.filter(
         (trial) => trial.type === 'healthy'
@@ -31,7 +31,7 @@ describe('Visual Search prepareTaskData', () => {
       expect(_.uniq(unhealthyImages).length).toBe(15)
     })
   })
-  it('Should not have the same healthy image back to back', () => {
+  it('No back to back healthy image repeats', () => {
     const healthyImages = testTaskData.map((trialImages) =>
       trialImages.filter((trial) => trial.type === 'healthy')
     )

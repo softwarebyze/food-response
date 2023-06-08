@@ -38,6 +38,10 @@ describe('Stop Signal prepareTaskData', () => {
   })
   it(`51.4% healthy foods: 40.5% are shown 2 times
       48.5% unhealthy foods: 38% are shown 2 times`, () => {
+    console.log(`STOP SIGNAL`)
+    const totalTrials = testTaskData.length
+    console.log(`total trials: ${totalTrials}`)
+
     const dataGroupedBySrc = _.groupBy(testTaskData, 'src')
     const counts = _.mapValues(dataGroupedBySrc, (group) => group.length)
 
@@ -46,20 +50,20 @@ describe('Stop Signal prepareTaskData', () => {
       count: counts[trial.src],
     }))
 
-    const totalTrials = testTaskDataWithCounts.length
-    console.log(`total trials: ${totalTrials}`)
-
     const imageTypes = ['healthy', 'unhealthy', 'water']
     imageTypes.forEach((imageType) => {
-      const trialsWithCounts = testTaskDataWithCounts.filter(
+      const trialsOfTypeWithCounts = testTaskDataWithCounts.filter(
         (trial) => trial.imageType === imageType
       )
-      const uniqueCounts = _.uniq(trialsWithCounts.map(({ count }) => count))
-      const trialTypePercent = (trialsWithCounts.length / totalTrials) * 100
+      const uniqueCounts = _.uniq(
+        trialsOfTypeWithCounts.map(({ count }) => count)
+      )
+      const trialTypePercent =
+        (trialsOfTypeWithCounts.length / totalTrials) * 100
 
       console.log(`- ${trialTypePercent}% ${imageType} trials:`)
       uniqueCounts.forEach((count) => {
-        const trialsWithCount = trialsWithCounts.filter(
+        const trialsWithCount = trialsOfTypeWithCounts.filter(
           (trial) => trial.count === count
         )
         const percentWithCount = (trialsWithCount.length / totalTrials) * 100

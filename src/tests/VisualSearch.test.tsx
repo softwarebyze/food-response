@@ -14,7 +14,7 @@ describe('Visual Search prepareTaskData', () => {
     1,
     15
   )
-  it(`Should give enough task data for all trials`, () => {
+  it(`Gives enough task data for all trials`, () => {
     expect(testTaskData.length).toBe(totalTrials)
   })
   it('Each trial should have 1 unique healthy food and 15 unique unhealthy foods', () => {

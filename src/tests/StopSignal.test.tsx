@@ -9,7 +9,7 @@ import { sampleUserImages } from './sampleUserImages'
 describe('Stop Signal prepareTaskData', () => {
   const stopSignal = tasks[0]
   const testTaskData = prepareTaskData(sampleUserImages, stopSignal.blocks)
-  it(`Should give enough task data for all trials`, () => {
+  it(`Gives enough task data for all trials`, () => {
     expect(testTaskData.length).toBe(
       stopSignal.blocks * stopSignal.trialsPerBlock
     )

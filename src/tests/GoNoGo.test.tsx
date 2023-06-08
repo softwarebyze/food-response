@@ -12,7 +12,7 @@ describe('GoNoGo prepareTaskData', () => {
   const goNoGo = tasks[1]
   const totalTrials = goNoGo.blocks * goNoGo.trialsPerBlock
   const testTaskData = prepareTaskData(sampleUserImages, totalTrials)
-  it(`Should give enough task data for all trials`, () => {
+  it(`Gives enough task data for all trials`, () => {
     expect(testTaskData.length).toBe(totalTrials)
   })
   it('Should not repeat any food images back to back', () => {

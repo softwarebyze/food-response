@@ -38,7 +38,7 @@ function getStopSignalBorderStyle(
   }
 }
 
-function sampleImagesByType(images: ImageData[], type: ImageType, n: number) {
+export function sampleImagesByType(images: ImageData[], type: ImageType, n: number) {
   const imagesOfType = images.filter((image) => image.type === type)
   const hasEnoughImagesOfType = imagesOfType.length >= n
 

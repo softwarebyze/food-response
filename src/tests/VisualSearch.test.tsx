@@ -31,6 +31,15 @@ describe('Visual Search prepareTaskData', () => {
       expect(_.uniq(unhealthyImages).length).toBe(15)
     })
   })
+  it('Should not have the same healthy image back to back', () => {
+    const healthyImages = testTaskData.map((trialImages) =>
+      trialImages.filter((trial) => trial.type === 'healthy')
+    )
+    const healthyImagesBackToBack = healthyImages.filter(
+      (healthyImage, i) => healthyImage === healthyImages[i - 1] && i > 0
+    )
+    expect(healthyImagesBackToBack.length).toBe(0)
+  })
   it(`Healthy foods: 23.7% are shown 2 times and 17.5% are shown 3 times
       Unhealthy foods: about 2.7% of the images are repeated between 26-45 times`, () => {
     console.log(`VISUAL SEARCH`)

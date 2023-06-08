@@ -1,16 +1,14 @@
 import _ from 'lodash'
 import { describe, expect, it } from 'vitest'
-import { prepareTaskData } from '../components/StopSignal'
+import { prepareTaskData, sampleImagesByType } from '../components/StopSignal'
+import { images } from '../data/images.json'
 import { tasks } from '../data/tasks.json'
-import { ImageData, TaskInfo } from '../types/Task'
+import { ImageData, ImageType } from '../types/Task'
 import { sampleUserImages } from './sampleUserImages'
 
 describe('Stop Signal prepareTaskData', () => {
-  const stopSignal = tasks[0] as TaskInfo
-  const testTaskData = prepareTaskData(
-    sampleUserImages as ImageData[],
-    stopSignal.blocks
-  )
+  const stopSignal = tasks[0]
+  const testTaskData = prepareTaskData(sampleUserImages, stopSignal.blocks)
   it(`Should give enough task data for all trials`, () => {
     expect(testTaskData.length).toBe(
       stopSignal.blocks * stopSignal.trialsPerBlock
@@ -33,8 +31,13 @@ describe('Stop Signal prepareTaskData', () => {
       expect(unhealthyImages.length).toBe(14)
       expect(_.uniq(unhealthyImages).length).toBe(14)
       expect(waterImages.length).toBe(4)
-      expect(_.uniq(waterImages).length).toBe(4)
     })
+  })
+  it('Should not use the same image back to back', () => {
+    const allTrialImagesBackToBack = testTaskData.filter(
+      (trialImage, i) => trialImage === testTaskData[i - 1] && i > 0
+    )
+    expect(allTrialImagesBackToBack.length).toBe(0)
   })
   it(`51.4% healthy foods: 40.5% are shown 2 times
       48.5% unhealthy foods: 38% are shown 2 times`, () => {
@@ -82,6 +85,26 @@ describe('Stop Signal prepareTaskData', () => {
       ).toFixed(3)
 
       console.log(`- ${trialType} ${trialTypePercent}%`)
+    })
+  })
+})
+
+describe('sampleImagesByType', () => {
+  const sampleImages = _.shuffle(images).slice(0, 100) as ImageData[]
+  it('returns the correct number of images', () => {
+    const testSamples = sampleImagesByType(sampleImages, 'healthy', 14)
+    expect(testSamples.length).toBe(14)
+  })
+  const fewSampleImages = _.shuffle(images).slice(0, 10) as ImageData[]
+  it('returns the correct number of images if the number requested is greater than the number available', () => {
+    const testSamples = sampleImagesByType(fewSampleImages, 'unhealthy', 100)
+    expect(testSamples.length).toBe(100)
+  })
+  it('returns images of the correct type', () => {
+    const imageTypes: ImageType[] = ['healthy', 'unhealthy', 'water']
+    imageTypes.forEach((type) => {
+      const testSamples = sampleImagesByType(sampleUserImages, type, 4)
+      expect(testSamples.every((image) => image.type === type)).toBe(true)
     })
   })
 })

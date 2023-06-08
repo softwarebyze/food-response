@@ -42,7 +42,7 @@ function getRandomSide(): 'left' | 'right' {
   return Math.random() < 0.5 ? 'left' : 'right'
 }
 
-function prepareTaskData(
+export function prepareTaskData(
   images: ImageData[],
   totalTrials: number
 ): GoNoGoTrialData[] {

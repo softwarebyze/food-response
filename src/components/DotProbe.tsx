@@ -15,7 +15,7 @@ import Break from './Break'
 const { times, blocks, trialsPerBlock } = tasks[2]
 const totalTrials = trialsPerBlock! * blocks!
 
-function prepareTaskData(images: ImageData[], totalTrials: number) {
+export function prepareTaskData(images: ImageData[], totalTrials: number) {
   const healthyImages = _.shuffle(
     images.filter((image) => image.type === 'healthy')
   )

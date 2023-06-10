@@ -117,7 +117,7 @@ export interface GoNoGoTrialData {
   side: 'left' | 'right'
   trialType: GoNoGoTrialType
 }
-export type GoNoGoGameStage = 'cue' | 'interval' | 'error' | 'break'
+export type GoNoGoGameStage = 'prime' | 'cue' | 'interval' | 'error' | 'break'
 type GoNoGoTimes = {
   [key in GoNoGoGameStage]: number
 }

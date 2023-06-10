@@ -141,6 +141,9 @@ export default function GoNoGo({
   const [jitterDur, setJitterDur] = useState<number | null>(null)
   const { session } = useAuth()
 
+  const isTrialWithPriming: boolean = trialType === 'no-go'
+  const showPriming: boolean = isTrialWithPriming && gameStage === 'prime'
+
   useEffect(() => {
     setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
   }, [setAccuracy, numCorrect, currentTrialIndex])
@@ -156,6 +159,10 @@ export default function GoNoGo({
     setPictureDelta(
       pictureShownAt ? pictureShownAt - taskStartedAt.getTime() : null
     )
+  }
+
+  function showPrime() {
+    setGameStage('prime')
   }
 
   function showInterval() {
@@ -206,7 +213,7 @@ export default function GoNoGo({
   )
 
   useEffect(() => {
-    showCue()
+    isTrialWithPriming ? showPrime() : showCue()
   }, [currentTrialIndex])
 
   function handleReaction(reaction: GoNoGoReaction) {
@@ -271,6 +278,9 @@ export default function GoNoGo({
   useEffect(() => {
     let timeout: NodeJS.Timeout
     switch (gameStage) {
+      case 'prime':
+        timeout = setTimeout(showCue, times.prime)
+        break
       case 'cue':
         timeout = setTimeout(() => handleReaction('omission'), times.cue)
         break
@@ -294,8 +304,11 @@ export default function GoNoGo({
   return interval ? (
     <></>
   ) : (
-    <div className={`imageBox ${border} sized`}>
-      {image && (
+      <div className={`imageBox ${!showPriming && border} sized`}>
+        {showPriming && (
+            <img src={'./priming.webp'} alt="prime image" className="squeezed cursorDefault" />
+          )}
+      {!showPriming && image && (
         <div className="columns is-mobile">
           <div className="column">
             {side === 'left' ? (

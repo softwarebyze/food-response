@@ -33,12 +33,9 @@ describe('Stop Signal prepareTaskData', () => {
       expect(waterImages.length).toBe(4)
     })
   })
-  it('No back-to-back food image src repeats', () => {
+  it('No back-to-back image src repeats', () => {
     const allTrialImagesBackToBack = testTaskData.filter(
-      (trialImage, i) =>
-        i > 0 &&
-        trialImage.imageType !== 'water' &&
-        trialImage.src === testTaskData[i - 1].src
+      (trialImage, i) => i > 0 && trialImage.src === testTaskData[i - 1].src
     )
     expect(allTrialImagesBackToBack.length).toBe(0)
   })

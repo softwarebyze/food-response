@@ -56,6 +56,7 @@ export type StopSignalBorderStyle = 'grayBorder' | 'blueBorder'
 export type StopSignalTrialType = 'go' | 'stop'
 export type StopSignalGameStage =
   | 'init'
+  | 'prime'
   | 'cue'
   | 'interval'
   | 'error'

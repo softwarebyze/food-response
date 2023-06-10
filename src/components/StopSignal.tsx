@@ -91,6 +91,7 @@ export function prepareTaskData(
 
 const { stages, times, blocks, trialsPerBlock } = tasks[0]
 const totalTrials = trialsPerBlock * blocks
+const primeSrc = './priming.webp'
 
 export default function StopSignal({
   endGame,
@@ -124,6 +125,9 @@ export default function StopSignal({
   const [jitterDur, setJitterDur] = useState<number | null>(null)
   const { session } = useAuth()
 
+  const isTrialWithPriming: boolean = trialType === 'stop'
+  const showPriming: boolean = isTrialWithPriming && gameStage === 'prime'
+
   useEffect(() => {
     setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
   }, [setAccuracy, numCorrect, currentTrialIndex])
@@ -135,6 +139,10 @@ export default function StopSignal({
   function showCue() {
     setGameStage('cue')
     setCueTimestamp(Date.now())
+  }
+
+  function showPrime() {
+    setGameStage('prime')
   }
 
   function showInterval() {
@@ -242,7 +250,14 @@ export default function StopSignal({
     let timeout: NodeJS.Timeout
     switch (gameStage) {
       case 'init':
-        timeout = setTimeout(showCue, times.init)
+        if (isTrialWithPriming) {
+          showPrime()
+        } else {
+          timeout = setTimeout(showCue, times.init)
+        }
+        break
+      case 'prime':
+        timeout = setTimeout(showCue, times.prime)
         break
       case 'cue':
         timeout = setTimeout(() => handleReaction('omission'), times.cue)
@@ -270,8 +285,14 @@ export default function StopSignal({
       {interval ? (
         <></>
       ) : (
-        <div title="image-container" className={`imageBox sized ${border}`}>
-          {image && (
+        <div
+          title="image-container"
+          className={`imageBox sized ${!showPriming && border}`}
+        >
+          {showPriming && (
+            <img src={primeSrc} alt="prime image" className="squeezed cursorDefault" />
+          )}
+          {!showPriming && image && (
             <img
               onClick={() => handleReaction('commission')}
               onTouchStart={() => handleReaction('commission')}

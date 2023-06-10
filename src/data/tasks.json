@@ -12,6 +12,12 @@
           "error": false,
           "interval": false
         },
+        "prime":{ 
+          "image": false,
+          "border": false,
+          "error": false,
+          "interval": false
+        },
         "cue": {
           "image": true,
           "border": true,
@@ -39,6 +45,7 @@
       },
       "times": {
         "init": 100,
+        "prime": 70,
         "cue": 1150,
         "interval": 500,
         "error": 500,

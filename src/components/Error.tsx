@@ -18,10 +18,3 @@ export default function Error({ message }: { message: string }) {
     </>
   )
 }
-//   return (
-//     <div className="notification is-danger">
-//       <button className="delete" />
-//       {message}
-//     </div>
-//   )
-// }

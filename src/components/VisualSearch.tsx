@@ -14,41 +14,26 @@ import {
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
 
-function prepareTaskData(
+export function prepareTaskData(
   images: ImageData[],
   totalNumberOfTrials: number,
   healthyImagesPerTrial: number = 1,
   unhealthyImagesPerTrial: number = 15
 ) {
-  const healthyImages = _.shuffle(
-    images.filter((image) => image.type === 'healthy')
-  )
-  const unhealthyImages = _.shuffle(
-    images.filter((image) => image.type === 'unhealthy')
-  )
-
-  while (healthyImages.length < healthyImagesPerTrial * totalNumberOfTrials) {
-    healthyImages.push(..._.shuffle([...healthyImages]))
+  const counts = {
+    healthy: healthyImagesPerTrial,
+    unhealthy: unhealthyImagesPerTrial,
   }
-
-  while (
-    unhealthyImages.length <
-    unhealthyImagesPerTrial * totalNumberOfTrials
-  ) {
-    unhealthyImages.push(..._.shuffle([...unhealthyImages]))
-  }
-
-  const taskData = []
-  for (let i = 0; i < totalNumberOfTrials; i++) {
-    const healthyImageForTrial = healthyImages.splice(0, healthyImagesPerTrial)
-    const unhealthyImagesForTrial = unhealthyImages.splice(
-      0,
-      unhealthyImagesPerTrial
+  const imageTypes = ['healthy', 'unhealthy'] as const
+  const taskData = _.times(totalNumberOfTrials, () => {
+    const imagesForTrial = imageTypes.flatMap((type) =>
+      _.sampleSize(
+        images.filter((image) => image.type === type),
+        counts[type]
+      )
     )
-    taskData.push(
-      _.shuffle([...healthyImageForTrial, ...unhealthyImagesForTrial])
-    )
-  }
+    return _.shuffle(imagesForTrial)
+  })
 
   return taskData
 }
@@ -228,8 +213,8 @@ export default function VisualSearch({
       commission_resp_delta: !isCorrect && type !== null ? responseTime : null,
       has_selection: type !== null ? 1 : 0,
       is_valid: isCorrect ? 1 : 0,
-      is_omission: (type === null) ? 1 : 0,
-      is_commission: (!isCorrect && type !== null) ? 1 : 0,
+      is_omission: type === null ? 1 : 0,
+      is_commission: !isCorrect && type !== null ? 1 : 0,
       target_index: targetIndex,
       picture_offset: 'LEFT',
       picture_list: trialImages.map((image) => image.src).join(','),
@@ -264,7 +249,9 @@ export default function VisualSearch({
         )}
         {['cue', 'feedback'].includes(gameStage) && (
           <>
-            {response.correct === false && gameStage === 'feedback' && <div className='bigRedX'>X</div>}
+            {response.correct === false && gameStage === 'feedback' && (
+              <div className="bigRedX">X</div>
+            )}
             {imageMatrix.map((row, rowIndex) => (
               <div key={`row${rowIndex}`} className="column">
                 {row.map((image, colIndex) => (

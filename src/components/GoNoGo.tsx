@@ -42,47 +42,34 @@ function getRandomSide(): 'left' | 'right' {
   return Math.random() < 0.5 ? 'left' : 'right'
 }
 
-function prepareTaskData(
+export function sampleWithoutBackToBackRepeats<T>(array: T[], n: number): T[] {
+  if (array.length >= n) return _.sampleSize(array, n)
+  let previousItem = _.sample(array)!
+  return Array(n)
+    .fill(null)
+    .map(() => {
+      const nextItem = _.sample(_.without(array, previousItem))!
+      previousItem = nextItem
+      return nextItem
+    })
+}
+
+export function prepareTaskData(
   images: ImageData[],
   totalTrials: number
 ): GoNoGoTrialData[] {
-  const healthyImages = _.shuffle(
-    images.filter((image) => image.type === 'healthy')
-  )
-  const unhealthyImages = _.shuffle(
-    images.filter((image) => image.type === 'unhealthy')
-  )
-  const waterImages = _.shuffle(
-    images.filter((image) => image.type === 'water')
-  )
+  const trialImages = sampleWithoutBackToBackRepeats(images, totalTrials)
 
-  while (healthyImages.length < totalTrials) {
-    healthyImages.push(..._.shuffle([...healthyImages]))
-  }
-
-  while (unhealthyImages.length < totalTrials) {
-    unhealthyImages.push(..._.shuffle([...unhealthyImages]))
-  }
-
-  while (waterImages.length < totalTrials) {
-    waterImages.push(..._.shuffle([...waterImages]))
-  }
-
-  const combinedImages = healthyImages.concat(unhealthyImages, waterImages)
-  const combinedImagesShuffled = _.shuffle(combinedImages)
-
-  const taskData = _.take(combinedImagesShuffled, totalTrials).map(
-    (imageData) => {
-      const trialType = getGoNoGoTrialType(imageData.type)
-      return {
-        src: imageData.src,
-        imageType: imageData.type,
-        border: getGoNoGoBorderStyle(trialType),
-        side: getRandomSide(),
-        trialType,
-      }
+  const taskData = trialImages.map((imageData) => {
+    const trialType = getGoNoGoTrialType(imageData.type)
+    return {
+      src: imageData.src,
+      imageType: imageData.type,
+      border: getGoNoGoBorderStyle(trialType),
+      side: getRandomSide(),
+      trialType,
     }
-  )
+  })
 
   return taskData
 }

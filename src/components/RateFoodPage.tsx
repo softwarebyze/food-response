@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { fetchFoodRatings, useUserData } from '../contexts/UserDataContext'
 import { supabase } from '../supabaseClient'
 import { FoodRatingData } from '../types/Task'
+import Error from './Error'
 
 export default function RateFoodPage() {
   const queryClient = useQueryClient()
@@ -14,10 +15,15 @@ export default function RateFoodPage() {
   const {
     data: foodRatings,
     isLoading,
-    isError,
+    isError: isFetchFoodRatingsError,
+    error: fetchFoodRatingsError,
     isFetching,
   } = useQuery({ queryKey: ['foodRatings'], queryFn: fetchFoodRatings })
-  const { mutate: recordRating } = useMutation({
+  const {
+    mutate: recordRating,
+    isError: isRecordRatingError,
+    error: recordRatingError,
+  } = useMutation({
     mutationFn: async (foodRating: FoodRatingData) => {
       return await supabase.from('food_ratings').insert(foodRating)
     },
@@ -102,6 +108,10 @@ export default function RateFoodPage() {
               </div>
             )}
           </div>
+          {isFetchFoodRatingsError && (
+            <Error message="Error fetching food ratings" />
+          )}
+          {isRecordRatingError && <Error message="Error recording rating" />}
         </>
       )}
     </div>

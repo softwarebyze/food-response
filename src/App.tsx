@@ -30,7 +30,7 @@ function RatingCompletedRoute({ children }: { children: JSX.Element }) {
     isFetching,
   } = useQuery({ queryKey: ['foodRatings'], queryFn: fetchFoodRatings })
   if (isLoading || isFetching) {
-    return <div>Loading...</div>
+    return <div>Loading food ratings...</div>
   }
   if (isError || !foodRatings) {
     return <div>Error loading food ratings</div>
@@ -43,23 +43,25 @@ export default function App() {
   const { session, loading } = useAuth()
 
   if (loading) {
-    return <div>Loading...</div>
+    return <div>Loading User...</div>
   }
 
   return (
     <BrowserRouter>
       {session && <Nav />}
-      {images?.map((food) => (
-        <img
-          key={food.id}
-          src={food.src}
-          alt={'food'}
-          style={{
-            visibility: 'hidden',
-            height: '1px',
-          }}
-        />
-      ))}
+      <div>
+        {images?.map((food) => (
+          <img
+            key={food.id}
+            src={food.src}
+            alt={'food'}
+            style={{
+              visibility: 'hidden',
+              height: '1px',
+            }}
+          />
+        ))}
+      </div>
       <Routes>
         <Route
           path="/"

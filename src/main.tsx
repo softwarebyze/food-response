@@ -6,7 +6,13 @@ import App from './App'
 import { AuthProvider } from './contexts/AuthContext'
 import { UserDataProvider } from './contexts/UserDataContext'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

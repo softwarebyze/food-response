@@ -13,6 +13,13 @@ export type FoodRatingData = {
   rating: number,
 }
 
+export interface FoodCategoryRatingData {
+  id?: number
+  food_category: string
+  user_id: string
+  rating: number
+}
+
 export type GameStage =
   | StopSignalGameStage
   | GoNoGoGameStage

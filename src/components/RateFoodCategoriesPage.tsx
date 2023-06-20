@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext.tsx'
 import { allUnhealthyCategories } from '../data/images.ts'
 import useRateFoodCategories from '../hooks/useRateFoodCategories.tsx'
 
 export default function RateFoodCategoriesPage() {
+  const { session } = useAuth()
   const [currentFoodCategoryRatings, setCurrentFoodCategoryRatings] = useState(
     () =>
       allUnhealthyCategories.map((category) => ({
@@ -36,7 +38,13 @@ export default function RateFoodCategoriesPage() {
   } = useRateFoodCategories()
   const handleSubmit = (e: any) => {
     e.preventDefault()
-    rateFoodCategories(currentFoodCategoryRatings)
+    rateFoodCategories(
+      currentFoodCategoryRatings.map(({ rating, category }) => ({
+        rating,
+        user_id: session?.user.id,
+        food_category: category,
+      }))
+    )
   }
 
   if (isSuccess) {

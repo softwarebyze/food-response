@@ -19,6 +19,7 @@ import './main.css'
 import './animation.css'
 import { TaskInfo } from './types/Task'
 import RateFoodCategoriesPage from './components/RateFoodCategoriesPage'
+import { useFoodCategoryRatings } from './hooks/useFoodCategoryRatings'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { session } = useAuth()
@@ -35,10 +36,7 @@ function RatingCategoriesCompletedRoute({
     isLoading,
     isError,
     isFetching,
-  } = useQuery({
-    queryKey: ['foodCategoryRatings'],
-    queryFn: fetchFoodCategoryRatings,
-  })
+  } = useFoodCategoryRatings()
   if (isLoading || isFetching) {
     return <div>Loading...</div>
   }

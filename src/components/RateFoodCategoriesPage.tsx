@@ -1,4 +1,5 @@
 import { useFoodCategoryRatings } from '../hooks/useFoodCategoryRatings'
+import { allUnhealthyCategories } from '../data/images.ts'
 
 export default function RateFoodCategoriesPage() {
   const { data: ratedCategories } = useFoodCategoryRatings()
@@ -8,7 +9,11 @@ export default function RateFoodCategoriesPage() {
       <h2 className="subtitle">
         Rated {ratedCategories?.length ?? '...'} food categories
       </h2>
-      <div className="columns is-centered"></div>
+      <div className="column">
+        {allUnhealthyCategories.map((category) => (
+          <p key={category}>{category}</p>
+        ))}
+      </div>
     </div>
   )
 }

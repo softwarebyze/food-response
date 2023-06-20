@@ -2,7 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { fetchFoodRatings, useUserData } from '../contexts/UserDataContext'
+import { fetchFoodRatings } from '../contexts/UserDataContext'
+import { allFoodImages } from '../data/images'
 import { supabase } from '../supabaseClient'
 import { FoodRatingData } from '../types/Task'
 
@@ -10,13 +11,14 @@ export default function RateFoodPage() {
   const queryClient = useQueryClient()
   const [currentRating, setCurrentRating] = useState('')
   const { session } = useAuth()
-  const { allFoodImages } = useUserData()
+
   const {
     data: foodRatings,
     isLoading,
     isError,
     isFetching,
   } = useQuery({ queryKey: ['foodRatings'], queryFn: fetchFoodRatings })
+
   const { mutate: recordRating } = useMutation({
     mutationFn: async (foodRating: FoodRatingData) => {
       return await supabase.from('food_ratings').insert(foodRating)

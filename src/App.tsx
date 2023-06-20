@@ -18,6 +18,7 @@ import { tasks } from './data/tasks.json'
 import './main.css'
 import './animation.css'
 import { TaskInfo } from './types/Task'
+import RateFoodCategoriesPage from './components/RateFoodCategoriesPage'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { session } = useAuth()
@@ -140,7 +141,7 @@ export default function App() {
           path="/ratecategories"
           element={
             <PrivateRoute>
-              <div>Rate Categories Route</div>
+              <RateFoodCategoriesPage />
             </PrivateRoute>
           }
         />

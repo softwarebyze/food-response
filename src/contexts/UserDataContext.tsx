@@ -1,12 +1,10 @@
 import { PostgrestError } from '@supabase/supabase-js'
 import { useQuery } from '@tanstack/react-query'
 import { createContext, useContext } from 'react'
-import { images as imagesFromJson } from '../data/images.json'
-import * as imagesHelpers from './../data/images.ts'
 import { supabase } from '../supabaseClient'
 import { FoodRatingData, ImageData } from '../types/Task'
+import * as imagesHelpers from './../data/images.ts'
 
-const images = imagesFromJson as ImageData[]
 const HEALTHY_IMAGE_COUNT = 60
 const UNHEALTHY_IMAGE_COUNT = 80
 

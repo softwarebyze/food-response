@@ -18,29 +18,6 @@ const UserDataContext = createContext<UserData>({
   userImages: [],
 })
 
-export async function fetchFoodRatings() {
-  // Get all food ratings for the user
-  const {
-    data: foodRatings,
-    error,
-  }: {
-    data: FoodRatingData[] | null
-    error: PostgrestError | null
-  } = await supabase.from('food_ratings').select('*')
-  if (foodRatings) {
-    return foodRatings
-  }
-  if (error) {
-    console.error(error)
-  }
-}
-
-export async function fetchFoodCategoryRatings() {
-  const { data: foodCategoryRatings, error } = await supabase
-    .from('food_category_ratings')
-    .select('*')
-  return foodCategoryRatings
-}
 
 export function UserDataProvider({ children }: { children: JSX.Element }) {
   const {

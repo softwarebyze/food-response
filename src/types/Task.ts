@@ -13,7 +13,7 @@ export type FoodRatingData = {
   rating: number,
 }
 
-export interface FoodCategoryRatingData {
+export type FoodCategoryRatingData = {
   id?: number
   food_category: string
   user_id: string

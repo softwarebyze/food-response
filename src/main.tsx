@@ -4,7 +4,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import { AuthProvider } from './contexts/AuthContext'
-import { UserDataProvider } from './contexts/UserDataContext'
+// import { UserDataProvider } from './contexts/UserDataContext'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,9 +18,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <UserDataProvider>
+        {/* <UserDataProvider> */}
           <App />
-        </UserDataProvider>
+        {/* </UserDataProvider> */}
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </AuthProvider>

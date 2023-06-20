@@ -1,23 +1,31 @@
 import { PostgrestError } from '@supabase/supabase-js'
 import { useQuery } from '@tanstack/react-query'
-import { createContext, useContext } from 'react'
+// import { createContext, useContext } from 'react'
 import { images as imagesFromJson } from '../data/images.json'
 import { supabase } from '../supabaseClient'
-import { FoodRatingData, ImageData } from '../types/Task'
+import {
+  FoodCategoryRatingData,
+  FoodRatingData,
+  ImageData,
+} from '../types/Task'
 
 const images = imagesFromJson as ImageData[]
 const HEALTHY_IMAGE_COUNT = 60
 const UNHEALTHY_IMAGE_COUNT = 80
 
-interface UserData {
-  allFoodImages: ImageData[]
-  userImages: ImageData[]
-}
+// interface UserData {
+//   allFoodImages: ImageData[]
+//   userImages: ImageData[]
+//   unhealthyFoodCategories: string[]
+//   // foodCategoryRatings: FoodCategoryRatingData[]
+// }
 
-const UserDataContext = createContext<UserData>({
-  allFoodImages: [],
-  userImages: [],
-})
+// const UserDataContext = createContext<UserData>({
+//   allFoodImages: [],
+//   userImages: [],
+//   unhealthyFoodCategories: [],
+//   // foodCategoryRatings: [],
+// })
 
 export async function fetchFoodRatings() {
   // Get all food ratings for the user
@@ -36,7 +44,47 @@ export async function fetchFoodRatings() {
   }
 }
 
-export function UserDataProvider({ children }: { children: JSX.Element }) {
+export const useFoodRatingsQuery = () =>
+  useQuery({
+    queryKey: ['foodRatings'],
+    queryFn: fetchFoodRatings,
+  })
+
+async function fetchFoodCategoryRatings() {
+  const {
+    data: foodCategoryRatings,
+    error,
+  }: {
+    data: FoodCategoryRatingData[] | null
+    error: PostgrestError | null
+  } = await supabase.from('food_category_ratings').select('*')
+  if (foodCategoryRatings) {
+    return foodCategoryRatings
+  }
+  if (error) {
+    console.error(error)
+  }
+}
+
+export const useFoodCategoryRatingsQuery = () =>
+  useQuery({
+    queryKey: ['foodCategoryRatings'],
+    queryFn: fetchFoodCategoryRatings,
+  })
+
+export async function insertFoodCategoryRatingOrRatings(
+  foodCategoryRatingOrRatings: FoodCategoryRatingData | FoodCategoryRatingData[]
+) {
+  const { data, error } = await supabase
+    .from('food_category_ratings')
+    .insert(foodCategoryRatingOrRatings)
+  if (error) {
+    console.error(error)
+  }
+  return data
+}
+export function useUserData() {
+  // export function UserDataProvider({ children }: { children: JSX.Element }) {
   const allImages = images
   const allFoodImages = allImages.filter((image) => image.type !== 'water')
   const allHealthyImages = allImages.filter((image) => image.type === 'healthy')
@@ -44,13 +92,20 @@ export function UserDataProvider({ children }: { children: JSX.Element }) {
     (image) => image.type === 'unhealthy'
   )
   const allWaterImages = allImages.filter((image) => image.type === 'water')
+  const unhealthyFoodCategories = [
+    ...new Set(allUnhealthyImages.map((image) => image.foodType)),
+  ]
 
-  const {
-    data: foodRatings,
-    isLoading,
-    isError,
-    isFetching,
-  } = useQuery({ queryKey: ['foodRatings'], queryFn: fetchFoodRatings })
+  // const { data: foodCategoryRatings } = useQuery({
+  //   queryKey: ['foodCategoryRatings'],
+  //   queryFn: fetchFoodCategoryRatings,
+  // })
+
+  // const { data: foodRatings } = useQuery({
+  //   queryKey: ['foodRatings'],
+  //   queryFn: fetchFoodRatings,
+  // })
+  const { data: foodRatings } = useFoodRatingsQuery()
 
   const sortImagesByRanking = (
     images: ImageData[],
@@ -87,18 +142,31 @@ export function UserDataProvider({ children }: { children: JSX.Element }) {
     ...allWaterImages,
   ]
 
-  return (
-    <UserDataContext.Provider
-      value={{
-        allFoodImages,
-        userImages: allUserImages,
-      }}
-    >
-      {children}
-    </UserDataContext.Provider>
-  )
-}
+  // return (
+  //   <UserDataContext.Provider
+  //     value={{
+  //       allFoodImages,
+  //       userImages: allUserImages,
+  //       unhealthyFoodCategories,
+  //       // foodCategoryRatings: foodCategoryRatings ?? [],
+  //     }}
+  //   >
+  //     {children}
+  //   </UserDataContext.Provider>
+  // )
+  // }
 
-export function useUserData() {
-  return useContext(UserDataContext)
+  // export function useUserData() {
+  //   return useContext(UserDataContext)
+  // }
+
+  return {
+    allFoodImages,
+    userImages: allUserImages,
+    unhealthyFoodCategories,
+    useFoodCategoryRatingsQuery,
+    useFoodRatingsQuery,
+    HEALTHY_IMAGE_COUNT,
+    UNHEALTHY_IMAGE_COUNT,
+  }
 }

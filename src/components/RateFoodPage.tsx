@@ -1,29 +1,44 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import {
-  HEALTHY_IMAGE_COUNT,
-  UNHEALTHY_IMAGE_COUNT,
-  fetchFoodRatings,
+  // HEALTHY_IMAGE_COUNT,
+  // UNHEALTHY_IMAGE_COUNT,
+  // fetchFoodRatings,
+  // useFoodCategoryRatingsQuery,
+  // useFoodRatingsQuery,
   useUserData,
 } from '../contexts/UserDataContext'
 import RateCategories from './RateCategories'
-import RateFoods from './RateFoods'
+// import RateFoods from './RateFoods'
 
 export default function RateFoodPage() {
-  const { foodCategoryRatings } = useUserData()
+  const {
+    useFoodCategoryRatingsQuery,
+    useFoodRatingsQuery,
+    HEALTHY_IMAGE_COUNT,
+    UNHEALTHY_IMAGE_COUNT,
+  } = useUserData()
+  const { data: foodCategoryRatings } = useFoodCategoryRatingsQuery()
   const {
     data: foodRatings,
     isLoading,
     isError,
     isFetching,
-  } = useQuery({ queryKey: ['foodRatings'], queryFn: fetchFoodRatings })
+  } = useFoodRatingsQuery()
+  // useQuery({ queryKey: ['foodRatings'], queryFn: fetchFoodRatings })
+
+  if (isLoading || isFetching) {
+    return <div>Loading food ratings...</div>
+  }
+  if (isError || !foodRatings) {
+    return <div>Error loading food ratings</div>
+  }
 
   const doneRatingFoods = foodRatings?.length
     ? foodRatings?.length >= HEALTHY_IMAGE_COUNT + UNHEALTHY_IMAGE_COUNT
     : false
 
-  const doneRatingCategories = foodCategoryRatings?.length > 0
-
+  const doneRatingCategories = foodCategoryRatings?.length ?? false
   return (
     <div className="container">
       <h1 className="title">Rate Food Page</h1>
@@ -34,7 +49,8 @@ export default function RateFoodPage() {
           </p>
         </div>
       ) : doneRatingCategories ? (
-        <RateFoods />
+          // <RateFoods />
+          <></>
       ) : (
         <RateCategories />
       )}

@@ -1,25 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
 import 'bulma/css/bulma.min.css'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import './animation.css'
 import Home from './components/Home'
 import LoginPage from './components/LoginPage'
 import Nav from './components/Nav'
+import RateFoodCategoriesPage from './components/RateFoodCategoriesPage'
 import RateFoodPage from './components/RateFoodPage'
 import TaskPage from './components/TaskPage'
 import UserPage from './components/UserPage'
 import { useAuth } from './contexts/AuthContext'
-import {
-  fetchFoodCategoryRatings,
-  fetchFoodRatings,
-  useUserData,
-} from './contexts/UserDataContext'
+import { fetchFoodRatings, useUserData } from './contexts/UserDataContext'
 import { images } from './data/images.json'
 import { tasks } from './data/tasks.json'
-import './main.css'
-import './animation.css'
-import { TaskInfo } from './types/Task'
-import RateFoodCategoriesPage from './components/RateFoodCategoriesPage'
 import { useFoodCategoryRatings } from './hooks/useFoodCategoryRatings'
+import './main.css'
+import { TaskInfo } from './types/Task'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { session } = useAuth()

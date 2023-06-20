@@ -20,7 +20,7 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
   return session ? children : <Navigate to="/login" />
 }
 
-function RatingCompletedRoute({ children }: { children: JSX.Element }) {
+function RatingFoodsCompletedRoute({ children }: { children: JSX.Element }) {
   // Check if the user has completed rating all the foods
   const { allFoodImages } = useUserData()
   const {
@@ -65,9 +65,9 @@ export default function App() {
           path="/"
           element={
             <PrivateRoute>
-              <RatingCompletedRoute>
+              <RatingFoodsCompletedRoute>
                 <Home tasks={tasks as TaskInfo[]} />
-              </RatingCompletedRoute>
+              </RatingFoodsCompletedRoute>
             </PrivateRoute>
           }
         />
@@ -86,9 +86,9 @@ export default function App() {
             path={task.path}
             element={
               <PrivateRoute>
-                <RatingCompletedRoute>
+                <RatingFoodsCompletedRoute>
                   <TaskPage task={task as TaskInfo} />
-                </RatingCompletedRoute>
+                </RatingFoodsCompletedRoute>
               </PrivateRoute>
             }
           />

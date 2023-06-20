@@ -36,7 +36,7 @@ function RatingCompletedRoute({ children }: { children: JSX.Element }) {
     return <div>Error loading food ratings</div>
   }
   const hasCompletedRating = foodRatings.length >= allFoodImages.length
-  return hasCompletedRating ? children : <Navigate to="/rate" />
+  return hasCompletedRating ? children : <Navigate to="/ratefoods" />
 }
 
 export default function App() {
@@ -94,7 +94,7 @@ export default function App() {
           />
         ))}
         <Route
-          path="/rate"
+          path="/ratefoods"
           element={
             <PrivateRoute>
               <RateFoodPage />

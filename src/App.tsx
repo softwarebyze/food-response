@@ -16,6 +16,7 @@ import { tasks } from './data/tasks.json'
 import { useFoodCategoryRatings } from './hooks/useFoodCategoryRatings'
 import './main.css'
 import { TaskInfo } from './types/Task'
+import { useFoodRatings } from './hooks/useFoodRatings'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { session } = useAuth()
@@ -56,7 +57,7 @@ function RatingFoodsCompletedRoute({ children }: { children: JSX.Element }) {
     isLoading,
     isError,
     isFetching,
-  } = useQuery({ queryKey: ['foodRatings'], queryFn: fetchFoodRatings })
+  } = useFoodRatings()
   if (isLoading || isFetching) {
     return <div>Loading...</div>
   }

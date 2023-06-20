@@ -3,8 +3,8 @@ import { supabase } from '../supabaseClient'
 
 type FoodCategoryRating = any
 
-const addFoodCategoryRating = async (
-  foodCategoryRating: FoodCategoryRating | FoodCategoryRating[]
+const addFoodCategoryRatings = async (
+  foodCategoryRating: FoodCategoryRating[]
 ) => {
   const { data, error } = await supabase
     .from('food_category_ratings')
@@ -20,7 +20,7 @@ const addFoodCategoryRating = async (
 export default function useRateFoodCategories() {
   return useMutation({
     mutationFn: async (foodCategoryRatings: FoodCategoryRating[]) =>
-      await addFoodCategoryRating(foodCategoryRatings),
+      await addFoodCategoryRatings(foodCategoryRatings),
     onSuccess: () =>
       useQueryClient().invalidateQueries({ queryKey: ['foodCategoryRatings'] }),
   })

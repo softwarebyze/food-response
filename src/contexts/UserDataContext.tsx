@@ -4,6 +4,7 @@ import { createContext, useContext } from 'react'
 import { supabase } from '../supabaseClient'
 import { FoodRatingData, ImageData } from '../types/Task'
 import * as imagesHelpers from './../data/images.ts'
+import { useFoodRatings } from '../hooks/useFoodRatings.tsx'
 
 const HEALTHY_IMAGE_COUNT = 60
 const UNHEALTHY_IMAGE_COUNT = 80
@@ -32,7 +33,7 @@ export function UserDataProvider({ children }: { children: JSX.Element }) {
     isLoading,
     isError,
     isFetching,
-  } = useQuery({ queryKey: ['foodRatings'], queryFn: fetchFoodRatings })
+  } = useFoodRatings()
 
   const sortImagesByRanking = (
     images: ImageData[],

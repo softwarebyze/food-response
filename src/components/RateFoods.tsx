@@ -13,14 +13,16 @@ import { FoodRatingData } from '../types/Task'
 export default function RateFoods() {
   const queryClient = useQueryClient()
   const { session } = useAuth()
-  const { allFoodImages } = useUserData()
-  const {
-    data: foodRatings,
-    isLoading,
-    isError,
-    isFetching,
-  } = useFoodRatingsQuery()
+  const { allFoodImages, foodRatings } = useUserData()
+  // const {
+  //   data: foodRatings,
+  //   isLoading,
+  //   isError,
+  //   isFetching,
+  // } = 
   // useQuery({ queryKey: ['foodRatings'], queryFn: fetchFoodRatings })
+  // useFoodRatingsQuery()
+  // const foodRatings: FoodRatingData[] = [{food_id: 1, rating: 1, user_id: '1'}]
 
   // const { data: foodCategoryRatings } = useFoodCategoryRatingsQuery()
   // console.log({ foodCategoryRatings })

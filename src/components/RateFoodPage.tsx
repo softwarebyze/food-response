@@ -1,23 +1,22 @@
-import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import {
-  // HEALTHY_IMAGE_COUNT,
-  // UNHEALTHY_IMAGE_COUNT,
-  // fetchFoodRatings,
-  // useFoodCategoryRatingsQuery,
-  // useFoodRatingsQuery,
+  HEALTHY_IMAGE_COUNT,
+  UNHEALTHY_IMAGE_COUNT,
+  fetchFoodRatings,
+  useFoodCategoryRatingsQuery,
+  useFoodRatingsQuery,
   useUserData,
 } from '../contexts/UserDataContext'
 import RateCategories from './RateCategories'
-// import RateFoods from './RateFoods'
+import RateFoods from './RateFoods'
 
 export default function RateFoodPage() {
-  const {
-    useFoodCategoryRatingsQuery,
-    useFoodRatingsQuery,
-    HEALTHY_IMAGE_COUNT,
-    UNHEALTHY_IMAGE_COUNT,
-  } = useUserData()
+  // const {
+  //   useFoodCategoryRatingsQuery,
+  //   useFoodRatingsQuery,
+  //   HEALTHY_IMAGE_COUNT,
+  //   UNHEALTHY_IMAGE_COUNT,
+  // } = useUserData()
   const { data: foodCategoryRatings } = useFoodCategoryRatingsQuery()
   const {
     data: foodRatings,
@@ -49,8 +48,8 @@ export default function RateFoodPage() {
           </p>
         </div>
       ) : doneRatingCategories ? (
-          // <RateFoods />
-          <></>
+        <RateFoods />
+      // <>Rate Foods</>
       ) : (
         <RateCategories />
       )}

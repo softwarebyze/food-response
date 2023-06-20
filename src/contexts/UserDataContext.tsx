@@ -1,6 +1,6 @@
 import { PostgrestError } from '@supabase/supabase-js'
 import { useQuery } from '@tanstack/react-query'
-// import { createContext, useContext } from 'react'
+import { createContext, useContext } from 'react'
 import { images as imagesFromJson } from '../data/images.json'
 import { supabase } from '../supabaseClient'
 import {
@@ -10,22 +10,24 @@ import {
 } from '../types/Task'
 
 const images = imagesFromJson as ImageData[]
-const HEALTHY_IMAGE_COUNT = 60
-const UNHEALTHY_IMAGE_COUNT = 80
+export const HEALTHY_IMAGE_COUNT = 60
+export const UNHEALTHY_IMAGE_COUNT = 80
 
-// interface UserData {
-//   allFoodImages: ImageData[]
-//   userImages: ImageData[]
-//   unhealthyFoodCategories: string[]
-//   // foodCategoryRatings: FoodCategoryRatingData[]
-// }
+interface UserData {
+  allFoodImages: ImageData[]
+  userImages: ImageData[]
+  unhealthyFoodCategories: string[]
+  foodRatings: FoodRatingData[]
+  // foodCategoryRatings: FoodCategoryRatingData[]
+}
 
-// const UserDataContext = createContext<UserData>({
-//   allFoodImages: [],
-//   userImages: [],
-//   unhealthyFoodCategories: [],
-//   // foodCategoryRatings: [],
-// })
+const UserDataContext = createContext<UserData>({
+  allFoodImages: [],
+  userImages: [],
+  unhealthyFoodCategories: [],
+  foodRatings: [],
+  // foodCategoryRatings: [],
+})
 
 export async function fetchFoodRatings() {
   // Get all food ratings for the user
@@ -41,6 +43,7 @@ export async function fetchFoodRatings() {
   }
   if (error) {
     console.error(error)
+    throw new Error(error.message)
   }
 }
 
@@ -63,6 +66,7 @@ async function fetchFoodCategoryRatings() {
   }
   if (error) {
     console.error(error)
+    throw new Error(error.message)
   }
 }
 
@@ -80,11 +84,12 @@ export async function insertFoodCategoryRatingOrRatings(
     .insert(foodCategoryRatingOrRatings)
   if (error) {
     console.error(error)
+    throw new Error(error.message)
   }
   return data
 }
-export function useUserData() {
-  // export function UserDataProvider({ children }: { children: JSX.Element }) {
+// export function useUserData() {
+  export function UserDataProvider({ children }: { children: JSX.Element }) {
   const allImages = images
   const allFoodImages = allImages.filter((image) => image.type !== 'water')
   const allHealthyImages = allImages.filter((image) => image.type === 'healthy')
@@ -101,11 +106,11 @@ export function useUserData() {
   //   queryFn: fetchFoodCategoryRatings,
   // })
 
-  // const { data: foodRatings } = useQuery({
-  //   queryKey: ['foodRatings'],
-  //   queryFn: fetchFoodRatings,
-  // })
-  const { data: foodRatings } = useFoodRatingsQuery()
+  const { data: foodRatingData } = useQuery({
+    queryKey: ['foodRatings'],
+    queryFn: fetchFoodRatings,
+  })
+  // const { data: foodRatings } = useFoodRatingsQuery()
 
   const sortImagesByRanking = (
     images: ImageData[],
@@ -120,11 +125,11 @@ export function useUserData() {
     })
   }
 
-  const healthyImagesSortedByRating = foodRatings
-    ? sortImagesByRanking(allHealthyImages, foodRatings)
+  const healthyImagesSortedByRating = foodRatingData
+    ? sortImagesByRanking(allHealthyImages, foodRatingData)
     : []
-  const unhealthyImagesSortedByRating = foodRatings
-    ? sortImagesByRanking(allUnhealthyImages, foodRatings)
+  const unhealthyImagesSortedByRating = foodRatingData
+    ? sortImagesByRanking(allUnhealthyImages, foodRatingData)
     : []
 
   const userHealthyImages = healthyImagesSortedByRating.slice(
@@ -141,32 +146,33 @@ export function useUserData() {
     ...userUnhealthyImages,
     ...allWaterImages,
   ]
-
-  // return (
-  //   <UserDataContext.Provider
-  //     value={{
-  //       allFoodImages,
-  //       userImages: allUserImages,
-  //       unhealthyFoodCategories,
-  //       // foodCategoryRatings: foodCategoryRatings ?? [],
-  //     }}
-  //   >
-  //     {children}
-  //   </UserDataContext.Provider>
-  // )
-  // }
-
-  // export function useUserData() {
-  //   return useContext(UserDataContext)
-  // }
-
-  return {
-    allFoodImages,
-    userImages: allUserImages,
-    unhealthyFoodCategories,
-    useFoodCategoryRatingsQuery,
-    useFoodRatingsQuery,
-    HEALTHY_IMAGE_COUNT,
-    UNHEALTHY_IMAGE_COUNT,
+console.log({foodRatingData})
+  return (
+    <UserDataContext.Provider
+      value={{
+        allFoodImages,
+        userImages: allUserImages,
+        unhealthyFoodCategories,
+        foodRatings: foodRatingData ?? [],
+        // foodCategoryRatings: foodCategoryRatings ?? [],
+      }}
+    >
+      {children}
+    </UserDataContext.Provider>
+  )
   }
-}
+
+  export function useUserData() {
+    return useContext(UserDataContext)
+  }
+
+  // return {
+  //   allFoodImages,
+  //   userImages: allUserImages,
+  //   unhealthyFoodCategories,
+  //   useFoodCategoryRatingsQuery,
+  //   useFoodRatingsQuery,
+  //   HEALTHY_IMAGE_COUNT,
+  //   UNHEALTHY_IMAGE_COUNT,
+  // }
+// }

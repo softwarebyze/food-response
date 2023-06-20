@@ -6,6 +6,7 @@ import { allFoodImages } from '../data/images'
 import { supabase } from '../supabaseClient'
 import { FoodRatingData } from '../types/Task'
 import { useFoodRatings } from '../hooks/useFoodRatings'
+import { useFoodCategoryRatings } from '../hooks/useFoodCategoryRatings'
 
 export default function RateFoodPage() {
   const queryClient = useQueryClient()
@@ -58,13 +59,7 @@ export default function RateFoodPage() {
   return (
     <div className="container">
       <h1 className="title">Rate Food Page</h1>
-      {isLoading ? (
-        'loading'
-      ) : isFetching ? (
-        'fetching'
-      ) : !foodRatings ? (
-        'issue loading food ratings'
-      ) : (
+      {
         <>
           <h2 className="subtitle">
             Rated {foodRatings?.length ?? 0} of {allFoodImages?.length} foods
@@ -105,7 +100,7 @@ export default function RateFoodPage() {
             )}
           </div>
         </>
-      )}
+      }
     </div>
   )
 }

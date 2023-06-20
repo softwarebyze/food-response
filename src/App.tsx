@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
 import 'bulma/css/bulma.min.css'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import './animation.css'
@@ -10,14 +9,13 @@ import RateFoodPage from './components/RateFoodPage'
 import TaskPage from './components/TaskPage'
 import UserPage from './components/UserPage'
 import { useAuth } from './contexts/AuthContext'
-import { fetchFoodRatings, useUserData } from './contexts/UserDataContext'
+import { allFoodImages } from './data/images'
 import { images } from './data/images.json'
 import { tasks } from './data/tasks.json'
 import { useFoodCategoryRatings } from './hooks/useFoodCategoryRatings'
+import { useFoodRatings } from './hooks/useFoodRatings'
 import './main.css'
 import { TaskInfo } from './types/Task'
-import { useFoodRatings } from './hooks/useFoodRatings'
-import { allFoodImages } from './data/images'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { session } = useAuth()
@@ -52,12 +50,7 @@ function RatingCategoriesCompletedRoute({
 
 function RatingFoodsCompletedRoute({ children }: { children: JSX.Element }) {
   // Check if the user has completed rating all the foods
-  const {
-    data: foodRatings,
-    isLoading,
-    isError,
-    isFetching,
-  } = useFoodRatings()
+  const { data: foodRatings, isLoading, isError, isFetching } = useFoodRatings()
   if (isLoading || isFetching) {
     return <div>Loading...</div>
   }

@@ -25,8 +25,8 @@ function RatingCategoriesCompletedRoute({
 }: {
   children: JSX.Element
 }) {
-  const hasCompletedRatings = false
-  return hasCompletedRatings ? children : <Navigate to="/ratecategories" />
+  const hasCompletedCategoryRatings = false
+  return hasCompletedCategoryRatings ? children : <Navigate to="/ratecategories" />
 }
 
 function RatingFoodsCompletedRoute({ children }: { children: JSX.Element }) {

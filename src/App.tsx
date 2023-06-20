@@ -8,7 +8,11 @@ import RateFoodPage from './components/RateFoodPage'
 import TaskPage from './components/TaskPage'
 import UserPage from './components/UserPage'
 import { useAuth } from './contexts/AuthContext'
-import { fetchFoodRatings, useUserData } from './contexts/UserDataContext'
+import {
+  fetchFoodCategoryRatings,
+  fetchFoodRatings,
+  useUserData,
+} from './contexts/UserDataContext'
 import { images } from './data/images.json'
 import { tasks } from './data/tasks.json'
 import './main.css'
@@ -25,8 +29,28 @@ function RatingCategoriesCompletedRoute({
 }: {
   children: JSX.Element
 }) {
-  const hasCompletedCategoryRatings = false
-  return hasCompletedCategoryRatings ? children : <Navigate to="/ratecategories" />
+  const {
+    data: foodCategoryRatings,
+    isLoading,
+    isError,
+    isFetching,
+  } = useQuery({
+    queryKey: ['foodCategoryRatings'],
+    queryFn: fetchFoodCategoryRatings,
+  })
+  if (isLoading || isFetching) {
+    return <div>Loading...</div>
+  }
+  if (isError || !foodCategoryRatings) {
+    return <div>Error loading food ratings</div>
+  }
+  const foodCategoryRatingsCount = foodCategoryRatings.length
+  const hasCompletedFoodCategoryRatings = foodCategoryRatingsCount >= 4
+  return hasCompletedFoodCategoryRatings ? (
+    children
+  ) : (
+    <Navigate to="/ratecategories" />
+  )
 }
 
 function RatingFoodsCompletedRoute({ children }: { children: JSX.Element }) {

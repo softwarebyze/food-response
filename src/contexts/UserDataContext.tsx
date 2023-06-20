@@ -36,6 +36,13 @@ export async function fetchFoodRatings() {
   }
 }
 
+export async function fetchFoodCategoryRatings() {
+  const { data: foodCategoryRatings, error } = await supabase
+    .from('food_category_ratings')
+    .select('*')
+  return foodCategoryRatings
+}
+
 export function UserDataProvider({ children }: { children: JSX.Element }) {
   const allImages = images
   const allFoodImages = allImages.filter((image) => image.type !== 'water')

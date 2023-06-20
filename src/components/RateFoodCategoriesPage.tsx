@@ -1,7 +1,7 @@
 import { useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import { allUnhealthyCategories } from '../data/images.ts'
 import useRateFoodCategories from '../hooks/useRateFoodCategories.tsx'
-import { Navigate } from 'react-router-dom'
 
 export default function RateFoodCategoriesPage() {
   const [currentFoodCategoryRatings, setCurrentFoodCategoryRatings] = useState(
@@ -28,7 +28,12 @@ export default function RateFoodCategoriesPage() {
     })
   }
 
-  const { mutate: rateFoodCategories, isSuccess } = useRateFoodCategories()
+  const {
+    mutate: rateFoodCategories,
+    isSuccess,
+    isError,
+    isLoading,
+  } = useRateFoodCategories()
   const handleSubmit = (e: any) => {
     e.preventDefault()
     rateFoodCategories(currentFoodCategoryRatings)
@@ -65,6 +70,9 @@ export default function RateFoodCategoriesPage() {
           >
             Submit
           </button>
+          {isSuccess && <div>Success!</div>}
+          {isError && <div>Error</div>}
+          {isLoading && <div>Loading...</div>}
         </form>
       </div>
     </div>

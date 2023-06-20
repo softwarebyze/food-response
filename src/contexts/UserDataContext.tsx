@@ -2,6 +2,7 @@ import { PostgrestError } from '@supabase/supabase-js'
 import { useQuery } from '@tanstack/react-query'
 import { createContext, useContext } from 'react'
 import { images as imagesFromJson } from '../data/images.json'
+import * as imagesHelpers from './../data/images.ts'
 import { supabase } from '../supabaseClient'
 import { FoodRatingData, ImageData } from '../types/Task'
 
@@ -44,13 +45,12 @@ export async function fetchFoodCategoryRatings() {
 }
 
 export function UserDataProvider({ children }: { children: JSX.Element }) {
-  const allImages = images
-  const allFoodImages = allImages.filter((image) => image.type !== 'water')
-  const allHealthyImages = allImages.filter((image) => image.type === 'healthy')
-  const allUnhealthyImages = allImages.filter(
-    (image) => image.type === 'unhealthy'
-  )
-  const allWaterImages = allImages.filter((image) => image.type === 'water')
+  const {
+    allFoodImages,
+    allHealthyImages,
+    allUnhealthyImages,
+    allWaterImages,
+  } = imagesHelpers
 
   const {
     data: foodRatings,

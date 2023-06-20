@@ -20,6 +20,15 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
   return session ? children : <Navigate to="/login" />
 }
 
+function RatingCategoriesCompletedRoute({
+  children,
+}: {
+  children: JSX.Element
+}) {
+  const hasCompletedRatings = false
+  return hasCompletedRatings ? children : <Navigate to="/ratecategories" />
+}
+
 function RatingFoodsCompletedRoute({ children }: { children: JSX.Element }) {
   // Check if the user has completed rating all the foods
   const { allFoodImages } = useUserData()
@@ -97,7 +106,17 @@ export default function App() {
           path="/ratefoods"
           element={
             <PrivateRoute>
-              <RateFoodPage />
+              <RatingCategoriesCompletedRoute>
+                <RateFoodPage />
+              </RatingCategoriesCompletedRoute>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/ratecategories"
+          element={
+            <PrivateRoute>
+              <div>Rate Categories Route</div>
             </PrivateRoute>
           }
         />

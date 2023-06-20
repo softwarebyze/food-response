@@ -14,3 +14,7 @@ export const allUnhealthyImages = allImages.filter(
 export const allWaterImages = allImages.filter(
   (image) => image.type === 'water'
 )
+
+export const allUnhealthyCategories = [
+  ...new Set(allUnhealthyImages.map(({ foodType }) => foodType)),
+]

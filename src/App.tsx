@@ -17,6 +17,7 @@ import { useFoodCategoryRatings } from './hooks/useFoodCategoryRatings'
 import './main.css'
 import { TaskInfo } from './types/Task'
 import { useFoodRatings } from './hooks/useFoodRatings'
+import { allFoodImages } from './data/images'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { session } = useAuth()
@@ -51,7 +52,6 @@ function RatingCategoriesCompletedRoute({
 
 function RatingFoodsCompletedRoute({ children }: { children: JSX.Element }) {
   // Check if the user has completed rating all the foods
-  const { allFoodImages } = useUserData()
   const {
     data: foodRatings,
     isLoading,

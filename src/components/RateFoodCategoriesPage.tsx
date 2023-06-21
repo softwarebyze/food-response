@@ -1,16 +1,21 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext.tsx'
 import { allUnhealthyCategories } from '../data/images.ts'
+import { useFoodCategoryRatings } from '../hooks/useFoodCategoryRatings.tsx'
 import useRateFoodCategories from '../hooks/useRateFoodCategories.tsx'
 
 export default function RateFoodCategoriesPage() {
   const { session } = useAuth()
+  const { data: foodCategoryRatings } = useFoodCategoryRatings()
   const [currentFoodCategoryRatings, setCurrentFoodCategoryRatings] = useState(
     () =>
       allUnhealthyCategories.map((category) => ({
         category,
-        rating: 0,
+        rating:
+          foodCategoryRatings?.find(
+            (rating) => rating.food_category === category
+          )?.rating ?? 0,
       }))
   )
 
@@ -47,6 +52,9 @@ export default function RateFoodCategoriesPage() {
     )
   }
 
+  const enoughChosenCategories =
+    currentFoodCategoryRatings.filter(({ rating }) => rating > 0).length >= 4
+
   if (isSuccess) {
     return <Navigate to="/ratefoods" />
   }
@@ -69,18 +77,20 @@ export default function RateFoodCategoriesPage() {
               </label>
             </div>
           ))}
-          <button
-            disabled={
-              currentFoodCategoryRatings.filter(({ rating }) => Boolean(rating))
-                .length < 4
-            }
-            onClick={handleSubmit}
-          >
+          <button disabled={!enoughChosenCategories} onClick={handleSubmit}>
             Submit
           </button>
           {isSuccess && <div>Success!</div>}
           {isError && <div>Error</div>}
           {isLoading && <div>Loading...</div>}
+          {(foodCategoryRatings?.length ?? 0) >= 4 && (
+            <div>
+              <p>
+                Done rating food categories!{' '}
+                <Link to="/ratefoods">Go to Rate Foods</Link>
+              </p>
+            </div>
+          )}
         </form>
       </div>
     </div>

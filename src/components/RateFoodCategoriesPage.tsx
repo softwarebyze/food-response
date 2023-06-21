@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext.tsx'
-import { allUnhealthyCategories } from '../data/images.ts'
-import { useFoodCategoryRatings } from '../hooks/useFoodCategoryRatings.tsx'
-import useRateFoodCategories from '../hooks/useRateFoodCategories.tsx'
+import { useAuth } from '../contexts/AuthContext'
+import { allUnhealthyCategories } from '../data/images'
+import { useFoodCategoryRatings } from '../hooks/useFoodCategoryRatings'
+import useRateFoodCategories from '../hooks/useRateFoodCategories'
 
 export default function RateFoodCategoriesPage() {
   const { session } = useAuth()

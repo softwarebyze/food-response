@@ -67,7 +67,10 @@ export default function VisualSearch({
 }: GameProps) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
 
-  const taskData = prepareTaskData(userImages, totalTrials, 1, 15)
+  const taskData = useMemo(
+    () => prepareTaskData(userImages, totalTrials, 1, 15),
+    []
+  )
 
   const trialImages = taskData[currentTrialIndex]
   const targetIndex = trialImages.findIndex((image) => image.type === 'healthy')

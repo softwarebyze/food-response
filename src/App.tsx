@@ -9,7 +9,7 @@ import RateFoodPage from './components/RateFoodPage'
 import TaskPage from './components/TaskPage'
 import UserPage from './components/UserPage'
 import { useAuth } from './contexts/AuthContext'
-import { allFoodImages } from './data/images'
+import { UNHEALTHY_IMAGE_COUNT } from './data/images'
 import { images } from './data/images.json'
 import { tasks } from './data/tasks.json'
 import { useFoodCategoryRatings } from './hooks/useFoodCategoryRatings'
@@ -18,7 +18,6 @@ import './main.css'
 import { TaskInfo } from './types/Task'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
-  console.log('PrivateRoute')
   const { session } = useAuth()
   return session ? children : <Navigate to="/login" />
 }
@@ -28,7 +27,6 @@ function RatingCategoriesCompletedRoute({
 }: {
   children: JSX.Element
 }) {
-  console.log('RatingCategoriesCompletedRoute')
   const {
     data: foodCategoryRatings,
     isLoading,
@@ -51,7 +49,6 @@ function RatingCategoriesCompletedRoute({
 }
 
 function RatingFoodsCompletedRoute({ children }: { children: JSX.Element }) {
-  console.log('RatingFoodsCompletedRoute')
   // Check if the user has completed rating all the foods
   const { data: foodRatings, isLoading, isError, isFetching } = useFoodRatings()
   if (isLoading) {
@@ -60,7 +57,7 @@ function RatingFoodsCompletedRoute({ children }: { children: JSX.Element }) {
   if (isError || !foodRatings) {
     return <div>Error loading food ratings</div>
   }
-  const hasCompletedRating = foodRatings.length >= allFoodImages.length
+  const hasCompletedRating = foodRatings.length >= UNHEALTHY_IMAGE_COUNT
   return hasCompletedRating ? children : <Navigate to="/ratefoods" />
 }
 

@@ -60,7 +60,7 @@ export function prepareTaskData(
   blocks: number,
   healthyImagesPerBlock: number = 14,
   unhealthyImagesPerBlock: number = 14,
-  waterImagesPerBlock: number = 4
+  waterImagesPerBlock: number = 0
 ): StopSignalTrialData[] {
   const counts = {
     healthy: healthyImagesPerBlock,

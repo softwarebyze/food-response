@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabaseClient'
 
 interface FoodCategoryRatingData {
@@ -14,15 +14,18 @@ const addFoodCategoryRatings = async (
     .insert(foodCategoryRating)
 
   if (error) {
+    console.error(error)
     throw error
   }
-
   return data
 }
 
 export default function useRateFoodCategories() {
+  const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (foodCategoryRatings: FoodCategoryRatingData[]) =>
-      await addFoodCategoryRatings(foodCategoryRatings),
+    mutationFn: addFoodCategoryRatings,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['foodCategoryRatings'] })
+    },
   })
 }

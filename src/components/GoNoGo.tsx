@@ -103,10 +103,7 @@ export default function GoNoGo({
   const [totalTime, setTotalTime] = useState<number>(0)
   const { image, error, interval } = stages[gameStage]
 
-  const taskData = useMemo(
-    () => prepareTaskData(userImages, totalTrials),
-    [userImages, totalTrials]
-  )
+  const taskData = useMemo(() => prepareTaskData(userImages, totalTrials), [])
 
   useEffect(() => {
     const healthyPercent =
@@ -201,7 +198,7 @@ export default function GoNoGo({
   )
 
   useEffect(() => {
-    showCue()
+    if (gameStage !== 'cue') showCue()
   }, [currentTrialIndex])
 
   function handleReaction(reaction: GoNoGoReaction) {

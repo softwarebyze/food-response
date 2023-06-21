@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { useUserData } from '../contexts/UserDataContext'
 import { tasks } from '../data/tasks.json'
 import {
+  GameProps,
   ImageData,
   ImageType,
   StopSignalBorderStyle,
@@ -75,7 +75,6 @@ export function prepareTaskData(
       )
     )
   ).flat()
-
   // Add the trial type and border to each image
   const taskData = trialImages.map((imageData) => {
     const trialType = getStopSignalTrialType(imageData.type)
@@ -96,11 +95,8 @@ export default function StopSignal({
   endGame,
   setAccuracy,
   setAverageResponse,
-}: {
-  endGame: () => void
-  setAccuracy: (value: number) => void
-  setAverageResponse: (value: number) => void
-}) {
+  userImages,
+}: GameProps) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<StopSignalGameStage>('init')
 
@@ -108,12 +104,7 @@ export default function StopSignal({
   const [totalTime, setTotalTime] = useState<number>(0)
   const { image, error, interval } = stages![gameStage] as any
 
-  const { userImages } = useUserData()
-
-  const taskData = useMemo(
-    () => prepareTaskData(userImages, blocks),
-    [userImages, blocks]
-  )
+  const taskData = useMemo(() => prepareTaskData(userImages, blocks), [])
 
   const { src, trialType, border, imageType } = taskData[currentTrialIndex]
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)

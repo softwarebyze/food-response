@@ -7,10 +7,10 @@ export type ImageData = {
 }
 
 export type FoodRatingData = {
-  id?: number,
-  food_id: number,
-  user_id: string,
-  rating: number,
+  id?: number
+  food_id: number
+  user_id: string
+  rating: number
 }
 
 export type GameStage =
@@ -46,6 +46,13 @@ export type TaskInfo = {
   trialsPerBlock: number
 }
 
+export interface GameProps {
+  endGame: () => void
+  setAccuracy: (value: number) => void
+  setAverageResponse: (value: number) => void
+  userImages: ImageData[]
+}
+
 export type StopSignalReaction = 'commission' | 'omission'
 export interface StopSignalResponse {
   reaction: StopSignalReaction | null
@@ -79,26 +86,26 @@ export interface Response {
   responseTime: number | null
 }
 export interface TaskResponse {
-  id: number;
-  user_id: string | null;
-  gsession_created_at: Date | null;
-  game_slug: string | null;
-  assessment: string | null;
-  phase: number | null;
-  sort: number | null;
-  picture_delta: number | null;
-  picture_dur: number | null;
-  border_delta: number | null;
-  jitter_dur: number | null;
-  correct_resp_delta: number | null;
-  commission_resp_delta: number | null;
-  has_selection: 0 | 1 | null;
-  is_valid: 0 | 1 | null;
-  is_omission: 0 | 1 | null;
-  is_commission: 0 | 1 | null;
-  target_index: number | null;
-  picture_offset: string | null;
-  picture_list: string | null;
+  id: number
+  user_id: string | null
+  gsession_created_at: Date | null
+  game_slug: string | null
+  assessment: string | null
+  phase: number | null
+  sort: number | null
+  picture_delta: number | null
+  picture_dur: number | null
+  border_delta: number | null
+  jitter_dur: number | null
+  correct_resp_delta: number | null
+  commission_resp_delta: number | null
+  has_selection: 0 | 1 | null
+  is_valid: 0 | 1 | null
+  is_omission: 0 | 1 | null
+  is_commission: 0 | 1 | null
+  target_index: number | null
+  picture_offset: string | null
+  picture_list: string | null
 }
 
 export type GoNoGoReaction = 'left-commission' | 'right-commission' | 'omission'

@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { useUserData } from '../contexts/UserDataContext'
 import { tasks } from '../data/tasks.json'
 import {
+  GameProps,
   GoNoGoBorderStyle,
   GoNoGoGameStage,
   GoNoGoReaction,
@@ -94,11 +94,8 @@ export default function GoNoGo({
   endGame,
   setAccuracy,
   setAverageResponse,
-}: {
-  endGame: () => void
-  setAccuracy: (value: number) => void
-  setAverageResponse: (value: number) => void
-}) {
+  userImages,
+}: GameProps) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<GoNoGoGameStage>('cue')
 
@@ -106,12 +103,7 @@ export default function GoNoGo({
   const [totalTime, setTotalTime] = useState<number>(0)
   const { image, error, interval } = stages[gameStage]
 
-  const { userImages } = useUserData()
-
-  const taskData = useMemo(
-    () => prepareTaskData(userImages, totalTrials),
-    [userImages, totalTrials]
-  )
+  const taskData = useMemo(() => prepareTaskData(userImages, totalTrials), [])
 
   useEffect(() => {
     const healthyPercent =
@@ -206,7 +198,7 @@ export default function GoNoGo({
   )
 
   useEffect(() => {
-    showCue()
+    if (gameStage !== 'cue') showCue()
   }, [currentTrialIndex])
 
   function handleReaction(reaction: GoNoGoReaction) {

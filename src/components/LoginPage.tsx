@@ -4,8 +4,8 @@ import { supabase } from '../supabaseClient'
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState('test@test')
-  const [password, setPassword] = useState('test')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const navigate = useNavigate()
 
   const handleLogin = async (event: any) => {

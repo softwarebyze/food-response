@@ -1,16 +1,17 @@
 import _ from 'lodash'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { useUserData } from '../contexts/UserDataContext'
 import { tasks } from '../data/tasks.json'
 import {
   DotProbeGameStage,
   DotProbeReaction,
+  GameProps,
   ImageData,
   TaskResponse,
 } from '../types/Task'
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
+import { getUserImagesFromFoodRatings } from '../data/images'
 
 const { times, blocks, trialsPerBlock } = tasks[2]
 const totalTrials = trialsPerBlock! * blocks!
@@ -48,11 +49,8 @@ export default function DotProbe({
   endGame,
   setAccuracy,
   setAverageResponse,
-}: {
-  endGame: () => void
-  setAccuracy: (value: number) => void
-  setAverageResponse: (value: number) => void
-}) {
+  userImages
+}: GameProps) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<DotProbeGameStage>('interval')
   const [numCorrect, setNumCorrect] = useState<number>(0)
@@ -64,8 +62,6 @@ export default function DotProbe({
   const [intervalShownAt, setIntervalShownAt] = useState<number | null>(null)
   const [jitterDur, setJitterDur] = useState<number | null>(null)
   const { session } = useAuth()
-
-  const { userImages } = useUserData()
 
   const imagePairs = useMemo(
     () => prepareTaskData(userImages, totalTrials),

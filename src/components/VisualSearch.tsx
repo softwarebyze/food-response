@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { useUserData } from '../contexts/UserDataContext'
 import { tasks } from '../data/tasks.json'
 import {
+  GameProps,
   ImageData,
   ImageType,
   TaskResponse,
@@ -63,18 +63,13 @@ export default function VisualSearch({
   endGame,
   setAccuracy,
   setAverageResponse,
-}: {
-  endGame: () => void
-  setAccuracy: (value: number) => void
-  setAverageResponse: (value: number) => void
-}) {
+  userImages,
+}: GameProps) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
-
-  const { userImages } = useUserData()
 
   const taskData = useMemo(
     () => prepareTaskData(userImages, totalTrials, 1, 15),
-    [userImages]
+    []
   )
 
   const trialImages = taskData[currentTrialIndex]

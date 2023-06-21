@@ -75,7 +75,6 @@ export function prepareTaskData(
       )
     )
   ).flat()
-  console.log(images, 'prepareTaskData')
   // Add the trial type and border to each image
   const taskData = trialImages.map((imageData) => {
     const trialType = getStopSignalTrialType(imageData.type)

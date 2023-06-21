@@ -1,14 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../supabaseClient'
 
-interface FoodCategoryRatingData {
-  id: number;
-  created_at: string;
-  user_id: string;
-  food_category: string;
-  rating: number;
+type FoodCategoryRatingData = {
+  id?: number
+  created_at?: string
+  user_id?: string
+  food_category: string
+  rating: number
 }
-
 
 const fetchFoodCategoryRatings = async () => {
   const { data: foodCategoryRatings, error } = await supabase

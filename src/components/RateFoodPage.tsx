@@ -3,22 +3,23 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { allFoodImages } from '../data/images'
+import { useFoodRatings } from '../hooks/useFoodRatings'
 import { supabase } from '../supabaseClient'
 import { FoodRatingData } from '../types/Task'
-import { useFoodRatings } from '../hooks/useFoodRatings'
-import { useFoodCategoryRatings } from '../hooks/useFoodCategoryRatings'
 
 export default function RateFoodPage() {
   const queryClient = useQueryClient()
   const [currentRating, setCurrentRating] = useState('')
   const { session } = useAuth()
 
-  const {
-    data: foodRatings,
-    isLoading,
-    isError,
-    isFetching,
-  } = useFoodRatings()
+  const { data: foodRatings, isLoading, isError, isFetching } = useFoodRatings()
+  // const { data } = useFoodCategoryRatings()
+  const ratedFoodIds =
+    foodRatings?.map((foodRating) => foodRating.food_id) ?? []
+  const unratedFoods = allFoodImages.filter(
+    (food) => !ratedFoodIds.includes(food.id)
+  )
+  const currentFood = unratedFoods?.length ? unratedFoods[0] : null
 
   const { mutate: recordRating } = useMutation({
     mutationFn: async (foodRating: FoodRatingData) => {
@@ -29,12 +30,6 @@ export default function RateFoodPage() {
       queryClient.invalidateQueries({ queryKey: ['foodRatings'] })
     },
   })
-  const ratedFoodIds =
-    foodRatings?.map((foodRating) => foodRating.food_id) ?? []
-  const unratedFoods = allFoodImages.filter(
-    (food) => !ratedFoodIds.includes(food.id)
-  )
-  const currentFood = unratedFoods?.length ? unratedFoods[0] : null
 
   const handleKeyDown = async (event: KeyboardEvent) => {
     const { key } = event
@@ -64,6 +59,11 @@ export default function RateFoodPage() {
           <h2 className="subtitle">
             Rated {foodRatings?.length ?? 0} of {allFoodImages?.length} foods
           </h2>
+          <pre>
+            {
+              // JSON.stringify(data, null, 2)
+            }
+          </pre>
           <div className="columns is-centered">
             {currentFood ? (
               <div className="column is-narrow is-centered">

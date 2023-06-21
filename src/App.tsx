@@ -18,6 +18,7 @@ import './main.css'
 import { TaskInfo } from './types/Task'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
+  console.log('PrivateRoute')
   const { session } = useAuth()
   return session ? children : <Navigate to="/login" />
 }
@@ -27,13 +28,14 @@ function RatingCategoriesCompletedRoute({
 }: {
   children: JSX.Element
 }) {
+  console.log('RatingCategoriesCompletedRoute')
   const {
     data: foodCategoryRatings,
     isLoading,
     isError,
     isFetching,
   } = useFoodCategoryRatings()
-  if (isLoading || isFetching) {
+  if (isLoading) {
     return <div>Loading...</div>
   }
   if (isError || !foodCategoryRatings) {
@@ -49,9 +51,10 @@ function RatingCategoriesCompletedRoute({
 }
 
 function RatingFoodsCompletedRoute({ children }: { children: JSX.Element }) {
+  console.log('RatingFoodsCompletedRoute')
   // Check if the user has completed rating all the foods
   const { data: foodRatings, isLoading, isError, isFetching } = useFoodRatings()
-  if (isLoading || isFetching) {
+  if (isLoading) {
     return <div>Loading...</div>
   }
   if (isError || !foodRatings) {

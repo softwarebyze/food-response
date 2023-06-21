@@ -6,6 +6,8 @@ import StopSignal from './StopSignal'
 import DotProbe from './DotProbe'
 import VisualSearch from './VisualSearch'
 import Results from './Results'
+import { getUserImagesFromFoodRatings } from '../data/images'
+import { useFoodRatings } from '../hooks/useFoodRatings'
 
 type PageState = 'start' | 'game' | 'results'
 
@@ -15,6 +17,10 @@ export default function TaskPage({ task }: { task: TaskInfo }) {
   const endGame = () => setPageState('results')
   const [accuracy, setAccuracy] = useState<number>(0);
   const [averageResponse, setAverageResponse] = useState<number>(0);
+  const { data: foodRatings, isLoading, isError } = useFoodRatings()
+  if (isLoading) return <div>Loading...</div>
+  if (isError || !foodRatings) return <div>Error loading food ratings</div>
+  const userImages = getUserImagesFromFoodRatings(foodRatings)
   return (
     <section className="section" id="gameSection">
       <div className="container" id="gameContainer">
@@ -23,10 +29,10 @@ export default function TaskPage({ task }: { task: TaskInfo }) {
         )}
         {pageState === 'game' && (
           <div className="gameWrapper">
-            {task.name === 'Stop Signal' && <StopSignal endGame={endGame} setAccuracy={setAccuracy} setAverageResponse={setAverageResponse}/>}
-            {task.name === 'Go/No-Go' && <GoNoGo endGame={endGame} setAccuracy={setAccuracy} setAverageResponse={setAverageResponse}/>}
-            {task.name === 'Dot Probe' && <DotProbe endGame={endGame} setAccuracy={setAccuracy} setAverageResponse={setAverageResponse}/>}
-            {task.name === 'Visual Search' && <VisualSearch endGame={endGame} setAccuracy={setAccuracy} setAverageResponse={setAverageResponse}/>}
+            {task.name === 'Stop Signal' && <StopSignal userImages={userImages}  endGame={endGame} setAccuracy={setAccuracy} setAverageResponse={setAverageResponse}/>}
+            {task.name === 'Go/No-Go' && <GoNoGo userImages={userImages} endGame={endGame} setAccuracy={setAccuracy} setAverageResponse={setAverageResponse}/>}
+            {task.name === 'Dot Probe' && <DotProbe userImages={userImages}  endGame={endGame} setAccuracy={setAccuracy} setAverageResponse={setAverageResponse}/>}
+            {task.name === 'Visual Search' && <VisualSearch userImages={userImages}  endGame={endGame} setAccuracy={setAccuracy} setAverageResponse={setAverageResponse}/>}
           </div>
         )}
         {pageState === 'results' && (

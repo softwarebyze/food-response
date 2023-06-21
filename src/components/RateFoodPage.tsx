@@ -2,7 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { allFoodImages } from '../data/images'
+import { UNHEALTHY_IMAGE_COUNT, allFoodImages } from '../data/images'
+import { useFoodCategoryRatings } from '../hooks/useFoodCategoryRatings'
 import { useFoodRatings } from '../hooks/useFoodRatings'
 import { supabase } from '../supabaseClient'
 import { FoodRatingData } from '../types/Task'
@@ -11,23 +12,36 @@ export default function RateFoodPage() {
   const queryClient = useQueryClient()
   const [currentRating, setCurrentRating] = useState('')
   const { session } = useAuth()
+  const [currentFoodIndex, setCurrentFoodIndex] = useState(0)
 
-  const { data: foodRatings, isLoading, isError, isFetching } = useFoodRatings()
-  // const { data } = useFoodCategoryRatings()
-  const ratedFoodIds =
-    foodRatings?.map((foodRating) => foodRating.food_id) ?? []
-  const unratedFoods = allFoodImages.filter(
-    (food) => !ratedFoodIds.includes(food.id)
-  )
-  const currentFood = unratedFoods?.length ? unratedFoods[0] : null
+  const { data: foodRatings } = useFoodRatings()
+  const { data: foodCategoryRatings } = useFoodCategoryRatings()
+
+  const chosenCategories =
+    foodCategoryRatings &&
+    foodCategoryRatings
+      .filter((rating) => rating.rating !== 0)
+      .map((rating) => rating.food_category)
+
+  const foodsToRate =
+    chosenCategories &&
+    allFoodImages.filter((foodImageData) =>
+      chosenCategories.includes(foodImageData.foodType)
+    )
+  const currentFood = foodsToRate?.length ? foodsToRate[currentFoodIndex] : null
 
   const { mutate: recordRating } = useMutation({
     mutationFn: async (foodRating: FoodRatingData) => {
-      return await supabase.from('food_ratings').insert(foodRating)
+      const { data, error } = await supabase
+        .from('food_ratings')
+        .insert(foodRating)
+      if (error) throw error
+      return data
     },
     onSuccess: () => {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ['foodRatings'] })
+      setCurrentFoodIndex((prevIndex) => prevIndex + 1)
     },
   })
 
@@ -54,53 +68,47 @@ export default function RateFoodPage() {
   return (
     <div className="container">
       <h1 className="title">Rate Food Page</h1>
-      {
-        <>
-          <h2 className="subtitle">
-            Rated {foodRatings?.length ?? 0} of {allFoodImages?.length} foods
-          </h2>
-          <pre>
-            {
-              // JSON.stringify(data, null, 2)
-            }
-          </pre>
-          <div className="columns is-centered">
-            {currentFood ? (
-              <div className="column is-narrow is-centered">
-                <div className="is-flex is-justify-content-center">
-                  <img src={currentFood.src} alt="food to rate" />
+      {foodRatings && (
+        <h2 className="subtitle">
+          Rated {foodRatings.length} of {foodsToRate?.length} foods
+        </h2>
+      )}
+      <div className="columns is-centered">
+        {currentFood && (
+          <div className="column is-narrow is-centered">
+            <div className="is-flex is-justify-content-center">
+              <img src={currentFood.src} alt="food to rate" />
+            </div>
+            <div className="has-text-centered">
+              <h1 className="is-size-1">{currentRating}</h1>
+            </div>
+            <div className="is-flex m-3">
+              {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((i) => (
+                <div
+                  key={i}
+                  className="tile button is-outlined p-6 is-align-items-center mr-1"
+                  onClick={() => handleKeyDown({ key: i } as KeyboardEvent)}
+                  onTouchStart={() =>
+                    handleKeyDown({ key: i } as KeyboardEvent)
+                  }
+                >
+                  <p>{i}</p>
                 </div>
-                <div className="has-text-centered">
-                  <h1 className="is-size-1">{currentRating}</h1>
-                </div>
-                <div className="is-flex m-3">
-                  {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((i) => (
-                    <div
-                      key={i}
-                      className="tile button is-outlined p-6 is-align-items-center mr-1"
-                      onClick={() => handleKeyDown({ key: i } as KeyboardEvent)}
-                      onTouchStart={() =>
-                        handleKeyDown({ key: i } as KeyboardEvent)
-                      }
-                    >
-                      <p>{i}</p>
-                    </div>
-                  ))}
-                </div>
-                <p className="has-text-centered">
-                  Rate the food from 1 to 9 with your keyboard
-                </p>
-              </div>
-            ) : (
-              <div>
-                <p>
-                  Done rating foods! <Link to="/">Go to Games</Link>
-                </p>
-              </div>
-            )}
+              ))}
+            </div>
+            <p className="has-text-centered">
+              Rate the food from 1 to 9 with your keyboard
+            </p>
           </div>
-        </>
-      }
+        )}
+        {foodRatings && foodRatings.length >= UNHEALTHY_IMAGE_COUNT && (
+          <div>
+            <p>
+              Done rating foods! <Link to="/">Go to Games</Link>
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

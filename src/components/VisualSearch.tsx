@@ -255,7 +255,6 @@ export default function VisualSearch({
                     className={getBorderStyle(image.src, image.type)}
                     src={image.src}
                     onClick={() => handleResponse(image.src, image.type)}
-                    onTouchStart={() => handleResponse(image.src, image.type)}
                   />
                 ))}
               </div>

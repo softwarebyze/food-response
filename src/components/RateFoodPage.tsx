@@ -88,9 +88,6 @@ export default function RateFoodPage() {
                   key={i}
                   className="tile button is-outlined p-6 is-align-items-center mr-1"
                   onClick={() => handleKeyDown({ key: i } as KeyboardEvent)}
-                  onTouchStart={() =>
-                    handleKeyDown({ key: i } as KeyboardEvent)
-                  }
                 >
                   <p>{i}</p>
                 </div>

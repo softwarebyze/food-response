@@ -265,7 +265,6 @@ export default function StopSignal({
           {image && (
             <img
               onClick={() => handleReaction('commission')}
-              onTouchStart={() => handleReaction('commission')}
               src={src}
               alt="trial image"
               className="squeezed"

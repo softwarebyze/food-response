@@ -293,13 +293,11 @@ export default function GoNoGo({
             {side === 'left' ? (
               <img
                 onClick={() => handleReaction('left-commission')}
-                onTouchStart={() => handleReaction('left-commission')}
                 src={src}
               />
             ) : (
               <div
                 onClick={() => handleReaction('left-commission')}
-                onTouchStart={() => handleReaction('left-commission')}
                 className="fill clickable"
               ></div>
             )}
@@ -308,13 +306,11 @@ export default function GoNoGo({
             {side === 'right' ? (
               <img
                 onClick={() => handleReaction('right-commission')}
-                onTouchStart={() => handleReaction('right-commission')}
                 src={src}
               />
             ) : (
               <div
                 onClick={() => handleReaction('right-commission')}
-                onTouchStart={() => handleReaction('right-commission')}
                 className="fill clickable"
               ></div>
             )}

@@ -11,7 +11,6 @@ import {
 } from '../types/Task'
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
-import { getUserImagesFromFoodRatings } from '../data/images'
 
 const { times, blocks, trialsPerBlock } = tasks[2]
 const totalTrials = trialsPerBlock! * blocks!
@@ -49,7 +48,7 @@ export default function DotProbe({
   endGame,
   setAccuracy,
   setAverageResponse,
-  userImages
+  userImages,
 }: GameProps) {
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
   const [gameStage, setGameStage] = useState<DotProbeGameStage>('interval')
@@ -236,7 +235,6 @@ export default function DotProbe({
               <div
                 className="probe"
                 onClick={() => handleReaction('left-commission')}
-                onTouchStart={() => handleReaction('left-commission')}
               >
                 <svg width="20" height="20">
                   <circle cx="10" cy="10" r="10"></circle>
@@ -251,7 +249,6 @@ export default function DotProbe({
               <div
                 className="probe"
                 onClick={() => handleReaction('right-commission')}
-                onTouchStart={() => handleReaction('right-commission')}
               >
                 <svg width="20" height="20">
                   <circle cx="10" cy="10" r="10"></circle>

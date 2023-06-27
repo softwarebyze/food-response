@@ -58,8 +58,8 @@ export function sampleImagesByType(
 export function prepareTaskData(
   images: ImageData[],
   blocks: number,
-  healthyImagesPerBlock: number = 14,
-  unhealthyImagesPerBlock: number = 14,
+  healthyImagesPerBlock: number = 16,
+  unhealthyImagesPerBlock: number = 16,
   waterImagesPerBlock: number = 0
 ): StopSignalTrialData[] {
   const counts = {

@@ -1,18 +1,20 @@
-import { useQuery } from '@tanstack/react-query'
 import 'bulma/css/bulma.min.css'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import './animation.css'
 import Home from './components/Home'
 import LoginPage from './components/LoginPage'
 import Nav from './components/Nav'
+import RateFoodCategoriesPage from './components/RateFoodCategoriesPage'
 import RateFoodPage from './components/RateFoodPage'
 import TaskPage from './components/TaskPage'
 import UserPage from './components/UserPage'
 import { useAuth } from './contexts/AuthContext'
-import { fetchFoodRatings, useUserData } from './contexts/UserDataContext'
+import { UNHEALTHY_IMAGE_COUNT } from './data/images'
 import { images } from './data/images.json'
 import { tasks } from './data/tasks.json'
+import { useFoodCategoryRatings } from './hooks/useFoodCategoryRatings'
+import { useFoodRatings } from './hooks/useFoodRatings'
 import './main.css'
-import './animation.css'
 import { TaskInfo } from './types/Task'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
@@ -20,23 +22,43 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
   return session ? children : <Navigate to="/login" />
 }
 
-function RatingCompletedRoute({ children }: { children: JSX.Element }) {
-  // Check if the user has completed rating all the foods
-  const { allFoodImages } = useUserData()
+function RatingCategoriesCompletedRoute({
+  children,
+}: {
+  children: JSX.Element
+}) {
   const {
-    data: foodRatings,
+    data: foodCategoryRatings,
     isLoading,
     isError,
     isFetching,
-  } = useQuery({ queryKey: ['foodRatings'], queryFn: fetchFoodRatings })
-  if (isLoading || isFetching) {
+  } = useFoodCategoryRatings()
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+  if (isError || !foodCategoryRatings) {
+    return <div>Error loading food ratings</div>
+  }
+  const foodCategoryRatingsCount = foodCategoryRatings.length
+  const hasCompletedFoodCategoryRatings = foodCategoryRatingsCount >= 4
+  return hasCompletedFoodCategoryRatings ? (
+    children
+  ) : (
+    <Navigate to="/ratecategories" />
+  )
+}
+
+function RatingFoodsCompletedRoute({ children }: { children: JSX.Element }) {
+  // Check if the user has completed rating all the foods
+  const { data: foodRatings, isLoading, isError, isFetching } = useFoodRatings()
+  if (isLoading) {
     return <div>Loading...</div>
   }
   if (isError || !foodRatings) {
     return <div>Error loading food ratings</div>
   }
-  const hasCompletedRating = foodRatings.length >= allFoodImages.length
-  return hasCompletedRating ? children : <Navigate to="/rate" />
+  const hasCompletedRating = foodRatings.length >= UNHEALTHY_IMAGE_COUNT
+  return hasCompletedRating ? children : <Navigate to="/ratefoods" />
 }
 
 export default function App() {
@@ -65,9 +87,9 @@ export default function App() {
           path="/"
           element={
             <PrivateRoute>
-              <RatingCompletedRoute>
+              <RatingFoodsCompletedRoute>
                 <Home tasks={tasks as TaskInfo[]} />
-              </RatingCompletedRoute>
+              </RatingFoodsCompletedRoute>
             </PrivateRoute>
           }
         />
@@ -86,18 +108,28 @@ export default function App() {
             path={task.path}
             element={
               <PrivateRoute>
-                <RatingCompletedRoute>
+                <RatingFoodsCompletedRoute>
                   <TaskPage task={task as TaskInfo} />
-                </RatingCompletedRoute>
+                </RatingFoodsCompletedRoute>
               </PrivateRoute>
             }
           />
         ))}
         <Route
-          path="/rate"
+          path="/ratefoods"
           element={
             <PrivateRoute>
-              <RateFoodPage />
+              <RatingCategoriesCompletedRoute>
+                <RateFoodPage />
+              </RatingCategoriesCompletedRoute>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/ratecategories"
+          element={
+            <PrivateRoute>
+              <RateFoodCategoriesPage />
             </PrivateRoute>
           }
         />

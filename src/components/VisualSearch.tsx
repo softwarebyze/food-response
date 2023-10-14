@@ -6,7 +6,6 @@ import {
   GameProps,
   ImageData,
   ImageType,
-  TaskResponse,
   VisualSearchGameStage,
   VisualSearchReaction,
   VisualSearchResponse,
@@ -193,7 +192,7 @@ export default function VisualSearch({
       selectedSrc: imageSrc,
     }
 
-    const taskResponseData: Partial<TaskResponse> = {
+    const taskResponseData = {
       user_id: session?.user.id,
       gsession_created_at: taskStartedAt,
       game_slug: 'visualsearch',

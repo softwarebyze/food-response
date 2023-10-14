@@ -13,7 +13,6 @@ import {
   GoNoGoTrialType,
   ImageData,
   ImageType,
-  TaskResponse,
 } from '../types/Task'
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
@@ -220,7 +219,7 @@ export default function GoNoGo({
       responseTime,
     }
 
-    const taskResponseData: Partial<TaskResponse> = {
+    const taskResponseData = {
       user_id: session!.user.id,
       gsession_created_at: taskStartedAt,
       game_slug: 'gonogo',

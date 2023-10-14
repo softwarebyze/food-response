@@ -1,16 +1,14 @@
+import { Database } from "./supabase"
+
+// helper type from https://supabase.com/docs/reference/javascript/typescript-support
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]
+
 export type ImageType = 'unhealthy' | 'healthy' | 'water'
 export type ImageData = {
   src: string
   foodType: string
   type: ImageType
   id: number
-}
-
-export type FoodRatingData = {
-  id?: number
-  food_id: number
-  user_id: string
-  rating: number
 }
 
 export type GameStage =
@@ -85,28 +83,6 @@ export interface Response {
   correct: boolean | null
   reaction: Reaction | null
   responseTime: number | null
-}
-export interface TaskResponse {
-  id: number
-  user_id: string | null
-  gsession_created_at: Date | null
-  game_slug: string | null
-  assessment: string | null
-  phase: number | null
-  sort: number | null
-  picture_delta: number | null
-  picture_dur: number | null
-  border_delta: number | null
-  jitter_dur: number | null
-  correct_resp_delta: number | null
-  commission_resp_delta: number | null
-  has_selection: 0 | 1 | null
-  is_valid: 0 | 1 | null
-  is_omission: 0 | 1 | null
-  is_commission: 0 | 1 | null
-  target_index: number | null
-  picture_offset: string | null
-  picture_list: string | null
 }
 
 export type GoNoGoReaction = 'left-commission' | 'right-commission' | 'omission'

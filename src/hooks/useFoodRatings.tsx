@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../supabaseClient'
-import { FoodRatingData } from '../types/Task'
 
 const fetchFoodRatings = async () => {
   const { data: foodRatings, error } = await supabase
@@ -11,7 +10,7 @@ const fetchFoodRatings = async () => {
     throw error
   }
 
-  return foodRatings as FoodRatingData[]
+  return foodRatings
 }
 
 export function useFoodRatings() {

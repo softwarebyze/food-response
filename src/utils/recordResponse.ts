@@ -1,8 +1,8 @@
 import { supabase } from '../supabaseClient'
-import { TaskResponse } from '../types/Task'
+import { Database } from '../types/supabase'
 
 export async function recordTaskResponse(
-  taskResponseData: Partial<TaskResponse>
+  taskResponseData: Database['public']['Tables']['task_responses']['Insert']
 ) {
   const { data, error } = await supabase
     .from('task_responses')

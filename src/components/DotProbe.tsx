@@ -7,7 +7,6 @@ import {
   DotProbeReaction,
   GameProps,
   ImageData,
-  TaskResponse,
 } from '../types/Task'
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
@@ -143,7 +142,7 @@ export default function DotProbe({
       (healthySide === 'left' && reaction === 'left-commission') ||
       (healthySide === 'right' && reaction === 'right-commission')
 
-    const taskResponseData: Partial<TaskResponse> = {
+    const taskResponseData = {
       user_id: session!.user.id,
       gsession_created_at: taskStartedAt,
       game_slug: 'dotprobe',

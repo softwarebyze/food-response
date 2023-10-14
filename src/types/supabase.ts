@@ -102,7 +102,7 @@ export interface Database {
           commission_resp_delta: number | null
           correct_resp_delta: number | null
           game_slug: string | null
-          gsession_created_at: string | null
+          gsession_created_at: string | Date | null
           has_selection: number | null
           id: number
           is_commission: number | null
@@ -124,7 +124,7 @@ export interface Database {
           commission_resp_delta?: number | null
           correct_resp_delta?: number | null
           game_slug?: string | null
-          gsession_created_at?: string | null
+          gsession_created_at?: string | Date | null
           has_selection?: number | null
           id?: number
           is_commission?: number | null
@@ -146,7 +146,7 @@ export interface Database {
           commission_resp_delta?: number | null
           correct_resp_delta?: number | null
           game_slug?: string | null
-          gsession_created_at?: string | null
+          gsession_created_at?: string | Date | null
           has_selection?: number | null
           id?: number
           is_commission?: number | null

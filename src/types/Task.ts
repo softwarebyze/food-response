@@ -1,16 +1,14 @@
+import { Database } from "./supabase"
+
+// helper type from https://supabase.com/docs/reference/javascript/typescript-support
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]
+
 export type ImageType = 'unhealthy' | 'healthy' | 'water'
 export type ImageData = {
   src: string
   foodType: string
   type: ImageType
   id: number
-}
-
-export type FoodRatingData = {
-  id?: number
-  food_id: number
-  user_id: string
-  rating: number
 }
 
 export type GameStage =

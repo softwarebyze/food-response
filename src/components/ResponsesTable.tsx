@@ -1,10 +1,10 @@
-import { TaskResponse } from '../types/Task'
+import { Tables } from "../types/Task"
 
 export default function ResponsesTable({
   responses,
   loading,
 }: {
-  responses: TaskResponse[]
+  responses: Tables<'task_responses'>['Insert'][]
   loading: boolean
 }) {
   return (

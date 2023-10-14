@@ -1,4 +1,4 @@
-import { FoodRatingData, ImageData } from '../types/Task'
+import { ImageData, Tables } from '../types/Task'
 import { images as imagesFromJson } from './images.json'
 
 const images = imagesFromJson as ImageData[]
@@ -23,7 +23,7 @@ export const allUnhealthyCategories = [
 
 const sortImagesByRanking = (
   images: ImageData[],
-  ratings: FoodRatingData[]
+  ratings: Tables<'food_ratings'>['Row'][]
 ) => {
   return images.sort((imageA, imageB) => {
     const imageARating =
@@ -34,7 +34,7 @@ const sortImagesByRanking = (
   })
 }
 
-export const getUserImagesFromFoodRatings = (foodRatings: FoodRatingData[]) => {
+export const getUserImagesFromFoodRatings = (foodRatings: Tables<'food_ratings'>['Row'][]) => {
   const healthyImagesSortedByRating = sortImagesByRanking(
     allHealthyImages,
     foodRatings

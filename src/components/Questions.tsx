@@ -1,30 +1,38 @@
 import _ from 'lodash'
 import questions from '../data/questions'
 import { useState } from 'react'
+import { useLocalStorage } from 'usehooks-ts'
 
 export default function Questions() {
   const numberOfQuestionsAtATime = 5
   const currentQuestions = _.sampleSize(questions, numberOfQuestionsAtATime)
 
+  const [showQuestions, setShowQuestions] = useLocalStorage(
+    'showQuestions',
+    false
+  )
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [show, setShow] = useState(true)
 
   const goToNextQuestionOrClose = () => {
-    // if on last question, close. else, increment index
-    const done = currentQuestionIndex >= currentQuestions.length - 1
-    if (done) {
-      setShow(false)
+    const hasCompletedQuestions =
+    currentQuestionIndex >= currentQuestions.length - 1
+    
+    if (hasCompletedQuestions) {
+      setShowQuestions(false)
     } else {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1)
     }
   }
 
-  return show ? (
+  return showQuestions ? (
     <Question
       question={currentQuestions[currentQuestionIndex]}
       onSubmit={goToNextQuestionOrClose}
     />
-  ) : null
+  ) : (
+    <></>
+  )
 }
 
 function Question({

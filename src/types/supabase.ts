@@ -95,6 +95,40 @@ export interface Database {
         }
         Relationships: []
       }
+      question_responses: {
+        Row: {
+          created_at: string
+          id: number
+          question: string | null
+          response: string | null
+          type: Database["public"]["Enums"]["question_type"] | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          question?: string | null
+          response?: string | null
+          type?: Database["public"]["Enums"]["question_type"] | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          question?: string | null
+          response?: string | null
+          type?: Database["public"]["Enums"]["question_type"] | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_responses_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       task_responses: {
         Row: {
           assessment: string | null
@@ -179,7 +213,7 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      question_type: "benefits" | "costs" | "reframing"
     }
     CompositeTypes: {
       [_ in never]: never

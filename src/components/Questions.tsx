@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
 export default function Questions() {
-  const numberOfQuestionsAtATime = 5
+  const numberOfQuestionsAtATime = 3
   const currentQuestions = _.sampleSize(questions, numberOfQuestionsAtATime)
 
   const [showQuestions, setShowQuestions] = useLocalStorage(
@@ -16,8 +16,7 @@ export default function Questions() {
 
   const goToNextQuestionOrClose = () => {
     const hasCompletedQuestions =
-    currentQuestionIndex >= currentQuestions.length - 1
-    
+      currentQuestionIndex >= currentQuestions.length - 1
     if (hasCompletedQuestions) {
       setShowQuestions(false)
     } else {
@@ -42,6 +41,12 @@ function Question({
   question: string
   onSubmit: () => void
 }) {
+  const [text, setText] = useState('')
+  const handleSubmit = () => {
+    onSubmit()
+    setText('')
+  }
+
   return (
     <div className="modal is-active">
       <div className="modal-background"></div>
@@ -53,10 +58,12 @@ function Question({
               className="textarea"
               id="mesAnswer"
               placeholder="Please answer the above question."
+              onChange={(e) => setText(e.target.value)}
+              value={text}
             ></textarea>
           </p>
           <p className="questionFeedback"></p>
-          <button onClick={onSubmit} className="button is-primary is-large">
+          <button onClick={handleSubmit} className="button is-primary is-large">
             Share
           </button>
         </div>

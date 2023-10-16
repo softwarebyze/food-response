@@ -2,6 +2,8 @@ import _ from 'lodash'
 import questions from '../data/questions'
 import { useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
+import { Tables } from '../types/Task'
+import { recordQuestionResponse } from '../utils/recordResponse'
 
 export default function Questions() {
   const numberOfQuestionsAtATime = 3
@@ -13,8 +15,15 @@ export default function Questions() {
   )
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const question = currentQuestions[currentQuestionIndex]
 
-  const goToNextQuestionOrClose = () => {
+  const handleResponse = (
+    response: Tables<'question_responses'>['Insert']['response']
+  ) => {
+    recordQuestionResponse({
+      question,
+      response,
+    })
     const hasCompletedQuestions =
       currentQuestionIndex >= currentQuestions.length - 1
     if (hasCompletedQuestions) {
@@ -25,10 +34,7 @@ export default function Questions() {
   }
 
   return showQuestions ? (
-    <Question
-      question={currentQuestions[currentQuestionIndex]}
-      onSubmit={goToNextQuestionOrClose}
-    />
+    <Question question={question} onSubmit={handleResponse} />
   ) : (
     <></>
   )
@@ -39,11 +45,11 @@ function Question({
   onSubmit,
 }: {
   question: string
-  onSubmit: () => void
+  onSubmit: (response: string) => void
 }) {
   const [text, setText] = useState('')
   const handleSubmit = () => {
-    onSubmit()
+    onSubmit('text')
     setText('')
   }
 

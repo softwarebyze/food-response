@@ -6,8 +6,11 @@ import { Tables } from '../types/Task'
 import { recordQuestionResponse } from '../utils/recordResponse'
 
 export default function Questions() {
-  const numberOfQuestionsAtATime = 3
-  const currentQuestions = _.sampleSize(questions, numberOfQuestionsAtATime)
+  const currentQuestions = [
+    { type: 'benefits' as const, question: _.sample(questions.benefits)! },
+    { type: 'costs' as const, question: _.sample(questions.costs)! },
+    { type: 'reframing' as const, question: _.sample(questions.reframing)! },
+  ]
 
   const [showQuestions, setShowQuestions] = useLocalStorage(
     'showQuestions',
@@ -15,13 +18,13 @@ export default function Questions() {
   )
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const question = currentQuestions[currentQuestionIndex]
+  const currentQuestion = currentQuestions[currentQuestionIndex]
 
   const handleResponse = (
     response: Tables<'question_responses'>['Insert']['response']
   ) => {
     recordQuestionResponse({
-      question,
+      ...currentQuestion,
       response,
     })
     const hasCompletedQuestions =
@@ -34,7 +37,7 @@ export default function Questions() {
   }
 
   return showQuestions ? (
-    <Question question={question} onSubmit={handleResponse} />
+    <Question question={currentQuestion.question} onSubmit={handleResponse} />
   ) : (
     <></>
   )
@@ -49,7 +52,7 @@ function Question({
 }) {
   const [text, setText] = useState('')
   const handleSubmit = () => {
-    onSubmit('text')
+    onSubmit(text)
     setText('')
   }
 

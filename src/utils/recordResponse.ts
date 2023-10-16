@@ -14,3 +14,17 @@ export async function recordTaskResponse(
     console.log('Task response inserted successfully:', data)
   }
 }
+
+export async function recordQuestionResponse(
+  questionResponseData: Tables<'question_responses'>['Insert']
+) {
+  const { data, error } = await supabase
+    .from('question_responses')
+    .insert(questionResponseData)
+
+  if (error) {
+    console.error('Error inserting question response:', error)
+  } else {
+    console.log('Question response inserted successfully:', data)
+  }
+}

@@ -2,10 +2,15 @@ import _ from 'lodash'
 import questions from '../data/questions'
 import { useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
+import { Tables } from '../types/Task'
+import { recordQuestionResponse } from '../utils/recordResponse'
 
 export default function Questions() {
-  const numberOfQuestionsAtATime = 3
-  const currentQuestions = _.sampleSize(questions, numberOfQuestionsAtATime)
+  const currentQuestions = [
+    { type: 'benefits' as const, question: _.sample(questions.benefits)! },
+    { type: 'costs' as const, question: _.sample(questions.costs)! },
+    { type: 'reframing' as const, question: _.sample(questions.reframing)! },
+  ]
 
   const [showQuestions, setShowQuestions] = useLocalStorage(
     'showQuestions',
@@ -13,8 +18,15 @@ export default function Questions() {
   )
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const currentQuestion = currentQuestions[currentQuestionIndex]
 
-  const goToNextQuestionOrClose = () => {
+  const handleResponse = (
+    response: Tables<'question_responses'>['Insert']['response']
+  ) => {
+    recordQuestionResponse({
+      ...currentQuestion,
+      response,
+    })
     const hasCompletedQuestions =
       currentQuestionIndex >= currentQuestions.length - 1
     if (hasCompletedQuestions) {
@@ -25,10 +37,7 @@ export default function Questions() {
   }
 
   return showQuestions ? (
-    <Question
-      question={currentQuestions[currentQuestionIndex]}
-      onSubmit={goToNextQuestionOrClose}
-    />
+    <Question question={currentQuestion.question} onSubmit={handleResponse} />
   ) : (
     <></>
   )
@@ -39,11 +48,11 @@ function Question({
   onSubmit,
 }: {
   question: string
-  onSubmit: () => void
+  onSubmit: (response: string) => void
 }) {
   const [text, setText] = useState('')
   const handleSubmit = () => {
-    onSubmit()
+    onSubmit(text)
     setText('')
   }
 

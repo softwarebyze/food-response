@@ -20,6 +20,8 @@ export default function LoginPage() {
     if (error) {
       alert(error.message)
     } else {
+      // When the user logs in, show the questions
+      localStorage.setItem('showQuestions', JSON.stringify('true'))
       navigate('/')
     }
     setLoading(false)

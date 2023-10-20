@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { TaskInfo } from '../types/Task'
+import Questions from './Questions'
 
 export default function Home({ tasks }: { tasks: TaskInfo[] }) {
   const { session } = useAuth()
@@ -16,6 +17,7 @@ export default function Home({ tasks }: { tasks: TaskInfo[] }) {
               </Link>
             }
           </h1>
+          <Questions  />
           <div className="columns">
             {tasks.map(({ name, path, cover }) => (
               <div key={name} className="column">

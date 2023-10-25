@@ -148,6 +148,9 @@ export interface Database {
           picture_dur: number | null
           picture_list: string | null
           picture_offset: string | null
+          priming_category: number | null
+          priming_dur: number | null
+          priming_picture: string | null
           sort: number | null
           target_index: number | null
           user_id: string | null
@@ -170,6 +173,9 @@ export interface Database {
           picture_dur?: number | null
           picture_list?: string | null
           picture_offset?: string | null
+          priming_category?: number | null
+          priming_dur?: number | null
+          priming_picture?: string | null
           sort?: number | null
           target_index?: number | null
           user_id?: string | null
@@ -192,6 +198,9 @@ export interface Database {
           picture_dur?: number | null
           picture_list?: string | null
           picture_offset?: string | null
+          priming_category?: number | null
+          priming_dur?: number | null
+          priming_picture?: string | null
           sort?: number | null
           target_index?: number | null
           user_id?: string | null

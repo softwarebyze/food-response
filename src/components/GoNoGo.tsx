@@ -89,51 +89,42 @@ export function getNextStageAfterResponse(
 const { stages, times, blocks, trialsPerBlock } = tasks[1] as GoNoGoTaskInfo
 const totalTrials = trialsPerBlock * blocks
 
+const primingImageSrcs: Record<string, string> = {
+  positive: './priming.webp',
+  negative: './priming-negative.webp',
+} as const
+
 export default function GoNoGo({
   endGame,
   setAccuracy,
   setAverageResponse,
   userImages,
 }: GameProps) {
+  const taskData = useMemo(() => prepareTaskData(userImages, totalTrials), [])
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
-  const [gameStage, setGameStage] = useState<GoNoGoGameStage>('cue')
+  const [gameStage, setGameStage] = useState<GoNoGoGameStage>('prime')
+  const [primingShownAt, setPrimingShownAt] = useState<number | null>(
+    Date.now()
+  )
 
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
   const { image, error, interval } = stages[gameStage]
-
-  const taskData = useMemo(() => prepareTaskData(userImages, totalTrials), [])
-
-  useEffect(() => {
-    const healthyPercent =
-      taskData.filter((imgData) => imgData.imageType === 'healthy').length /
-      taskData.length
-    const unhealthyPercent =
-      taskData.filter((imgData) => imgData.imageType === 'unhealthy').length /
-      taskData.length
-    const waterPercent =
-      taskData.filter((imgData) => imgData.imageType === 'water').length /
-      taskData.length
-    const percentages = `
-    Healthy: ${Math.round(healthyPercent * 100)}%
-    Unhealthy: ${Math.round(unhealthyPercent * 100)}%
-    Water: ${Math.round(waterPercent * 100)}%
-    `
-    console.log('Go/No-Go', percentages)
-  }, [])
-
-  const { src, trialType, side, border, imageType } =
-    taskData[currentTrialIndex]
+  const { src, trialType, side, border } = taskData[currentTrialIndex]
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [taskStartedAt, setTaskStartedAt] = useState(new Date())
   const [pictureDelta, setPictureDelta] = useState<number | null>(null)
   const [pictureShownAt, setPictureShownAt] = useState<number | null>(null)
   const [intervalShownAt, setIntervalShownAt] = useState<number | null>(null)
   const [jitterDur, setJitterDur] = useState<number | null>(null)
+  const [primingDur, setPrimingDur] = useState<number | null>(null)
   const { session } = useAuth()
 
-  const isTrialWithPriming: boolean = trialType === 'no-go'
+  const isTrialWithPriming: boolean = true
   const showPriming: boolean = isTrialWithPriming && gameStage === 'prime'
+  const primingType: 'positive' | 'negative' =
+    trialType === 'go' ? 'positive' : 'negative'
+  const primingImageSrc = primingImageSrcs[primingType]
 
   useEffect(() => {
     setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
@@ -150,10 +141,15 @@ export default function GoNoGo({
     setPictureDelta(
       pictureShownAt ? pictureShownAt - taskStartedAt.getTime() : null
     )
+    if (primingShownAt) {
+      setPrimingDur(primingShownAt ? primingShownAt - Date.now() : null)
+      setPrimingShownAt(null)
+    }
   }
 
   function showPrime() {
     setGameStage('prime')
+    setPrimingShownAt(Date.now())
   }
 
   function showInterval() {
@@ -219,6 +215,11 @@ export default function GoNoGo({
       responseTime,
     }
 
+    const primingCategories = {
+      positive: 0,
+      negative: 1,
+    } as const
+
     const taskResponseData = {
       user_id: session!.user.id,
       gsession_created_at: taskStartedAt.toLocaleDateString(),
@@ -247,6 +248,11 @@ export default function GoNoGo({
       target_index: side === 'left' ? 0 : 1,
       picture_offset: side === 'left' ? 'LEFT' : 'RIGHT',
       picture_list: src,
+      priming_dur: primingDur,
+      priming_picture: isTrialWithPriming ? primingImageSrc : null,
+      priming_category: isTrialWithPriming
+        ? primingCategories[primingType]
+        : null,
     }
 
     recordTaskResponse(taskResponseData)
@@ -290,46 +296,54 @@ export default function GoNoGo({
     return () => clearTimeout(timeout)
   }, [gameStage])
 
-  if (gameStage === 'break') return <Break />
-
-  return interval ? (
-    <></>
-  ) : (
-      <div className={`imageBox ${!showPriming && border} sized`}>
-        {showPriming && (
-            <img src={'./priming.webp'} alt="prime image" className="squeezed cursorDefault" />
+  return (
+    <>
+      {gameStage === 'break' ? (
+        <Break />
+      ) : interval ? (
+        <></>
+      ) : (
+        <div className={`imageBox ${!showPriming && border} sized`}>
+          {showPriming && (
+            <img
+              src={primingImageSrc}
+              alt="prime image"
+              className="squeezed cursorDefault"
+            />
           )}
-      {!showPriming && image && (
-        <div className="columns is-mobile">
-          <div className="column">
-            {side === 'left' ? (
-              <img
-                onClick={() => handleReaction('left-commission')}
-                src={src}
-              />
-            ) : (
-              <div
-                onClick={() => handleReaction('left-commission')}
-                className="fill clickable"
-              ></div>
-            )}
-          </div>
-          <div className="column">
-            {side === 'right' ? (
-              <img
-                onClick={() => handleReaction('right-commission')}
-                src={src}
-              />
-            ) : (
-              <div
-                onClick={() => handleReaction('right-commission')}
-                className="fill clickable"
-              ></div>
-            )}
-          </div>
+          {!showPriming && image && (
+            <div className="columns is-mobile">
+              <div className="column">
+                {side === 'left' ? (
+                  <img
+                    onClick={() => handleReaction('left-commission')}
+                    src={src}
+                  />
+                ) : (
+                  <div
+                    onClick={() => handleReaction('left-commission')}
+                    className="fill clickable"
+                  ></div>
+                )}
+              </div>
+              <div className="column">
+                {side === 'right' ? (
+                  <img
+                    onClick={() => handleReaction('right-commission')}
+                    src={src}
+                  />
+                ) : (
+                  <div
+                    onClick={() => handleReaction('right-commission')}
+                    className="fill clickable"
+                  ></div>
+                )}
+              </div>
+            </div>
+          )}
+          {error && <div className="redCross">X</div>}
         </div>
       )}
-      {error && <div className="redCross">X</div>}
-    </div>
+    </>
   )
 }

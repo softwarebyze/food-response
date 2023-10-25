@@ -84,7 +84,10 @@ export default function App() {
       ))}
       <img
         src="priming.webp"
-        alt="priming image"
+        style={{ visibility: 'hidden', height: '100px' }}
+      />
+      <img
+        src="priming-negative.webp"
         style={{ visibility: 'hidden', height: '100px' }}
       />
       <Routes>

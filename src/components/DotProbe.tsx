@@ -144,7 +144,7 @@ export default function DotProbe({
 
     const taskResponseData = {
       user_id: session!.user.id,
-      gsession_created_at: taskStartedAt,
+      gsession_created_at: taskStartedAt.toLocaleDateString(),
       game_slug: 'dotprobe',
       assessment: 'TEST',
       phase: 0,

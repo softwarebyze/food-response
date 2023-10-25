@@ -221,7 +221,7 @@ export default function GoNoGo({
 
     const taskResponseData = {
       user_id: session!.user.id,
-      gsession_created_at: taskStartedAt,
+      gsession_created_at: taskStartedAt.toLocaleDateString(),
       game_slug: 'gonogo',
       assessment: 'TEST',
       phase: 0,

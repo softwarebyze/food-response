@@ -194,7 +194,7 @@ export default function VisualSearch({
 
     const taskResponseData = {
       user_id: session?.user.id,
-      gsession_created_at: taskStartedAt,
+      gsession_created_at: taskStartedAt.toLocaleDateString(),
       game_slug: 'visualsearch',
       assessment: 'TEST',
       phase: 0,

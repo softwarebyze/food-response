@@ -194,7 +194,7 @@ export default function StopSignal({
 
     const taskResponseData = {
       user_id: session!.user.id,
-      gsession_created_at: taskStartedAt,
+      gsession_created_at: taskStartedAt.toLocaleDateString(),
       game_slug: 'stopsignal',
       assessment: 'TEST',
       phase: 0,
@@ -280,7 +280,11 @@ export default function StopSignal({
           className={`imageBox sized ${!showPriming && border}`}
         >
           {showPriming && (
-            <img src={primeSrc} alt="prime image" className="squeezed cursorDefault" />
+            <img
+              src={primeSrc}
+              alt="prime image"
+              className="squeezed cursorDefault"
+            />
           )}
           {!showPriming && image && (
             <img

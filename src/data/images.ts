@@ -61,3 +61,13 @@ export const getUserImagesFromFoodRatings = (foodRatings: Tables<'food_ratings'>
 
   return allUserImages
 }
+
+export const primingImageSrcs: Record<string, string> = {
+  positive: './priming.webp',
+  negative: './priming-negative.webp',
+} as const
+
+export const primingCategories = {
+  positive: 0,
+  negative: 1,
+} as const

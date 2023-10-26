@@ -16,6 +16,7 @@ import {
 } from '../types/Task'
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
+import { primingCategories, primingImageSrcs } from '../data/images'
 
 function getGoNoGoTrialType(imageType: ImageType): GoNoGoTrialType {
   switch (imageType) {
@@ -89,11 +90,6 @@ export function getNextStageAfterResponse(
 const { stages, times, blocks, trialsPerBlock } = tasks[1] as GoNoGoTaskInfo
 const totalTrials = trialsPerBlock * blocks
 
-const primingImageSrcs: Record<string, string> = {
-  positive: './priming.webp',
-  negative: './priming-negative.webp',
-} as const
-
 export default function GoNoGo({
   endGame,
   setAccuracy,
@@ -142,7 +138,7 @@ export default function GoNoGo({
       pictureShownAt ? pictureShownAt - taskStartedAt.getTime() : null
     )
     if (primingShownAt) {
-      setPrimingDur(primingShownAt ? primingShownAt - Date.now() : null)
+      setPrimingDur(primingShownAt ? Date.now() - primingShownAt : null)
       setPrimingShownAt(null)
     }
   }
@@ -214,11 +210,6 @@ export default function GoNoGo({
       correct: isCorrect,
       responseTime,
     }
-
-    const primingCategories = {
-      positive: 0,
-      negative: 1,
-    } as const
 
     const taskResponseData = {
       user_id: session!.user.id,

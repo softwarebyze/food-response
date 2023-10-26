@@ -138,7 +138,7 @@ export default function GoNoGo({
       pictureShownAt ? pictureShownAt - taskStartedAt.getTime() : null
     )
     if (primingShownAt) {
-      setPrimingDur(primingShownAt ? primingShownAt - Date.now() : null)
+      setPrimingDur(primingShownAt ? Date.now() - primingShownAt : null)
       setPrimingShownAt(null)
     }
   }

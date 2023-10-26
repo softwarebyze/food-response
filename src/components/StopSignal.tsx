@@ -14,6 +14,7 @@ import {
 } from '../types/Task'
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
+import { primingCategories, primingImageSrcs } from '../data/images'
 
 function getStopSignalTrialType(imageType: ImageType): StopSignalTrialType {
   switch (imageType) {
@@ -89,7 +90,6 @@ export function prepareTaskData(
 
 const { stages, times, blocks, trialsPerBlock } = tasks[0]
 const totalTrials = trialsPerBlock * blocks
-const primeSrc = './priming.webp'
 
 export default function StopSignal({
   endGame,
@@ -97,15 +97,15 @@ export default function StopSignal({
   setAverageResponse,
   userImages,
 }: GameProps) {
+  const taskData = useMemo(() => prepareTaskData(userImages, blocks), [])
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
-  const [gameStage, setGameStage] = useState<StopSignalGameStage>('init')
-
+  const [gameStage, setGameStage] = useState<StopSignalGameStage>('prime')
+  const [primingShownAt, setPrimingShownAt] = useState<number | null>(
+    Date.now()
+  )
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
   const { image, error, interval } = stages![gameStage] as any
-
-  const taskData = useMemo(() => prepareTaskData(userImages, blocks), [])
-
   const { src, trialType, border, imageType } = taskData[currentTrialIndex]
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [taskStartedAt, setTaskStartedAt] = useState(new Date())
@@ -113,26 +113,30 @@ export default function StopSignal({
   const [pictureShownAt, setPictureShownAt] = useState<number | null>(null)
   const [intervalShownAt, setIntervalShownAt] = useState<number | null>(null)
   const [jitterDur, setJitterDur] = useState<number | null>(null)
+  const [primingDur, setPrimingDur] = useState<number | null>(null)
   const { session } = useAuth()
-
-  const isTrialWithPriming: boolean = trialType === 'stop'
+  const isTrialWithPriming: boolean = true
   const showPriming: boolean = isTrialWithPriming && gameStage === 'prime'
-
-  useEffect(() => {
-    setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
-  }, [setAccuracy, numCorrect, currentTrialIndex])
-
-  useEffect(() => {
-    setAverageResponse(Math.round(totalTime / numCorrect))
-  }, [setAccuracy, totalTime, numCorrect])
+  const primingType: 'positive' | 'negative' =
+    trialType === 'go' ? 'positive' : 'negative'
+  const primingImageSrc = primingImageSrcs[primingType]
 
   function showCue() {
     setGameStage('cue')
     setCueTimestamp(Date.now())
+    setPictureShownAt(Date.now())
+    setPictureDelta(
+      pictureShownAt ? pictureShownAt - taskStartedAt.getTime() : null
+    )
+    if (primingShownAt) {
+      setPrimingDur(primingShownAt ? Date.now() - primingShownAt : null)
+      setPrimingShownAt(null)
+    }
   }
 
   function showPrime() {
     setGameStage('prime')
+    setPrimingShownAt(Date.now())
   }
 
   function showInterval() {
@@ -214,6 +218,11 @@ export default function StopSignal({
       target_index: 0,
       picture_offset: 'NONE',
       picture_list: src,
+      priming_dur: primingDur,
+      priming_picture: isTrialWithPriming ? primingImageSrc : null,
+      priming_category: isTrialWithPriming
+        ? primingCategories[primingType]
+        : null,
     }
 
     recordTaskResponse(taskResponseData)
@@ -232,7 +241,7 @@ export default function StopSignal({
 
   // set game stage to init and show cue after 1000ms when currentTrialIndex changes
   useEffect(() => {
-    showInit()
+    isTrialWithPriming ? showPrime() : showInit()
   }, [currentTrialIndex])
 
   // add timeout to proceed to next stage
@@ -241,7 +250,7 @@ export default function StopSignal({
     switch (gameStage) {
       case 'init':
         if (isTrialWithPriming) {
-          showPrime()
+          timeout = setTimeout(showPrime, times.init)
         } else {
           timeout = setTimeout(showCue, times.init)
         }
@@ -268,11 +277,19 @@ export default function StopSignal({
     return () => clearTimeout(timeout)
   }, [gameStage])
 
-  if (gameStage === 'break') return <Break />
+  useEffect(() => {
+    setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
+  }, [setAccuracy, numCorrect, currentTrialIndex])
+
+  useEffect(() => {
+    setAverageResponse(Math.round(totalTime / numCorrect))
+  }, [setAccuracy, totalTime, numCorrect])
 
   return (
     <>
-      {interval ? (
+      {gameStage === 'break' ? (
+        <Break />
+      ) : interval ? (
         <></>
       ) : (
         <div
@@ -281,7 +298,7 @@ export default function StopSignal({
         >
           {showPriming && (
             <img
-              src={primeSrc}
+              src={primingImageSrc}
               alt="prime image"
               className="squeezed cursorDefault"
             />

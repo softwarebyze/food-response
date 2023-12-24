@@ -1,4 +1,5 @@
-import { ImageData, Tables } from '../types/Task'
+import { ImageData } from '../types/Task'
+import { Tables } from '../types/supabase'
 import { images as imagesFromJson } from './images.json'
 
 const images = imagesFromJson as ImageData[]
@@ -23,7 +24,7 @@ export const allUnhealthyCategories = [
 
 const sortImagesByRanking = (
   images: ImageData[],
-  ratings: Tables<'food_ratings'>['Row'][]
+  ratings: Tables<'food_ratings'>[]
 ) => {
   return images.sort((imageA, imageB) => {
     const imageARating =
@@ -34,7 +35,9 @@ const sortImagesByRanking = (
   })
 }
 
-export const getUserImagesFromFoodRatings = (foodRatings: Tables<'food_ratings'>['Row'][]) => {
+export const getUserImagesFromFoodRatings = (
+  foodRatings: Tables<'food_ratings'>[]
+) => {
   const healthyImagesSortedByRating = sortImagesByRanking(
     allHealthyImages,
     foodRatings

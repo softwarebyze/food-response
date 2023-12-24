@@ -6,7 +6,7 @@ import { UNHEALTHY_IMAGE_COUNT, allFoodImages } from '../data/images'
 import { useFoodCategoryRatings } from '../hooks/useFoodCategoryRatings'
 import { useFoodRatings } from '../hooks/useFoodRatings'
 import { supabase } from '../supabaseClient'
-import { Tables } from '../types/Task'
+import { TablesInsert } from '../types/supabase'
 
 export default function RateFoodPage() {
   const queryClient = useQueryClient()
@@ -31,7 +31,7 @@ export default function RateFoodPage() {
   const currentFood = foodsToRate?.length ? foodsToRate[currentFoodIndex] : null
 
   const { mutate: recordRating } = useMutation({
-    mutationFn: async (foodRating: Tables<'food_ratings'>['Insert']) => {
+    mutationFn: async (foodRating: TablesInsert<'food_ratings'>) => {
       const { data, error } = await supabase
         .from('food_ratings')
         .insert(foodRating)

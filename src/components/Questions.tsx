@@ -2,14 +2,51 @@ import _ from 'lodash'
 import questions from '../data/questions'
 import { useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
-import { Tables } from '../types/Task'
 import { recordQuestionResponse } from '../utils/recordResponse'
+import { useQuestionResponses } from '../hooks/useQuestionResponses'
+import { TablesInsert } from '../types/supabase'
 
 export default function Questions() {
+  const { data: questionResponsesFromDb } = useQuestionResponses()
+
+  // 66% chance of benefits, 33% chance of costs
+  const firstQuestionType: 'benefits' | 'costs' = _.sample([
+    'benefits',
+    'costs',
+    'benefits',
+  ])!
+
+  // if goals question has been asked, use implementation question, otherwise use goals question
+  const wasGoalsQuestionAsked = questionResponsesFromDb?.some(
+    (response) => response.type === 'goals'
+  )
+
+  const secondQuestionType: 'goals' | 'implementations' = wasGoalsQuestionAsked
+    ? 'implementations'
+    : 'goals'
+
+  const wasReframingQuestionAskedThreeTimes =
+    (questionResponsesFromDb || []).filter(
+      (response) => response.type === 'reframing'
+    ).length >= 3
+
+  // if reframing question has been asked three times, use circumnavigating question, otherwise use reframing question
+  const thirdQuestionType: 'reframing' | 'circumnavigating' =
+    wasReframingQuestionAskedThreeTimes ? 'circumnavigating' : 'reframing'
+
   const currentQuestions = [
-    { type: 'benefits' as const, question: _.sample(questions.benefits)! },
-    { type: 'costs' as const, question: _.sample(questions.costs)! },
-    { type: 'reframing' as const, question: _.sample(questions.reframing)! },
+    {
+      type: firstQuestionType,
+      question: _.sample(questions[firstQuestionType])!,
+    },
+    {
+      type: secondQuestionType,
+      question: _.sample(questions[secondQuestionType])!,
+    },
+    {
+      type: thirdQuestionType,
+      question: _.sample(questions[thirdQuestionType])!,
+    },
   ]
 
   const [showQuestions, setShowQuestions] = useLocalStorage(
@@ -21,7 +58,7 @@ export default function Questions() {
   const currentQuestion = currentQuestions[currentQuestionIndex]
 
   const handleResponse = (
-    response: Tables<'question_responses'>['Insert']['response']
+    response: TablesInsert<'question_responses'>['response']
   ) => {
     recordQuestionResponse({
       ...currentQuestion,

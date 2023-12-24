@@ -1,14 +1,14 @@
-import { Tables } from "../types/Task"
+import { Tables } from '../types/supabase'
 
 export default function ResponsesTable({
   responses,
   loading,
 }: {
-  responses: Tables<'task_responses'>['Insert'][]
+  responses: Tables<'task_responses'>[]
   loading: boolean
 }) {
   return (
-    <>
+    <div className="overflow-x-scroll">
       <table className="table">
         <thead>
           <tr>
@@ -61,7 +61,7 @@ export default function ResponsesTable({
           ))}
         </tbody>
       </table>
-      {loading && <progress className="progress  is-primary" max="100" />}
-    </>
+      {loading && <progress className="progress is-primary" max="100" />}
+    </div>
   )
 }

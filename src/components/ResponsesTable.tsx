@@ -8,7 +8,7 @@ export default function ResponsesTable({
   loading: boolean
 }) {
   return (
-    <>
+    <div className="overflow-x-scroll">
       <table className="table">
         <thead>
           <tr>
@@ -62,6 +62,6 @@ export default function ResponsesTable({
         </tbody>
       </table>
       {loading && <progress className="progress is-primary" max="100" />}
-    </>
+    </div>
   )
 }

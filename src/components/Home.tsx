@@ -17,7 +17,7 @@ export default function Home({ tasks }: { tasks: TaskInfo[] }) {
               </Link>
             }
           </h1>
-          <Questions  />
+          <Questions />
           <div className="columns">
             {tasks.map(({ name, path, cover }) => (
               <div key={name} className="column">

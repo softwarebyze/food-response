@@ -18,10 +18,6 @@ export const allWaterImages = allImages.filter(
   (image) => image.type === 'water'
 )
 
-export const allUnhealthyCategories = [
-  ...new Set(allUnhealthyImages.map(({ foodType }) => foodType)),
-]
-
 const sortImagesByRanking = (
   images: ImageData[],
   ratings: Tables<'food_ratings'>[]

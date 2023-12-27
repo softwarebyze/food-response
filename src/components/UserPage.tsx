@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../supabaseClient'
 import ResponsesTable from './ResponsesTable'
-import { useFoodCategoryRatings } from '../hooks/useFoodCategoryRatings'
 import { useFoodRatings } from '../hooks/useFoodRatings'
 import { allImages } from '../data/images'
 import { useQuestionResponses } from '../hooks/useQuestionResponses'
@@ -24,8 +23,6 @@ export default function UserPage() {
     }
     setLoading(false)
   }
-  const { data: foodCategoryRatings, isSuccess: areFoodCategoryRatingsReady } =
-    useFoodCategoryRatings()
   const { data: foodRatings, isSuccess: areFoodRatingsReady } = useFoodRatings()
 
   useEffect(() => {
@@ -60,29 +57,6 @@ export default function UserPage() {
         </tbody>
         <hr />
         <div className="columns">
-          <div className="column">
-            <p className="title">Food Category Selections</p>
-            <thead>
-              <tr>
-                <th>id</th>
-                <th>food_category</th>
-                <th>selected</th>
-              </tr>
-            </thead>
-            {areFoodCategoryRatingsReady ? (
-              <tbody>
-                {foodCategoryRatings.map((rating) => (
-                  <tr key={rating.id}>
-                    <td>{rating.id}</td>
-                    <td>{rating.food_category}</td>
-                    <td>{rating.rating}</td>
-                  </tr>
-                ))}
-              </tbody>
-            ) : (
-              'Not ready'
-            )}
-          </div>
           <div className="column">
             <p className="title">Food Ratings</p>
             <thead>

@@ -37,52 +37,69 @@ export default function UserPage() {
         <div>Id: {session?.user.id}</div>
         <hr />
         <p className="title">Question Responses</p>
-        <thead>
-          <tr>
-            <th>id</th>
-            <th>type</th>
-            <th>question</th>
-            <th>response</th>
-          </tr>
-        </thead>
-        <tbody>
-          {questionResponses?.map((response) => (
-            <tr key={response.id}>
-              <td>{response.id}</td>
-              <td>{response.type}</td>
-              <td>{response.question}</td>
-              <td>{response.response}</td>
-            </tr>
-          ))}
-        </tbody>
+        <div className='table-container'>
+          <table className='table'>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>type</th>
+                <th>question</th>
+                <th>response</th>
+              </tr>
+            </thead>
+            <tbody>
+              {questionResponses?.map((response) => (
+                <tr key={response.id}>
+                  <td>{response.id}</td>
+                  <td>{response.type}</td>
+                  <td>{response.question}</td>
+                  <td>{response.response}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <hr />
         <div className="columns">
           <div className="column">
             <p className="title">Food Ratings</p>
-            <thead>
-              <tr>
-                <th>id</th>
-                <th>food_id</th>
-                <th>food_type</th>
-                <th>rating</th>
-              </tr>
-            </thead>
             {areFoodRatingsReady ? (
-              <tbody>
-                {foodRatings.map((rating) => (
-                  <tr key={rating.id}>
-                    <td>{rating.id}</td>
-                    <td>{rating.food_id}</td>
-                    <td>
-                      {
-                        allImages.find((image) => image.id === rating.food_id)
-                          ?.foodType
-                      }
-                    </td>
-                    {rating.rating}
-                  </tr>
-                ))}
-              </tbody>
+              <div className="table-container">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>id</th>
+                      <th>food_id</th>
+                      <th>src</th>
+                      <th>food_type</th>
+                      <th>rating</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {foodRatings.map((rating) => (
+                      <tr key={rating.id}>
+                        <td>{rating.id}</td>
+                        <td>
+                          {
+                            allImages.find(
+                              (image) => image.id === rating.food_id
+                            )?.src
+                          }
+                        </td>
+                        <td>{rating.id}</td>
+                        <td>
+                          {
+                            allImages.find(
+                              (image) => image.id === rating.food_id
+                            )?.foodType
+                          }
+                        </td>
+                        <td>{rating.rating}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ) : (
               'Not ready'
             )}

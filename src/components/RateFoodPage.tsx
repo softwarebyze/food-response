@@ -35,8 +35,8 @@ export default function RateFoodPage() {
 
   const rawData = getDataFromCsv(rawCsvString || '')
   const cleanedData = rawData.filter((row) => {
-    const [filename, _pictype, rating, _chosen, _value] = row.split(',')
-    return filename.length > 0 && rating
+    const [filename, _pictype, rating, chosen, _value] = row.split(',')
+    return filename.length > 0 && rating && chosen // exclude rows not chosen
   })
   const ratingsData = cleanedData.map((row) => {
     const [filename, _pictype, rating, _chosen, _value] = row.split(',')

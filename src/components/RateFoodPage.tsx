@@ -1,104 +1,119 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
 import { UNHEALTHY_IMAGE_COUNT, allFoodImages } from '../data/images'
-import { useFoodCategoryRatings } from '../hooks/useFoodCategoryRatings'
 import { useFoodRatings } from '../hooks/useFoodRatings'
-import { supabase } from '../supabaseClient'
-import { TablesInsert } from '../types/supabase'
+import { useState } from 'react'
+import { useFoodRatingsMutation } from '../hooks/useFoodRatingsMutation'
+
+const getFoodIdFromFilename = (filenameWithExtension: string) => {
+  const filename = filenameWithExtension.split('.')[0]
+  const imageWithMatchingFilename = allFoodImages.find((food) =>
+    food.src.includes(filename)
+  )
+  if (!imageWithMatchingFilename) {
+    throw new Error(`No food found with filename ${filename}`)
+  }
+  return imageWithMatchingFilename.id
+}
+
+const getDataFromCsv = (csv: string) => {
+  const [_headers, ...data] = csv.split('\r\n')
+  return data
+}
 
 export default function RateFoodPage() {
-  const queryClient = useQueryClient()
-  const [currentRating, setCurrentRating] = useState('')
-  const { session } = useAuth()
-  const [currentFoodIndex, setCurrentFoodIndex] = useState(0)
-
   const { data: foodRatings } = useFoodRatings()
-  const { data: foodCategoryRatings } = useFoodCategoryRatings()
+  const hasCompletedRating =
+    foodRatings && foodRatings?.length >= UNHEALTHY_IMAGE_COUNT
 
-  const chosenCategories =
-    foodCategoryRatings &&
-    foodCategoryRatings
-      .filter((rating) => rating.rating !== 0)
-      .map((rating) => rating.food_category)
+  const {
+    mutate: recordRating,
+    isError,
+    isLoading,
+  } = useFoodRatingsMutation()
 
-  const foodsToRate =
-    chosenCategories &&
-    allFoodImages.filter((foodImageData) =>
-      chosenCategories.includes(foodImageData.foodType)
-    )
-  const currentFood = foodsToRate?.length ? foodsToRate[currentFoodIndex] : null
+  const [rawCsvString, setRawCsvString] = useState<string | null>(null)
 
-  const { mutate: recordRating } = useMutation({
-    mutationFn: async (foodRating: TablesInsert<'food_ratings'>) => {
-      const { data, error } = await supabase
-        .from('food_ratings')
-        .insert(foodRating)
-      if (error) throw error
-      return data
-    },
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ['foodRatings'] })
-      setCurrentFoodIndex((prevIndex) => prevIndex + 1)
-    },
+  const rawData = getDataFromCsv(rawCsvString || '')
+  const cleanedData = rawData.filter((row) => {
+    const [filename, _pictype, rating, chosen, _value] = row.split(',')
+    return filename.length > 0 && rating && chosen // exclude rows not chosen
   })
-
-  const handleKeyDown = async (event: KeyboardEvent) => {
-    const { key } = event
-    if (!(key >= '1' && key <= '9')) return
-    if (!currentFood) return console.log('no current food')
-    if (!currentFood?.id) return console.log('no current food id')
-    setCurrentRating(key)
-    const keyNumber = parseInt(key)
-    recordRating({
-      rating: keyNumber,
-      food_id: currentFood!.id,
-      user_id: session!.user!.id,
-    })
-    setCurrentRating('')
-  }
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
+  const ratingsData = cleanedData.map((row) => {
+    const [filename, _pictype, rating, _chosen, _value] = row.split(',')
+    return {
+      food_id: getFoodIdFromFilename(filename),
+      rating: +rating,
     }
-  }, [currentFood])
+  })
+  const ratings = ratingsData
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const text = e.target?.result
+        console.log(text)
+        if (typeof text === 'string') {
+          setRawCsvString(text)
+        }
+      }
+      reader.readAsText(file)
+    }
+  }
+
+  const handleSubmit = () => {
+    recordRating(ratings)
+  }
+
   return (
     <div className="container">
-      <h1 className="title">Rate Food Page</h1>
-      {foodRatings && (
-        <h2 className="subtitle">
-          Rated {foodRatings.length} of {foodsToRate?.length} foods
-        </h2>
-      )}
-      <div className="columns is-centered">
-        {currentFood && (
-          <div className="column is-narrow is-centered">
-            <div className="is-flex is-justify-content-center">
-              <img src={currentFood.src} alt="food to rate" />
-            </div>
-            <div className="has-text-centered">
-              <h1 className="is-size-1">{currentRating}</h1>
-            </div>
-            <div className="is-flex m-3">
-              {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((i) => (
-                <div
-                  key={i}
-                  className="tile button is-outlined p-6 is-align-items-center mr-1"
-                  onClick={() => handleKeyDown({ key: i } as KeyboardEvent)}
-                >
-                  <p>{i}</p>
+      <div className="column is-centered">
+        <h1 className="title">Rate Food Page</h1>
+
+        {!hasCompletedRating ? (
+          <>
+            {isError && (
+              <article className="message is-danger">
+                <div className="message-body">
+                  <strong>Error</strong>
+                  <p>There was an error recording your ratings.</p>
                 </div>
-              ))}
-            </div>
-            <p className="has-text-centered">
-              Rate the food from 1 to 9 with your keyboard
+              </article>
+            )}
+            {isLoading && (
+              <article className="message is-info">
+                <div className="message-body">
+                  <strong>Loading</strong>
+                  <p>Recording your ratings...</p>
+                </div>
+              </article>
+            )}
+            <p className="subtitle">
+              {!rawCsvString
+                ? `Please upload your food ratings file. The file 
+          should be a CSV with columns in this order: 
+          name (ex: PHHealthy16.png), pictype (1 or 0), rating 
+          (number), chosen (1 or 0), value (number)`
+                : 'Please confirm your food ratings and click Submit.'}
             </p>
-          </div>
-        )}
-        {foodRatings && foodRatings.length >= UNHEALTHY_IMAGE_COUNT && (
+            <div className="is-flex is-flex-direction-column is-align-items-start is-2">
+              <input type="file" accept=".csv" onChange={onChange} />
+              {ratings && (
+                <div className='mt-3'>
+                  <p>Preview:</p>
+                  <pre>{JSON.stringify(ratings, null, 2)}</pre>
+                </div>
+              )}
+              <input
+                disabled={!rawCsvString || !rawCsvString?.length}
+                type="submit"
+                className="button is-primary mt-2"
+                onClick={handleSubmit}
+              />
+            </div>
+          </>
+        ) : (
           <div>
             <p>
               Done rating foods! <Link to="/">Go to Games</Link>

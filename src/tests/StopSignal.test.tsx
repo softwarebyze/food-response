@@ -14,7 +14,7 @@ describe('Stop Signal prepareTaskData', () => {
       stopSignal.blocks * stopSignal.trialsPerBlock
     )
   })
-  it('Has 16 unique low-cal foods, 16 unique high-cal foods, and 0 glasses of water', () => {
+  it('Has 16 unique low-cal foods, 14 unique high-cal foods, and 4 glasses of water', () => {
     const testTaskDataBlocks = _.chunk(testTaskData, stopSignal.trialsPerBlock)
     testTaskDataBlocks.forEach((testTaskData) => {
       const healthyImages = testTaskData.filter(

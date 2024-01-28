@@ -16,7 +16,7 @@ import {
 } from '../types/Task'
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
-import { primingCategories, primingImageSrcs } from '../data/images'
+import { getPrimingImageSrc, primingCategories } from '../data/images'
 
 function getGoNoGoTrialType(imageType: ImageType): GoNoGoTrialType {
   switch (imageType) {
@@ -120,7 +120,7 @@ export default function GoNoGo({
   const showPriming: boolean = isTrialWithPriming && gameStage === 'prime'
   const primingType: 'positive' | 'negative' =
     trialType === 'go' ? 'positive' : 'negative'
-  const primingImageSrc = primingImageSrcs[primingType]
+  const primingImageSrc = getPrimingImageSrc(primingType)
 
   useEffect(() => {
     setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)

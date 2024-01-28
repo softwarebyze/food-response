@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { ImageData } from '../types/Task'
 import { Tables } from '../types/supabase'
 import { images as imagesFromJson } from './images.json'
@@ -61,12 +62,29 @@ export const getUserImagesFromFoodRatings = (
   return allUserImages
 }
 
-export const primingImageSrcs: Record<string, string> = {
-  positive: './priming.webp',
-  negative: './priming-negative.webp',
-} as const
-
 export const primingCategories = {
   positive: 0,
   negative: 1,
 } as const
+
+type ModuleWithDefaultExport = { default: string }
+const positiveImages = import.meta.glob('/src/priming-images/positive/*', {
+  eager: true,
+}) as Record<string, ModuleWithDefaultExport>
+
+const negativeImages = import.meta.glob('/src/priming-images/negative/*', {
+  eager: true,
+}) as Record<string, ModuleWithDefaultExport>
+
+export const positivePrimingImageSrcs = Object.values(positiveImages).map(
+  (module) => module.default
+)
+export const negativePrimingImageSrcs = Object.values(negativeImages).map(
+  (module) => module.default
+)
+
+export function getPrimingImageSrc(type: 'positive' | 'negative'): string {
+  const imageList =
+    type === 'positive' ? positivePrimingImageSrcs : negativePrimingImageSrcs
+  return _.sample(imageList)!
+}

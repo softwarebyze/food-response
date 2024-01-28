@@ -12,6 +12,12 @@
           "error": false,
           "interval": false
         },
+        "prime":{ 
+          "image": false,
+          "border": false,
+          "error": false,
+          "interval": false
+        },
         "cue": {
           "image": true,
           "border": true,
@@ -39,6 +45,7 @@
       },
       "times": {
         "init": 100,
+        "prime": 20,
         "cue": 1150,
         "interval": 500,
         "error": 500,
@@ -53,6 +60,12 @@
       "instructions": "You will see pictures on either the left or right side of the screen, surrounded by a solid or dashed border. If you see a solid border around the picture, touch the picture. Be sure to touch the side of the screen that you see the picture and stay within the border. Do not touch the screen if you see a dashed border. Go as fast as you can but remember accuracy is more important than speed!",
       "cover": "https://klaugybhpmnhtpggpgtq.supabase.co/storage/v1/object/public/foodresponse/cover_images/gonogo.png",
       "stages": {
+        "prime": {
+          "image": false,
+          "border": false,
+          "error": false,
+          "interval": false
+        },
         "cue": {
           "image": true,
           "border": true,
@@ -79,6 +92,7 @@
         }
       },
       "times": {
+        "prime": 20,
         "cue": 1250,
         "interval": 500,
         "error": 500,

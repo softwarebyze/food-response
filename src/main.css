@@ -156,6 +156,10 @@ blockquote i {
   cursor: pointer;
 }
 
+.imageBox img.cursorDefault {
+  cursor: default;
+}
+
 .imageBox {
   text-align: center;
   overflow: hidden;

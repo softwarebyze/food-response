@@ -9,7 +9,6 @@ import TaskPage from './components/TaskPage'
 import UserPage from './components/UserPage'
 import { useAuth } from './contexts/AuthContext'
 import { UNHEALTHY_IMAGE_COUNT } from './data/images'
-import { images } from './data/images.json'
 import { tasks } from './data/tasks.json'
 import { useFoodRatings } from './hooks/useFoodRatings'
 import './main.css'
@@ -43,17 +42,6 @@ export default function App() {
   return (
     <BrowserRouter>
       {session && <Nav />}
-      {images?.map((food) => (
-        <img
-          key={food.id}
-          src={food.src}
-          alt={'food'}
-          style={{
-            visibility: 'hidden',
-            height: '1px',
-          }}
-        />
-      ))}
       <Routes>
         <Route
           path="/"

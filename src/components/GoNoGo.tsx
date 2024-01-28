@@ -16,6 +16,7 @@ import {
 } from '../types/Task'
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
+import { getPrimingImageSrc, primingCategories } from '../data/images'
 
 function getGoNoGoTrialType(imageType: ImageType): GoNoGoTrialType {
   switch (imageType) {
@@ -95,42 +96,31 @@ export default function GoNoGo({
   setAverageResponse,
   userImages,
 }: GameProps) {
+  const taskData = useMemo(() => prepareTaskData(userImages, totalTrials), [])
   const [currentTrialIndex, setCurrentTrialIndex] = useState<number>(0)
-  const [gameStage, setGameStage] = useState<GoNoGoGameStage>('cue')
+  const [gameStage, setGameStage] = useState<GoNoGoGameStage>('prime')
+  const [primingShownAt, setPrimingShownAt] = useState<number | null>(
+    Date.now()
+  )
 
   const [numCorrect, setNumCorrect] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
   const { image, error, interval } = stages[gameStage]
-
-  const taskData = useMemo(() => prepareTaskData(userImages, totalTrials), [])
-
-  useEffect(() => {
-    const healthyPercent =
-      taskData.filter((imgData) => imgData.imageType === 'healthy').length /
-      taskData.length
-    const unhealthyPercent =
-      taskData.filter((imgData) => imgData.imageType === 'unhealthy').length /
-      taskData.length
-    const waterPercent =
-      taskData.filter((imgData) => imgData.imageType === 'water').length /
-      taskData.length
-    const percentages = `
-    Healthy: ${Math.round(healthyPercent * 100)}%
-    Unhealthy: ${Math.round(unhealthyPercent * 100)}%
-    Water: ${Math.round(waterPercent * 100)}%
-    `
-    console.log('Go/No-Go', percentages)
-  }, [])
-
-  const { src, trialType, side, border, imageType } =
-    taskData[currentTrialIndex]
+  const { src, trialType, side, border } = taskData[currentTrialIndex]
   const [cueTimestamp, setCueTimestamp] = useState<number | null>(null)
   const [taskStartedAt, setTaskStartedAt] = useState(new Date())
   const [pictureDelta, setPictureDelta] = useState<number | null>(null)
   const [pictureShownAt, setPictureShownAt] = useState<number | null>(null)
   const [intervalShownAt, setIntervalShownAt] = useState<number | null>(null)
   const [jitterDur, setJitterDur] = useState<number | null>(null)
+  const [primingDur, setPrimingDur] = useState<number | null>(null)
   const { session } = useAuth()
+
+  const isTrialWithPriming: boolean = true
+  const showPriming: boolean = isTrialWithPriming && gameStage === 'prime'
+  const primingType: 'positive' | 'negative' =
+    trialType === 'go' ? 'positive' : 'negative'
+  const primingImageSrc = getPrimingImageSrc(primingType)
 
   useEffect(() => {
     setAccuracy(Math.round((numCorrect / currentTrialIndex) * 10000) / 100)
@@ -147,6 +137,15 @@ export default function GoNoGo({
     setPictureDelta(
       pictureShownAt ? pictureShownAt - taskStartedAt.getTime() : null
     )
+    if (primingShownAt) {
+      setPrimingDur(primingShownAt ? Date.now() - primingShownAt : null)
+      setPrimingShownAt(null)
+    }
+  }
+
+  function showPrime() {
+    setGameStage('prime')
+    setPrimingShownAt(Date.now())
   }
 
   function showInterval() {
@@ -197,7 +196,7 @@ export default function GoNoGo({
   )
 
   useEffect(() => {
-    if (gameStage !== 'cue') showCue()
+    if (gameStage !== 'cue') isTrialWithPriming ? showPrime() : showCue()
   }, [currentTrialIndex])
 
   function handleReaction(reaction: GoNoGoReaction) {
@@ -214,7 +213,7 @@ export default function GoNoGo({
 
     const taskResponseData = {
       user_id: session!.user.id,
-      gsession_created_at: taskStartedAt,
+      gsession_created_at: taskStartedAt.toLocaleDateString(),
       game_slug: 'gonogo',
       assessment: 'TEST',
       phase: 0,
@@ -240,6 +239,11 @@ export default function GoNoGo({
       target_index: side === 'left' ? 0 : 1,
       picture_offset: side === 'left' ? 'LEFT' : 'RIGHT',
       picture_list: src,
+      priming_dur: primingDur,
+      priming_picture: isTrialWithPriming ? primingImageSrc : null,
+      priming_category: isTrialWithPriming
+        ? primingCategories[primingType]
+        : null,
     }
 
     recordTaskResponse(taskResponseData)
@@ -262,6 +266,9 @@ export default function GoNoGo({
   useEffect(() => {
     let timeout: NodeJS.Timeout
     switch (gameStage) {
+      case 'prime':
+        timeout = setTimeout(showCue, times.prime)
+        break
       case 'cue':
         timeout = setTimeout(() => handleReaction('omission'), times.cue)
         break
@@ -280,43 +287,54 @@ export default function GoNoGo({
     return () => clearTimeout(timeout)
   }, [gameStage])
 
-  if (gameStage === 'break') return <Break />
-
-  return interval ? (
-    <></>
-  ) : (
-    <div className={`imageBox ${border} sized`}>
-      {image && (
-        <div className="columns is-mobile">
-          <div className="column">
-            {side === 'left' ? (
-              <img
-                onClick={() => handleReaction('left-commission')}
-                src={src}
-              />
-            ) : (
-              <div
-                onClick={() => handleReaction('left-commission')}
-                className="fill clickable"
-              ></div>
-            )}
-          </div>
-          <div className="column">
-            {side === 'right' ? (
-              <img
-                onClick={() => handleReaction('right-commission')}
-                src={src}
-              />
-            ) : (
-              <div
-                onClick={() => handleReaction('right-commission')}
-                className="fill clickable"
-              ></div>
-            )}
-          </div>
+  return (
+    <>
+      {gameStage === 'break' ? (
+        <Break />
+      ) : interval ? (
+        <></>
+      ) : (
+        <div className={`imageBox ${!showPriming && border} sized`}>
+          {showPriming && (
+            <img
+              src={primingImageSrc}
+              alt="prime image"
+              className="squeezed cursorDefault"
+            />
+          )}
+          {!showPriming && image && (
+            <div className="columns is-mobile">
+              <div className="column">
+                {side === 'left' ? (
+                  <img
+                    onClick={() => handleReaction('left-commission')}
+                    src={src}
+                  />
+                ) : (
+                  <div
+                    onClick={() => handleReaction('left-commission')}
+                    className="fill clickable"
+                  ></div>
+                )}
+              </div>
+              <div className="column">
+                {side === 'right' ? (
+                  <img
+                    onClick={() => handleReaction('right-commission')}
+                    src={src}
+                  />
+                ) : (
+                  <div
+                    onClick={() => handleReaction('right-commission')}
+                    className="fill clickable"
+                  ></div>
+                )}
+              </div>
+            </div>
+          )}
+          {error && <div className="redCross">X</div>}
         </div>
       )}
-      {error && <div className="redCross">X</div>}
-    </div>
+    </>
   )
 }

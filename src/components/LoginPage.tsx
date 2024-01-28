@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { images } from '../data/images.json'
 import { supabase } from '../supabaseClient'
+import HiddenImageToCache from './HiddenImageToCache'
+import {
+  negativePrimingImageSrcs,
+  positivePrimingImageSrcs,
+} from '../data/images'
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
@@ -97,6 +103,31 @@ export default function LoginPage() {
           </div>
         </div>
       </section>
+      <div>
+        {images?.map((food) => (
+          <HiddenImageToCache key={food.id} src={food.src} alt={'food'} />
+        ))}
+        {positivePrimingImageSrcs.map(
+          (src) =>
+            src && (
+              <HiddenImageToCache
+                key={src}
+                src={src}
+                alt={'positive priming image'}
+              />
+            )
+        )}
+        {negativePrimingImageSrcs.map(
+          (src) =>
+            src && (
+              <HiddenImageToCache
+                key={src}
+                src={src}
+                alt={'negative priming image'}
+              />
+            )
+        )}
+      </div>
     </div>
   )
 }

@@ -14,7 +14,7 @@ import {
 } from '../types/Task'
 import { recordTaskResponse } from '../utils/recordResponse'
 import Break from './Break'
-import { primingCategories, primingImageSrcs } from '../data/images'
+import { getPrimingImageSrc, primingCategories } from '../data/images'
 
 function getStopSignalTrialType(imageType: ImageType): StopSignalTrialType {
   switch (imageType) {
@@ -119,7 +119,8 @@ export default function StopSignal({
   const showPriming: boolean = isTrialWithPriming && gameStage === 'prime'
   const primingType: 'positive' | 'negative' =
     trialType === 'go' ? 'positive' : 'negative'
-  const primingImageSrc = primingImageSrcs[primingType]
+
+  const primingImageSrc = getPrimingImageSrc(primingType)
 
   function showCue() {
     setGameStage('cue')
